@@ -1,0 +1,13 @@
+-- ============================================================
+-- PROJECT : E-Commerce Order & Inventory Management System
+-- FILE    : 01_Create_Database.sql
+-- DATABASE: MySQL
+-- ============================================================
+
+DROP DATABASE IF EXISTS ecommerce_db;
+
+CREATE DATABASE ecommerce_db;
+
+USE ecommerce_db;
+
+SELECT DATABASE() AS current_database;

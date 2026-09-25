@@ -1,0 +1,273 @@
+-- ============================================================
+-- FILE : 02_Insert_Master_Data.sql
+-- ============================================================
+
+USE ecommerce_db;
+
+-- ============================================================
+-- CATEGORIES 
+-- ============================================================
+
+INSERT INTO categories
+(category_name, description, category_status)
+VALUES
+('Mobiles & Smartphones', 'Smartphones and mobile accessories', 'ACTIVE'),
+('Laptops & Computers', 'Laptops, desktops and computer accessories', 'ACTIVE'),
+('Audio & Headphones', 'Headphones, earphones and speakers', 'ACTIVE'),
+('Home Appliances', 'Electrical appliances for home use', 'ACTIVE'),
+('Smart Home', 'Smart home and IoT devices', 'ACTIVE'),
+('Wearables', 'Smartwatches and fitness devices', 'ACTIVE'),
+('Networking', 'Routers, switches and networking equipment', 'ACTIVE'),
+('Office Electronics', 'Printers, keyboards and office equipment', 'ACTIVE'),
+('Cameras', 'Digital cameras and camera accessories', 'ACTIVE'),
+('Gaming', 'Gaming consoles and gaming accessories', 'ACTIVE');
+
+
+-- ============================================================
+-- SUPPLIERS
+-- ============================================================
+
+INSERT INTO suppliers
+(supplier_name, contact_person, email, phone, city, state, supplier_status)
+VALUES
+('TechSource Distributors Pvt Ltd', 'Ramesh Kumar', 'ramesh@techsource.in', '9876501001', 'Bengaluru', 'Karnataka', 'ACTIVE'),
+('Digital World Supplies', 'Suresh Babu', 'suresh@digitalworld.in', '9876501002', 'Hyderabad', 'Telangana', 'ACTIVE'),
+('Prime Electronics India', 'Vikram Singh', 'vikram@primeelectronics.in', '9876501003', 'Delhi', 'Delhi', 'ACTIVE'),
+('NextGen Gadgets Pvt Ltd', 'Arjun Mehta', 'arjun@nextgengadgets.in', '9876501004', 'Mumbai', 'Maharashtra', 'ACTIVE'),
+('SmartHome Solutions', 'Karthik Rao', 'karthik@smarthome.in', '9876501005', 'Pune', 'Maharashtra', 'ACTIVE'),
+('Computer Hub India', 'Manoj Sharma', 'manoj@computerhub.in', '9876501006', 'Chennai', 'Tamil Nadu', 'ACTIVE'),
+('AudioTech Distributors', 'Naveen Reddy', 'naveen@audiotech.in', '9876501007', 'Hyderabad', 'Telangana', 'ACTIVE'),
+('NetworkPro Systems', 'Prakash Verma', 'prakash@networkpro.in', '9876501008', 'Bengaluru', 'Karnataka', 'ACTIVE'),
+('Vision Camera Solutions', 'Rahul Malhotra', 'rahul@visioncamera.in', '9876501009', 'Mumbai', 'Maharashtra', 'ACTIVE'),
+('GameZone Distributors', 'Deepak Jain', 'deepak@gamezone.in', '9876501010', 'Delhi', 'Delhi', 'ACTIVE');
+
+
+-- ============================================================
+-- CUSTOMERS
+-- ============================================================
+
+INSERT INTO customers
+(first_name, last_name, email, phone, date_of_birth, registration_date, customer_status)
+VALUES
+('Rahul', 'Kumar', 'rahul.kumar01@gmail.com', '9000000001', '1998-05-14', '2026-01-05 10:15:00', 'ACTIVE'),
+('Priya', 'Sharma', 'priya.sharma02@gmail.com', '9000000002', '1999-08-21', '2026-01-08 14:30:00', 'ACTIVE'),
+('Arun', 'Reddy', 'arun.reddy03@gmail.com', '9000000003', '1997-03-11', '2026-01-12 09:20:00', 'ACTIVE'),
+('Sneha', 'Patel', 'sneha.patel04@gmail.com', '9000000004', '2000-11-03', '2026-01-18 18:45:00', 'ACTIVE'),
+('Vijay', 'Kumar', 'vijay.kumar05@gmail.com', '9000000005', '1996-07-19', '2026-01-22 11:10:00', 'ACTIVE'),
+('Ananya', 'Rao', 'ananya.rao06@gmail.com', '9000000006', '2001-02-27', '2026-02-02 16:25:00', 'ACTIVE'),
+('Rohit', 'Verma', 'rohit.verma07@gmail.com', '9000000007', '1998-09-15', '2026-02-10 12:40:00', 'ACTIVE'),
+('Kavya', 'Reddy', 'kavya.reddy08@gmail.com', '9000000008', '1999-12-10', '2026-02-15 09:35:00', 'ACTIVE'),
+('Sandeep', 'Naik', 'sandeep.naik09@gmail.com', '9000000009', '1995-06-18', '2026-02-21 15:50:00', 'ACTIVE'),
+('Pooja', 'Nair', 'pooja.nair10@gmail.com', '9000000010', '2000-04-09', '2026-02-25 13:15:00', 'ACTIVE'),
+('Manoj', 'Kumar', 'manoj.kumar11@gmail.com', '9000000011', '1997-10-22', '2026-03-03 10:05:00', 'ACTIVE'),
+('Divya', 'Iyer', 'divya.iyer12@gmail.com', '9000000012', '1998-01-30', '2026-03-08 17:20:00', 'ACTIVE'),
+('Akhil', 'Menon', 'akhil.menon13@gmail.com', '9000000013', '1996-12-12', '2026-03-15 11:45:00', 'ACTIVE'),
+('Swathi', 'Rao', 'swathi.rao14@gmail.com', '9000000014', '2001-05-26', '2026-03-21 14:10:00', 'ACTIVE'),
+('Nikhil', 'Shah', 'nikhil.shah15@gmail.com', '9000000015', '1995-09-07', '2026-03-29 19:05:00', 'ACTIVE'),
+('Harish', 'Gowda', 'harish.gowda16@gmail.com', '9000000016', '1997-04-17', '2026-04-02 10:30:00', 'ACTIVE'),
+('Meena', 'Krishnan', 'meena.krishnan17@gmail.com', '9000000017', '1999-06-23', '2026-04-09 16:40:00', 'ACTIVE'),
+('Varun', 'Joshi', 'varun.joshi18@gmail.com', '9000000018', '1996-02-14', '2026-04-15 12:00:00', 'ACTIVE'),
+('Lakshmi', 'Prasad', 'lakshmi.prasad19@gmail.com', '9000000019', '1998-11-29', '2026-04-21 18:25:00', 'ACTIVE'),
+('Aditya', 'Kulkarni', 'aditya.kulkarni20@gmail.com', '9000000020', '1997-08-05', '2026-05-01 09:15:00', 'ACTIVE'),
+('Neha', 'Singh', 'neha.singh21@gmail.com', '9000000021', '2000-03-19', '2026-05-07 13:35:00', 'ACTIVE'),
+('Kiran', 'Bhat', 'kiran.bhat22@gmail.com', '9000000022', '1995-12-01', '2026-05-14 15:45:00', 'ACTIVE'),
+('Abhishek', 'Yadav', 'abhishek.yadav23@gmail.com', '9000000023', '1999-07-08', '2026-05-20 11:20:00', 'ACTIVE'),
+('Deepa', 'Thomas', 'deepa.thomas24@gmail.com', '9000000024', '1998-10-16', '2026-05-27 17:55:00', 'ACTIVE'),
+('Mohan', 'Das', 'mohan.das25@gmail.com', '9000000025', '1996-05-31', '2026-06-03 10:50:00', 'ACTIVE'),
+('Reshma', 'Khan', 'reshma.khan26@gmail.com', '9000000026', '2001-01-13', '2026-06-10 14:25:00', 'ACTIVE'),
+('Tarun', 'Rao', 'tarun.rao27@gmail.com', '9000000027', '1997-09-24', '2026-06-17 09:40:00', 'ACTIVE'),
+('Aishwarya', 'N', 'aishwarya.n28@gmail.com', '9000000028', '2000-06-06', '2026-06-24 16:15:00', 'ACTIVE'),
+('Srinivas', 'Reddy', 'srinivas.reddy29@gmail.com', '9000000029', '1994-11-20', '2026-07-01 12:30:00', 'ACTIVE'),
+('Monika', 'Gupta', 'monika.gupta30@gmail.com', '9000000030', '1999-02-02', '2026-07-08 18:10:00', 'ACTIVE');
+
+
+-- ============================================================
+-- CUSTOMER ADDRESSES
+-- ============================================================
+
+INSERT INTO customer_addresses
+(customer_id, address_type, address_line1, address_line2, city, state, postal_code, country, is_default)
+VALUES
+(1, 'HOME', '24th Main Road, HSR Layout', 'Sector 2', 'Bengaluru', 'Karnataka', '560102', 'India', TRUE),
+(1, 'WORK', 'ITPL Main Road', 'Whitefield', 'Bengaluru', 'Karnataka', '560066', 'India', FALSE),
+(2, 'HOME', 'Madhapur Main Road', 'Near Metro Station', 'Hyderabad', 'Telangana', '500081', 'India', TRUE),
+(3, 'HOME', 'Banjara Hills Road No 12', NULL, 'Hyderabad', 'Telangana', '500034', 'India', TRUE),
+(4, 'HOME', 'Satellite Road', 'Near ISRO Circle', 'Ahmedabad', 'Gujarat', '380015', 'India', TRUE),
+(5, 'HOME', 'Indiranagar 12th Main', NULL, 'Bengaluru', 'Karnataka', '560038', 'India', TRUE),
+(6, 'HOME', 'Anna Nagar West', 'Second Avenue', 'Chennai', 'Tamil Nadu', '600040', 'India', TRUE),
+(7, 'HOME', 'Andheri East', 'Mahakali Caves Road', 'Mumbai', 'Maharashtra', '400093', 'India', TRUE),
+(8, 'HOME', 'Kukatpally Housing Board', NULL, 'Hyderabad', 'Telangana', '500072', 'India', TRUE),
+(9, 'HOME', 'Baner Road', NULL, 'Pune', 'Maharashtra', '411045', 'India', TRUE),
+(10, 'HOME', 'Kakkanad', 'Civil Station Road', 'Kochi', 'Kerala', '682030', 'India', TRUE),
+(11, 'HOME', 'Koramangala 5th Block', NULL, 'Bengaluru', 'Karnataka', '560095', 'India', TRUE),
+(12, 'HOME', 'Adyar Main Road', NULL, 'Chennai', 'Tamil Nadu', '600020', 'India', TRUE),
+(13, 'HOME', 'Vijayanagar', '2nd Stage', 'Bengaluru', 'Karnataka', '560040', 'India', TRUE),
+(14, 'HOME', 'Gachibowli', 'Financial District Road', 'Hyderabad', 'Telangana', '500032', 'India', TRUE),
+(15, 'HOME', 'Dwarka Sector 10', NULL, 'New Delhi', 'Delhi', '110075', 'India', TRUE),
+(16, 'HOME', 'Rajajinagar', '1st Block', 'Bengaluru', 'Karnataka', '560010', 'India', TRUE),
+(17, 'HOME', 'Velachery Main Road', NULL, 'Chennai', 'Tamil Nadu', '600042', 'India', TRUE),
+(18, 'HOME', 'Vastrapur', NULL, 'Ahmedabad', 'Gujarat', '380015', 'India', TRUE),
+(19, 'HOME', 'Madhapur', 'Ayyappa Society', 'Hyderabad', 'Telangana', '500081', 'India', TRUE),
+(20, 'HOME', 'Wakad', 'Datta Mandir Road', 'Pune', 'Maharashtra', '411057', 'India', TRUE),
+(21, 'HOME', 'Electronic City Phase 1', NULL, 'Bengaluru', 'Karnataka', '560100', 'India', TRUE),
+(22, 'HOME', 'Salt Lake Sector V', NULL, 'Kolkata', 'West Bengal', '700091', 'India', TRUE),
+(23, 'HOME', 'Noida Sector 62', NULL, 'Noida', 'Uttar Pradesh', '201309', 'India', TRUE),
+(24, 'HOME', 'T Nagar', 'North Usman Road', 'Chennai', 'Tamil Nadu', '600017', 'India', TRUE),
+(25, 'HOME', 'Rajouri Garden', NULL, 'New Delhi', 'Delhi', '110027', 'India', TRUE),
+(26, 'HOME', 'Kharadi', NULL, 'Pune', 'Maharashtra', '411014', 'India', TRUE),
+(27, 'HOME', 'Marathahalli', 'Outer Ring Road', 'Bengaluru', 'Karnataka', '560037', 'India', TRUE),
+(28, 'HOME', 'Jubilee Hills', NULL, 'Hyderabad', 'Telangana', '500033', 'India', TRUE),
+(29, 'HOME', 'JP Nagar 6th Phase', NULL, 'Bengaluru', 'Karnataka', '560078', 'India', TRUE),
+(30, 'HOME', 'Goregaon West', NULL, 'Mumbai', 'Maharashtra', '400104', 'India', TRUE);
+
+-- ============================================================
+-- WAREHOUSES
+-- ============================================================
+
+INSERT INTO warehouses
+(warehouse_code, warehouse_name, city, state, manager_name, warehouse_status)
+VALUES
+('WH-BLR-01', 'Bengaluru Central Warehouse', 'Bengaluru', 'Karnataka', 'Mahesh Rao', 'ACTIVE'),
+('WH-HYD-01', 'Hyderabad Fulfillment Center', 'Hyderabad', 'Telangana', 'Ravi Kumar', 'ACTIVE'),
+('WH-MUM-01', 'Mumbai Distribution Center', 'Mumbai', 'Maharashtra', 'Sanjay Patil', 'ACTIVE'),
+('WH-DEL-01', 'Delhi NCR Warehouse', 'New Delhi', 'Delhi', 'Amit Verma', 'ACTIVE'),
+('WH-CHN-01', 'Chennai Fulfillment Center', 'Chennai', 'Tamil Nadu', 'Senthil Kumar', 'ACTIVE');
+
+
+-- ============================================================
+-- PRODUCTS
+-- ============================================================
+
+INSERT INTO products
+(category_id, supplier_id, product_name, sku, description, cost_price, selling_price, reorder_level, product_status)
+VALUES
+(1, 1, 'Samsung Galaxy S24 5G', 'SAM-S24-256-BLK', '256GB 5G smartphone', 61000.00, 74999.00, 15, 'ACTIVE'),
+(1, 4, 'OnePlus Nord CE 4', 'OP-NCE4-128-GRY', '128GB 5G smartphone', 21000.00, 24999.00, 20, 'ACTIVE'),
+(1, 3, 'Apple iPhone 15', 'APL-IP15-128-BLU', '128GB smartphone', 58000.00, 69999.00, 10, 'ACTIVE'),
+(1, 1, 'Anker USB-C Fast Charger', 'ANK-CHR-65W-WHT', '65W USB-C fast charger', 1800.00, 2499.00, 30, 'ACTIVE'),
+(2, 6, 'HP Pavilion 15', 'HP-PAV15-I5-16', '15.6 inch Intel Core i5 laptop', 58000.00, 67999.00, 10, 'ACTIVE'),
+(2, 6, 'Dell Inspiron 14', 'DEL-INS14-I5-16', '14 inch Intel Core i5 laptop', 55000.00, 64999.00, 10, 'ACTIVE'),
+(2, 6, 'Lenovo IdeaPad Slim 5', 'LEN-SL5-R5-16', '15 inch AMD Ryzen laptop', 52000.00, 61999.00, 10, 'ACTIVE'),
+(2, 3, 'Logitech Wireless Keyboard', 'LOG-KB-K380-BLK', 'Wireless compact keyboard', 2200.00, 2999.00, 25, 'ACTIVE'),
+(2, 3, 'Logitech Wireless Mouse', 'LOG-MS-M185-BLK', 'Wireless optical mouse', 750.00, 999.00, 40, 'ACTIVE'),
+(3, 7, 'Sony WH-1000XM5', 'SON-WH1000XM5-BLK', 'Wireless noise cancelling headphones', 26000.00, 29999.00, 15, 'ACTIVE'),
+(3, 7, 'JBL Tune 770NC', 'JBL-T770NC-BLU', 'Wireless ANC headphones', 5500.00, 6999.00, 20, 'ACTIVE'),
+(3, 7, 'Apple AirPods Pro 2', 'APL-APP2-WHT', 'Wireless ANC earbuds', 19000.00, 24999.00, 20, 'ACTIVE'),
+(3, 7, 'JBL Flip 6 Speaker', 'JBL-FLIP6-BLU', 'Portable Bluetooth speaker', 8500.00, 10999.00, 15, 'ACTIVE'),
+(4, 5, 'Philips Air Fryer 4.1L', 'PHI-AF41-BLK', 'Digital air fryer', 6500.00, 8499.00, 15, 'ACTIVE'),
+(4, 5, 'Prestige Electric Kettle 1.5L', 'PRE-KET15-SS', 'Stainless steel electric kettle', 1100.00, 1599.00, 25, 'ACTIVE'),
+(4, 5, 'LG 260L Double Door Refrigerator', 'LG-REF260-GLS', 'Double door refrigerator', 28000.00, 34999.00, 5, 'ACTIVE'),
+(5, 5, 'Amazon Echo Dot 5th Gen', 'AMZ-ECHO5-BLU', 'Smart speaker with Alexa', 3200.00, 5499.00, 20, 'ACTIVE'),
+(5, 5, 'TP-Link Smart WiFi Plug', 'TPL-SPLUG-TAPO', 'WiFi smart plug', 650.00, 999.00, 40, 'ACTIVE'),
+(5, 5, 'Philips Hue Smart Bulb', 'PHI-HUE-B22-WHT', 'Smart LED bulb', 1100.00, 1599.00, 30, 'ACTIVE'),
+(6, 4, 'Samsung Galaxy Watch 6', 'SAM-WATCH6-44-BLK', '44mm Bluetooth smartwatch', 19000.00, 24999.00, 12, 'ACTIVE'),
+(6, 4, 'boAt Wave Sigma Smartwatch', 'BOAT-WSIG-BLK', 'Bluetooth calling smartwatch', 1800.00, 2999.00, 25, 'ACTIVE'),
+(7, 8, 'TP-Link Archer AX55', 'TPL-AX55-AX3000', 'WiFi 6 dual-band router', 6500.00, 8999.00, 15, 'ACTIVE'),
+(7, 8, 'Netgear 8-Port Gigabit Switch', 'NET-GS108-8P', '8-port unmanaged switch', 4500.00, 5999.00, 10, 'ACTIVE'),
+(8, 3, 'HP LaserJet MFP 1188', 'HP-MFP1188-BLK', 'Multifunction laser printer', 14500.00, 18999.00, 8, 'ACTIVE'),
+(8, 3, 'Canon PIXMA E477', 'CAN-E477-MFP', 'Wireless inkjet printer', 6500.00, 8499.00, 10, 'ACTIVE'),
+(9, 9, 'Canon EOS 1500D', 'CAN-EOS1500D-KIT', '24.1MP DSLR camera with lens', 31000.00, 39999.00, 5, 'ACTIVE'),
+(9, 9, 'Sony Alpha ZV-E10', 'SON-ZVE10-BLK', 'Mirrorless camera for creators', 51000.00, 64999.00, 5, 'ACTIVE'),
+(10, 10, 'Sony PlayStation 5 Slim', 'SON-PS5SLIM-STD', 'Gaming console', 42000.00, 54999.00, 8, 'ACTIVE'),
+(10, 10, 'Logitech G102 Gaming Mouse', 'LOG-G102-BLK', 'Wired gaming mouse', 1500.00, 2199.00, 25, 'ACTIVE'),
+(10, 10, 'Redragon K552 Mechanical Keyboard', 'RED-K552-RGB', 'Mechanical gaming keyboard', 2800.00, 3499.00, 20, 'ACTIVE');
+
+
+-- ============================================================
+-- INVENTORY
+-- ============================================================
+
+INSERT INTO inventory
+(product_id, warehouse_id, quantity_available, quantity_reserved, last_restocked_at)
+VALUES
+-- Bengaluru
+(1, 1, 28, 3, '2026-09-10 10:00:00'),
+(2, 1, 45, 5, '2026-09-12 11:00:00'),
+(3, 1, 18, 2, '2026-09-11 14:00:00'),
+(4, 1, 85, 8, '2026-09-15 09:30:00'),
+(5, 1, 14, 2, '2026-09-08 12:00:00'),
+(8, 1, 52, 4, '2026-09-14 10:15:00'),
+(9, 1, 95, 7, '2026-09-13 16:00:00'),
+(10, 1, 22, 3, '2026-09-10 13:00:00'),
+(12, 1, 31, 4, '2026-09-15 15:30:00'),
+(17, 1, 42, 5, '2026-09-14 11:00:00'),
+(18, 1, 120, 10, '2026-09-16 09:00:00'),
+(20, 1, 15, 2, '2026-09-09 14:30:00'),
+(22, 1, 26, 3, '2026-09-12 10:45:00'),
+(24, 1, 11, 1, '2026-09-07 12:20:00'),
+(26, 1, 7, 1, '2026-09-05 15:00:00'),
+(28, 1, 13, 2, '2026-09-10 16:00:00'),
+(29, 1, 38, 5, '2026-09-14 09:00:00'),
+
+-- Hyderabad
+(1, 2, 12, 2, '2026-09-09 10:00:00'),
+(2, 2, 34, 4, '2026-09-11 12:00:00'),
+(3, 2, 9, 1, '2026-09-13 13:30:00'),
+(6, 2, 16, 2, '2026-09-08 10:30:00'),
+(7, 2, 21, 2, '2026-09-12 11:30:00'),
+(11, 2, 46, 6, '2026-09-15 14:00:00'),
+(13, 2, 20, 3, '2026-09-10 15:00:00'),
+(16, 2, 8, 1, '2026-09-06 11:00:00'),
+(19, 2, 55, 6, '2026-09-14 12:30:00'),
+(21, 2, 17, 2, '2026-09-09 13:15:00'),
+(23, 2, 14, 1, '2026-09-11 16:00:00'),
+(25, 2, 22, 2, '2026-09-12 10:00:00'),
+(27, 2, 5, 1, '2026-09-04 14:00:00'),
+(30, 2, 32, 4, '2026-09-13 15:30:00'),
+
+-- Mumbai
+(1, 3, 7, 1, '2026-09-08 10:00:00'),
+(5, 3, 11, 2, '2026-09-10 11:00:00'),
+(6, 3, 13, 1, '2026-09-09 12:00:00'),
+(10, 3, 19, 2, '2026-09-11 13:00:00'),
+(12, 3, 14, 2, '2026-09-13 14:00:00'),
+(14, 3, 18, 2, '2026-09-12 10:30:00'),
+(15, 3, 29, 3, '2026-09-15 11:30:00'),
+(17, 3, 31, 4, '2026-09-10 15:00:00'),
+(20, 3, 9, 1, '2026-09-07 13:30:00'),
+(27, 3, 6, 1, '2026-09-06 12:00:00'),
+(30, 3, 17, 2, '2026-09-14 16:00:00'),
+
+-- Delhi
+(3, 4, 11, 1, '2026-09-12 10:00:00'),
+(7, 4, 15, 2, '2026-09-09 11:30:00'),
+(9, 4, 43, 4, '2026-09-14 13:00:00'),
+(16, 4, 6, 1, '2026-09-08 12:00:00'),
+(22, 4, 12, 1, '2026-09-10 14:30:00'),
+(28, 4, 8, 1, '2026-09-05 15:30:00'),
+(29, 4, 24, 3, '2026-09-13 10:30:00'),
+
+-- Chennai
+(4, 5, 48, 5, '2026-09-13 09:30:00'),
+(8, 5, 34, 3, '2026-09-11 12:30:00'),
+(11, 5, 27, 3, '2026-09-14 14:00:00'),
+(14, 5, 16, 2, '2026-09-10 10:00:00'),
+(15, 5, 21, 2, '2026-09-12 11:00:00'),
+(18, 5, 65, 6, '2026-09-15 13:30:00'),
+(21, 5, 10, 1, '2026-09-08 15:00:00'),
+(23, 5, 9, 1, '2026-09-09 16:00:00'),
+(25, 5, 13, 1, '2026-09-12 09:00:00'),
+(26, 5, 15, 2, '2026-09-07 14:00:00'),
+(30, 5, 28, 3, '2026-09-14 12:00:00');
+
+
+-- ============================================================
+-- COUPONS
+-- ============================================================
+
+INSERT INTO coupons
+(coupon_code, discount_type, discount_value, minimum_order_value,
+ maximum_discount, valid_from, valid_until, usage_limit, used_count, coupon_status)
+VALUES
+('WELCOME10', 'PERCENTAGE', 10.00, 1000.00, 1000.00,
+ '2026-01-01 00:00:00', '2026-12-31 23:59:59', 5000, 0, 'ACTIVE'),
+('SAVE500', 'FIXED', 500.00, 10000.00, 500.00,
+ '2026-06-01 00:00:00', '2026-10-31 23:59:59', 1000, 0, 'ACTIVE'),
+('FESTIVE15', 'PERCENTAGE', 15.00, 20000.00, 3000.00,
+ '2026-09-01 00:00:00', '2026-10-31 23:59:59', 2000, 0, 'ACTIVE'),
+('TECH1000', 'FIXED', 1000.00, 30000.00, 1000.00,
+ '2026-08-01 00:00:00', '2026-12-31 23:59:59', 1500, 0, 'ACTIVE'),
+('AUDIO20', 'PERCENTAGE', 20.00, 5000.00, 2000.00,
+ '2026-09-01 00:00:00', '2026-09-30 23:59:59', 500, 0, 'ACTIVE'),
+('NEWYEAR25', 'PERCENTAGE', 25.00, 15000.00, 5000.00,
+ '2026-01-01 00:00:00', '2026-01-31 23:59:59', 1000, 874, 'EXPIRED');
