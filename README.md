@@ -661,7 +661,7 @@ The project provides hands-on experience with the types of database operations c
 
 ---
 
-👨‍💻 # Author
+ # 👨‍💻 Author
 
 **Lakshmanna Kuruva**
 
