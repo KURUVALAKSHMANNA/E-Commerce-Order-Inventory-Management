@@ -1,20 +1,22 @@
 # E-Commerce Order & Inventory Management System
 
-A real-world **MySQL database project** designed to simulate the database operations of an e-commerce platform.
+A **MySQL-based E-Commerce Order & Inventory Management System** designed to simulate real-world database operations of an e-commerce business.
 
-This project is being developed step-by-step from database creation and relational schema design to realistic business data, advanced SQL, database programming, transactions, performance optimization, testing, and business reporting.
+The project demonstrates practical **SQL and Database Developer skills** including relational database design, realistic business data, SQL queries, JOINs, aggregations, advanced SQL concepts, database programming, transactions, performance optimization, testing, and business reporting.
 
-## Project Objective
+---
 
-The objective of this project is to demonstrate practical **Database Developer / SQL Developer** skills by building a complete relational database for an e-commerce business.
+## Project Overview
 
-The project focuses on:
+This project models the core database operations of an e-commerce platform, covering the complete flow from **customers and products to orders, payments, shipments, inventory, returns, and customer support**.
+
+It is designed as a practical database project to demonstrate how a Database Developer works with:
 
 * Relational database design
+* Business data modelling
 * Data integrity
-* Realistic business data
 * SQL querying
-* Advanced SQL
+* Data analysis
 * Database programming
 * Transaction management
 * Performance optimization
@@ -23,47 +25,45 @@ The project focuses on:
 
 ---
 
-# Business Scenario
+## Business Workflow
 
-The system represents an e-commerce company that manages customers, products, suppliers, warehouses, inventory, orders, payments, shipments, returns, reviews, coupons, and customer support.
-
-### Main Order Flow
+### Order Management
 
 ```text
 Customer
-   ↓
+    ↓
 Customer Address
-   ↓
+    ↓
 Order
-   ↓
+    ↓
 Order Items
-   ↓
+    ↓
 Payment
-   ↓
+    ↓
 Shipment
-   ↓
+    ↓
 Delivery
-   ↓
+    ↓
 Return / Refund
 ```
 
-### Inventory Flow
+### Inventory Management
 
 ```text
 Product
-   ↓
+    ↓
 Category
-   ↓
+    ↓
 Supplier
-   ↓
+    ↓
 Warehouse
-   ↓
+    ↓
 Inventory
-   ↓
+    ↓
 Inventory Transactions
 ```
 
-### Supporting Processes
+### Supporting Operations
 
 ```text
 Customer → Coupons
@@ -81,25 +81,38 @@ Database Changes → Audit Logs
 
 ---
 
-# Technology Used
+# Key Features
 
-* **MySQL**
-* **SQL**
-* **MySQL Workbench**
-* **Git**
-* **GitHub**
+* Customer and address management
+* Product and category management
+* Supplier management
+* Warehouse management
+* Inventory management
+* Inventory transaction tracking
+* Customer order management
+* Order item management
+* Payment tracking
+* Shipment management
+* Return and refund management
+* Coupon management
+* Product price history
+* Order status history
+* Customer reviews
+* Customer support tickets
+* Audit logging
+* SQL-based business analysis
 
 ---
 
-# Database
+# Database Design
 
-Database name:
+Database:
 
 ```sql
 ecommerce_db
 ```
 
-The database is designed using relational concepts such as:
+The database contains **20 relational tables** designed using:
 
 * Primary Keys
 * Foreign Keys
@@ -110,35 +123,386 @@ The database is designed using relational concepts such as:
 * Referential Integrity
 * One-to-Many Relationships
 * Business Status Management
+* Timestamp-based tracking
 
 ---
 
 # Database Tables
 
-The project contains 20 core tables.
+| #  | Table                    | Purpose                      |
+| -- | ------------------------ | ---------------------------- |
+| 1  | `customers`              | Customer information         |
+| 2  | `customer_addresses`     | Customer address information |
+| 3  | `categories`             | Product categories           |
+| 4  | `suppliers`              | Supplier information         |
+| 5  | `products`               | Product details              |
+| 6  | `warehouses`             | Warehouse information        |
+| 7  | `inventory`              | Current product stock        |
+| 8  | `inventory_transactions` | Inventory movement history   |
+| 9  | `coupons`                | Discount coupon information  |
+| 10 | `orders`                 | Customer orders              |
+| 11 | `order_items`            | Products included in orders  |
+| 12 | `payments`               | Payment information          |
+| 13 | `shipments`              | Shipment information         |
+| 14 | `returns`                | Return requests              |
+| 15 | `return_items`           | Returned products            |
+| 16 | `order_status_history`   | Order status changes         |
+| 17 | `product_price_history`  | Product price changes        |
+| 18 | `reviews`                | Customer product reviews     |
+| 19 | `audit_logs`             | Database audit information   |
+| 20 | `support_tickets`        | Customer support requests    |
 
-| #  | Table                    | Purpose                          |
-| -- | ------------------------ | -------------------------------- |
-| 1  | `customers`              | Stores customer information      |
-| 2  | `customer_addresses`     | Stores customer addresses        |
-| 3  | `categories`             | Stores product categories        |
-| 4  | `suppliers`              | Stores supplier information      |
-| 5  | `products`               | Stores product details           |
-| 6  | `warehouses`             | Stores warehouse information     |
-| 7  | `inventory`              | Stores current inventory         |
-| 8  | `inventory_transactions` | Tracks inventory movements       |
-| 9  | `coupons`                | Stores discount coupons          |
-| 10 | `orders`                 | Stores customer orders           |
-| 11 | `order_items`            | Stores products within orders    |
-| 12 | `payments`               | Stores payment information       |
-| 13 | `shipments`              | Stores shipment information      |
-| 14 | `returns`                | Stores return requests           |
-| 15 | `return_items`           | Stores returned products         |
-| 16 | `order_status_history`   | Tracks order status changes      |
-| 17 | `product_price_history`  | Tracks product price changes     |
-| 18 | `reviews`                | Stores customer reviews          |
-| 19 | `audit_logs`             | Stores audit information         |
-| 20 | `support_tickets`        | Stores customer support requests |
+---
+
+# SQL Development
+
+The project contains SQL scripts covering different database development areas.
+
+### Database Creation
+
+```text
+01_Create_Database.sql
+```
+
+Creates the `ecommerce_db` database.
+
+### Table Design
+
+```text
+02_Create_Tables.sql
+```
+
+Creates the complete relational database structure with keys, constraints, relationships, and validation rules.
+
+### Master Data
+
+```text
+03_Insert_Master_Data.sql
+```
+
+Contains business data for:
+
+* Customers
+* Addresses
+* Categories
+* Suppliers
+* Products
+* Warehouses
+* Inventory
+* Coupons
+
+### Transactional Data
+
+```text
+04_Insert_Transactional_Data.sql
+```
+
+Contains realistic business transactions including:
+
+* Orders
+* Order items
+* Payments
+* Shipments
+* Returns
+* Inventory transactions
+* Reviews
+* Support tickets
+* Order status history
+* Coupon usage
+
+---
+
+# SQL Querying
+
+The project demonstrates practical SQL queries used for retrieving and analyzing business data.
+
+### Basic SQL
+
+```text
+05_Basic_SQL_Queries.sql
+```
+
+Concepts:
+
+* SELECT
+* DISTINCT
+* WHERE
+* ORDER BY
+* LIMIT
+
+### Filtering
+
+```text
+06_Filtering_Queries.sql
+```
+
+Concepts:
+
+* AND
+* OR
+* IN
+* BETWEEN
+* LIKE
+* IS NULL
+* CASE
+
+### JOINs
+
+```text
+07_Joins.sql
+```
+
+Concepts:
+
+* INNER JOIN
+* LEFT JOIN
+* RIGHT JOIN
+* Multiple-table JOINs
+
+Example business relationships:
+
+```text
+Customers → Orders
+Orders → Order Items
+Products → Categories
+Products → Inventory
+Orders → Payments
+Orders → Shipments
+```
+
+### Aggregate Queries
+
+```text
+08_Aggregate_Queries.sql
+```
+
+Concepts:
+
+* COUNT()
+* SUM()
+* AVG()
+* MIN()
+* MAX()
+* GROUP BY
+* HAVING
+
+These queries are used for business analysis such as:
+
+* Total sales
+* Customer order counts
+* Product sales
+* Average order value
+* Inventory analysis
+
+---
+
+# Advanced SQL
+
+The project also covers advanced SQL concepts:
+
+### Subqueries
+
+```text
+09_Subqueries.sql
+```
+
+* Scalar subqueries
+* Correlated subqueries
+* EXISTS
+* NOT EXISTS
+* IN
+* Derived tables
+
+### Common Table Expressions
+
+```text
+10_CTE_Queries.sql
+```
+
+* CTEs
+* Multiple CTEs
+* Business analysis using CTEs
+
+### Window Functions
+
+```text
+11_Window_Functions.sql
+```
+
+* ROW_NUMBER()
+* RANK()
+* DENSE_RANK()
+* LAG()
+* LEAD()
+* Running totals
+* PARTITION BY
+
+---
+
+# Database Programming
+
+The project demonstrates database programming concepts using MySQL.
+
+### Built-in Functions
+
+```text
+12_Built_In_Functions.sql
+```
+
+Includes:
+
+* String functions
+* Date functions
+* Numeric functions
+* NULL functions
+
+### User-Defined Functions
+
+```text
+13_User_Defined_Functions.sql
+```
+
+Business calculations such as:
+
+* Order total
+* Discount calculation
+* Profit calculation
+
+### Stored Procedures
+
+```text
+14_Stored_Procedures.sql
+```
+
+Business operations such as:
+
+* Customer order retrieval
+* Inventory checking
+* Order processing
+* Return processing
+* Sales analysis
+
+### Triggers
+
+```text
+15_Triggers.sql
+```
+
+Database automation such as:
+
+* Order status history
+* Inventory transactions
+* Price history
+* Audit logging
+
+### Views
+
+```text
+16_Views.sql
+```
+
+Business-oriented database views such as:
+
+* Customer order summary
+* Product sales summary
+* Inventory status
+* Order tracking
+* Customer support summary
+
+---
+
+# Transaction Management
+
+```text
+17_Transactions.sql
+```
+
+Demonstrates:
+
+```sql
+START TRANSACTION;
+COMMIT;
+ROLLBACK;
+SAVEPOINT;
+```
+
+Example:
+
+```text
+Place Order
+    ↓
+Check Inventory
+    ↓
+Reserve Stock
+    ↓
+Create Order
+    ↓
+Process Payment
+    ↓
+Commit Transaction
+```
+
+Transaction handling helps maintain data consistency when multiple database operations are involved in a business process.
+
+---
+
+# Performance Optimization
+
+```text
+18_Indexes.sql
+```
+
+The project demonstrates database performance concepts using:
+
+```sql
+EXPLAIN
+```
+
+Indexes are applied to frequently searched, filtered, and joined columns.
+
+---
+
+# SQL Testing
+
+```text
+19_Test_Cases.sql
+```
+
+Database testing covers scenarios such as:
+
+* Primary key validation
+* Foreign key validation
+* Duplicate records
+* NULL handling
+* Invalid values
+* Order total validation
+* Payment validation
+* Inventory validation
+* Return validation
+* Trigger testing
+* Stored procedure testing
+* Business rule validation
+
+---
+
+# Business Reporting
+
+```text
+20_Business_Reports.sql
+```
+
+SQL-based business reports include:
+
+* Monthly sales analysis
+* Customer analysis
+* Top customers
+* Product sales analysis
+* Top products
+* Low stock analysis
+* Warehouse inventory analysis
+* Payment analysis
+* Return analysis
+* Order fulfillment analysis
 
 ---
 
@@ -148,12 +512,10 @@ The project contains 20 core tables.
 E-Commerce-Order-Inventory-Management/
 │
 ├── SQL/
-│   │
 │   ├── 01_Create_Database.sql
 │   ├── 02_Create_Tables.sql
 │   ├── 03_Insert_Master_Data.sql
 │   ├── 04_Insert_Transactional_Data.sql
-│   │
 │   ├── 05_Basic_SQL_Queries.sql
 │   ├── 06_Filtering_Queries.sql
 │   ├── 07_Joins.sql
@@ -176,387 +538,15 @@ E-Commerce-Order-Inventory-Management/
 
 ---
 
-# SQL Development Phases
-
-## Phase 1 — Database Creation
-
-**File:** `01_Create_Database.sql`
-
-Creates the project database:
-
-```sql
-DROP DATABASE IF EXISTS ecommerce_db;
-CREATE DATABASE ecommerce_db;
-USE ecommerce_db;
-```
-
----
-
-## Phase 2 — Table Design
-
-**File:** `02_Create_Tables.sql`
-
-Creates the complete relational database structure.
-
-The schema includes:
-
-* Primary keys
-* Foreign keys
-* Constraints
-* Relationships
-* Default values
-* Status fields
-* Timestamp columns
-* Data validation rules
-
----
-
-## Phase 3 — Master Data
-
-**File:** `03_Insert_Master_Data.sql`
-
-The master dataset contains realistic business information for:
-
-* Customers
-* Customer addresses
-* Categories
-* Suppliers
-* Products
-* Warehouses
-* Inventory
-* Coupons
-
-This data provides the foundation for the transactional part of the project.
-
----
-
-## Phase 4 — Transactional Data
-
-**File:** `04_Insert_Transactional_Data.sql`
-
-This phase populates the database with realistic e-commerce transactions connected to the existing master data.
-
-Planned transaction scenarios include:
-
-* Multiple customer orders
-* Multiple order items
-* Different payment methods
-* Different payment statuses
-* Processing orders
-* Shipped orders
-* Delivered orders
-* Cancelled orders
-* Product returns
-* Refunds
-* Inventory movements
-* Coupon usage
-* Order status history
-* Customer reviews
-* Support tickets
-
----
-
-# Advanced SQL
-
-After the data population phases, the project will progressively implement advanced SQL concepts.
-
-### Basic SQL
-
-`05_Basic_SQL_Queries.sql`
-
-* SELECT
-* DISTINCT
-* WHERE
-* ORDER BY
-* LIMIT
-
-### Filtering
-
-`06_Filtering_Queries.sql`
-
-* AND
-* OR
-* IN
-* BETWEEN
-* LIKE
-* IS NULL
-* CASE
-
-### JOINs
-
-`07_Joins.sql`
-
-* INNER JOIN
-* LEFT JOIN
-* RIGHT JOIN
-* Multiple-table JOINs
-
-### Aggregations
-
-`08_Aggregate_Queries.sql`
-
-* COUNT
-* SUM
-* AVG
-* MIN
-* MAX
-* GROUP BY
-* HAVING
-
-### Subqueries
-
-`09_Subqueries.sql`
-
-* Scalar subqueries
-* Correlated subqueries
-* EXISTS
-* NOT EXISTS
-* IN
-* Derived tables
-
-### CTEs
-
-`10_CTE_Queries.sql`
-
-* Common Table Expressions
-* Multiple CTEs
-* Business analysis using CTEs
-
-### Window Functions
-
-`11_Window_Functions.sql`
-
-* ROW_NUMBER
-* RANK
-* DENSE_RANK
-* LAG
-* LEAD
-* Running totals
-* PARTITION BY
-
----
-
-# Database Programming
-
-The project will also cover database programming concepts.
-
-### Built-in Functions
-
-`12_Built_In_Functions.sql`
-
-Examples:
-
-```text
-String Functions
-Date Functions
-Numeric Functions
-NULL Functions
-```
-
-### User-Defined Functions
-
-`13_User_Defined_Functions.sql`
-
-Business-specific functions will be developed for calculations such as:
-
-```text
-Order Total
-Discount Calculation
-Profit Calculation
-```
-
-### Stored Procedures
-
-`14_Stored_Procedures.sql`
-
-Procedures will be developed for operations such as:
-
-```text
-Customer Order Retrieval
-Inventory Checking
-Order Processing
-Return Processing
-Sales Analysis
-```
-
-### Triggers
-
-`15_Triggers.sql`
-
-Triggers will be used for database automation such as:
-
-```text
-Order Status History
-Inventory Transactions
-Price History
-Audit Logging
-```
-
-### Views
-
-`16_Views.sql`
-
-Business-oriented views will be created for commonly required information.
-
-Examples:
-
-```text
-Customer Order Summary
-Product Sales Summary
-Inventory Status
-Order Tracking
-Customer Support Summary
-```
-
----
-
-# Transactions
-
-**File:** `17_Transactions.sql`
-
-Transaction management will demonstrate:
-
-```sql
-START TRANSACTION;
-
-COMMIT;
-
-ROLLBACK;
-
-SAVEPOINT;
-```
-
-Example business process:
-
-```text
-Place Order
-    ↓
-Check Inventory
-    ↓
-Reserve Stock
-    ↓
-Create Order
-    ↓
-Process Payment
-    ↓
-Commit Transaction
-```
-
-If an operation fails:
-
-```text
-ROLLBACK
-```
-
----
-
-# Performance Optimization
-
-**File:** `18_Indexes.sql`
-
-Database performance will be analyzed using:
-
-```sql
-EXPLAIN
-```
-
-Indexes will be created based on actual query requirements and frequently searched or joined columns.
-
----
-
-# SQL Testing
-
-**File:** `19_Test_Cases.sql`
-
-Testing will cover:
-
-* Primary key validation
-* Foreign key validation
-* Duplicate records
-* NULL handling
-* Invalid values
-* Order total validation
-* Payment validation
-* Inventory validation
-* Return validation
-* Trigger testing
-* Stored procedure testing
-* Business rule testing
-
----
-
-# Business Reports
-
-**File:** `20_Business_Reports.sql`
-
-The final reporting phase will contain SQL-based business reports such as:
-
-* Monthly Sales Report
-* Top Customers
-* Top Products
-* Low Stock Report
-* Warehouse Inventory Report
-* Payment Analysis
-* Return Analysis
-* Order Fulfillment Analysis
-* Customer Analysis
-* Product Sales Analysis
-
----
-
-# Project Execution Order
-
-Run the SQL files in this order:
-
-```text
-01 → Create Database
-02 → Create Tables
-03 → Insert Master Data
-04 → Insert Transactional Data
-05 → Basic SQL
-06 → Filtering
-07 → JOINs
-08 → Aggregations
-09 → Subqueries
-10 → CTEs
-11 → Window Functions
-12 → Built-in Functions
-13 → User-Defined Functions
-14 → Stored Procedures
-15 → Triggers
-16 → Views
-17 → Transactions
-18 → Indexes
-19 → Testing
-20 → Business Reports
-```
-
----
-
-# Current Project Status
-
-| Phase                  | Status                |
-| ---------------------- | --------------------- |
-| Database Creation      | ✅ Completed           |
-| Table Design           | ✅ Completed           |
-| Master Data            | ✅ Completed           |
-| Transactional Data     | 🔄 In Progress / Next |
-| Basic SQL Queries      | ⏳ Pending             |
-| Filtering Queries      | ⏳ Pending             |
-| JOINs                  | ⏳ Pending             |
-| Aggregate Queries      | ⏳ Pending             |
-| Subqueries             | ⏳ Pending             |
-| CTEs                   | ⏳ Pending             |
-| Window Functions       | ⏳ Pending             |
-| Built-in Functions     | ⏳ Pending             |
-| User-Defined Functions | ⏳ Pending             |
-| Stored Procedures      | ⏳ Pending             |
-| Triggers               | ⏳ Pending             |
-| Views                  | ⏳ Pending             |
-| Transactions           | ⏳ Pending             |
-| Indexes                | ⏳ Pending             |
-| Test Cases             | ⏳ Pending             |
-| Business Reports       | ⏳ Pending             |
+# Technology Stack
+
+| Technology      | Usage                          |
+| --------------- | ------------------------------ |
+| MySQL           | Relational Database            |
+| SQL             | Database Queries & Analysis    |
+| MySQL Workbench | Database Development & Testing |
+| Git             | Version Control                |
+| GitHub          | Project Repository             |
 
 ---
 
@@ -567,12 +557,15 @@ MySQL
 SQL
 Relational Database Design
 Database Schema Design
+Data Modelling
 Primary Keys
 Foreign Keys
 Constraints
 Data Integrity
+Realistic Business Data
 JOINs
 Aggregate Functions
+Filtering
 Subqueries
 CTEs
 Window Functions
@@ -601,14 +594,29 @@ git clone https://github.com/KURUVALAKSHMANNA/E-Commerce-Order-Inventory-Managem
 
 ### 2. Open MySQL Workbench
 
-### 3. Execute the SQL files in order
+### 3. Execute the SQL scripts in sequence
 
 ```text
 01_Create_Database.sql
 02_Create_Tables.sql
 03_Insert_Master_Data.sql
 04_Insert_Transactional_Data.sql
-...
+05_Basic_SQL_Queries.sql
+06_Filtering_Queries.sql
+07_Joins.sql
+08_Aggregate_Queries.sql
+09_Subqueries.sql
+10_CTE_Queries.sql
+11_Window_Functions.sql
+12_Built_In_Functions.sql
+13_User_Defined_Functions.sql
+14_Stored_Procedures.sql
+15_Triggers.sql
+16_Views.sql
+17_Transactions.sql
+18_Indexes.sql
+19_Test_Cases.sql
+20_Business_Reports.sql
 ```
 
 ### 4. Select the database
@@ -621,20 +629,18 @@ USE ecommerce_db;
 
 ---
 
-# Project Goal
+# Why This Project
 
-The goal is to build a complete real-world database system rather than a collection of isolated SQL queries.
+This project is built to demonstrate practical database development skills through a realistic e-commerce business scenario.
 
-The project progressively covers:
+It combines:
 
 ```text
 Database Design
       ↓
-Table Creation
+Data Modelling
       ↓
-Master Data
-      ↓
-Transactional Data
+Realistic Business Data
       ↓
 SQL Queries
       ↓
@@ -651,18 +657,16 @@ Testing
 Business Reporting
 ```
 
+The project provides hands-on experience with the types of database operations commonly used in real-world business applications.
+
 ---
 
-# Author
+👨‍💻 # Author
 
 **Lakshmanna Kuruva**
 
 Aspiring Database Developer / SQL Developer
-Email: kuruvalakshmanna4154@gmail.com
-GitHub: [KURUVALAKSHMANNA](https://github.com/KURUVALAKSHMANNA)
 
----
+ Email: [kuruvalakshmanna4154@gmail.com](mailto:kuruvalakshmanna4154@gmail.com)
 
-## Project Status
-
-This project is being developed incrementally. The README will be updated as each phase is completed.
+🔗 GitHub: [KURUVALAKSHMANNA](https://github.com/KURUVALAKSHMANNA)
