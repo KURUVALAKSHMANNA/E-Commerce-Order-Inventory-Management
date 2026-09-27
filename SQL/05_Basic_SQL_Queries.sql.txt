@@ -1,0 +1,755 @@
+USE ecommerce_management_db;
+
+-- ============================================================
+-- E-COMMERCE ORDER, INVENTORY & SALES MANAGEMENT SYSTEM
+-- FILE: 05_Basic_Queries.sql
+-- TOPIC: BASIC SQL QUERIES
+-- ============================================================
+
+
+-- ============================================================
+-- 1. SELECT ALL CATEGORIES
+-- ============================================================
+
+SELECT *
+FROM categories;
+
+
+-- ============================================================
+-- 2. SELECT SPECIFIC COLUMNS
+-- ============================================================
+
+SELECT
+    product_id,
+    product_name,
+    selling_price
+FROM products;
+
+
+-- ============================================================
+-- 3. COLUMN ALIAS
+-- ============================================================
+
+SELECT
+    product_name AS Product,
+    selling_price AS Price
+FROM products;
+
+
+-- ============================================================
+-- 4. CALCULATED COLUMN
+-- ============================================================
+
+SELECT
+    product_name,
+    selling_price,
+    selling_price * 0.18 AS GST
+FROM products;
+
+
+-- ============================================================
+-- 5. CALCULATE PRICE INCLUDING GST
+-- ============================================================
+
+SELECT
+    product_name,
+    selling_price,
+    selling_price + (selling_price * 0.18) AS Price_Including_GST
+FROM products;
+
+
+-- ============================================================
+-- 6. DISTINCT CATEGORIES
+-- ============================================================
+
+SELECT DISTINCT
+    category_id
+FROM products;
+
+
+-- ============================================================
+-- 7. DISTINCT PRODUCT STATUS
+-- ============================================================
+
+SELECT DISTINCT
+    status
+FROM products;
+
+
+-- ============================================================
+-- 8. WHERE CONDITION
+-- Products costing more than 50,000
+-- ============================================================
+
+SELECT
+    product_id,
+    product_name,
+    selling_price
+FROM products
+WHERE selling_price > 50000;
+
+
+-- ============================================================
+-- 9. PRODUCTS BETWEEN TWO PRICES
+-- ============================================================
+
+SELECT
+    product_name,
+    selling_price
+FROM products
+WHERE selling_price BETWEEN 5000 AND 20000;
+
+
+-- ============================================================
+-- 10. PRODUCTS BELOW 5,000
+-- ============================================================
+
+SELECT
+    product_name,
+    selling_price
+FROM products
+WHERE selling_price < 5000;
+
+
+-- ============================================================
+-- 11. AND CONDITION
+-- Active products above 10,000
+-- ============================================================
+
+SELECT
+    product_name,
+    selling_price,
+    status
+FROM products
+WHERE status = 'ACTIVE'
+  AND selling_price > 10000;
+
+
+-- ============================================================
+-- 12. OR CONDITION
+-- Products from category 1 or category 2
+-- ============================================================
+
+SELECT
+    product_name,
+    category_id
+FROM products
+WHERE category_id = 1
+   OR category_id = 2;
+
+
+-- ============================================================
+-- 13. NOT CONDITION
+-- Products which are not inactive
+-- ============================================================
+
+SELECT
+    product_id,
+    product_name,
+    status
+FROM products
+WHERE NOT status = 'INACTIVE';
+
+
+-- ============================================================
+-- 14. IN OPERATOR
+-- ============================================================
+
+SELECT
+    product_name,
+    category_id
+FROM products
+WHERE category_id IN (1, 2, 3);
+
+
+-- ============================================================
+-- 15. NOT IN OPERATOR
+-- ============================================================
+
+SELECT
+    product_name,
+    category_id
+FROM products
+WHERE category_id NOT IN (1, 2, 3);
+
+
+-- ============================================================
+-- 16. BETWEEN OPERATOR
+-- ============================================================
+
+SELECT
+    product_name,
+    cost_price,
+    selling_price
+FROM products
+WHERE selling_price BETWEEN 10000 AND 50000;
+
+
+-- ============================================================
+-- 17. LIKE - STARTS WITH
+-- ============================================================
+
+SELECT
+    product_name
+FROM products
+WHERE product_name LIKE 'Samsung%';
+
+
+-- ============================================================
+-- 18. LIKE - ENDS WITH
+-- ============================================================
+
+SELECT
+    product_name
+FROM products
+WHERE product_name LIKE '%Pro';
+
+
+-- ============================================================
+-- 19. LIKE - CONTAINS WORD
+-- ============================================================
+
+SELECT
+    product_name
+FROM products
+WHERE product_name LIKE '%Wireless%';
+
+
+-- ============================================================
+-- 20. LIKE - SINGLE CHARACTER
+-- ============================================================
+
+SELECT
+    product_name
+FROM products
+WHERE product_name LIKE 'H%';
+
+
+-- ============================================================
+-- 21. ORDER BY ASCENDING
+-- ============================================================
+
+SELECT
+    product_name,
+    selling_price
+FROM products
+ORDER BY selling_price ASC;
+
+
+-- ============================================================
+-- 22. ORDER BY DESCENDING
+-- ============================================================
+
+SELECT
+    product_name,
+    selling_price
+FROM products
+ORDER BY selling_price DESC;
+
+
+-- ============================================================
+-- 23. MULTIPLE COLUMN SORTING
+-- ============================================================
+
+SELECT
+    product_name,
+    category_id,
+    selling_price
+FROM products
+ORDER BY category_id ASC,
+         selling_price DESC;
+
+
+-- ============================================================
+-- 24. LIMIT
+-- Top 5 expensive products
+-- ============================================================
+
+SELECT
+    product_name,
+    selling_price
+FROM products
+ORDER BY selling_price DESC
+LIMIT 5;
+
+
+-- ============================================================
+-- 25. LIMIT - CHEAPEST PRODUCTS
+-- ============================================================
+
+SELECT
+    product_name,
+    selling_price
+FROM products
+ORDER BY selling_price ASC
+LIMIT 5;
+
+
+-- ============================================================
+-- 26. IS NULL
+-- Orders without coupon
+-- ============================================================
+
+SELECT
+    order_id,
+    customer_id,
+    order_date
+FROM orders
+WHERE coupon_id IS NULL;
+
+
+-- ============================================================
+-- 27. IS NOT NULL
+-- Orders having coupon
+-- ============================================================
+
+SELECT
+    order_id,
+    customer_id,
+    coupon_id
+FROM orders
+WHERE coupon_id IS NOT NULL;
+
+
+-- ============================================================
+-- 28. ORDERS AFTER A SPECIFIC DATE
+-- ============================================================
+
+SELECT
+    order_id,
+    customer_id,
+    order_date,
+    total_amount
+FROM orders
+WHERE order_date >= '2026-08-15';
+
+
+-- ============================================================
+-- 29. ORDERS BETWEEN TWO DATES
+-- ============================================================
+
+SELECT
+    order_id,
+    customer_id,
+    order_date,
+    total_amount
+FROM orders
+WHERE order_date BETWEEN '2026-08-01'
+                     AND '2026-08-10 23:59:59';
+
+
+-- ============================================================
+-- 30. DELIVERED ORDERS
+-- ============================================================
+
+SELECT
+    order_id,
+    customer_id,
+    order_date,
+    total_amount
+FROM orders
+WHERE order_status = 'DELIVERED';
+
+
+-- ============================================================
+-- 31. CANCELLED ORDERS
+-- ============================================================
+
+SELECT
+    order_id,
+    customer_id,
+    order_date,
+    total_amount
+FROM orders
+WHERE order_status = 'CANCELLED';
+
+
+-- ============================================================
+-- 32. ORDERS ABOVE 20,000
+-- ============================================================
+
+SELECT
+    order_id,
+    customer_id,
+    total_amount
+FROM orders
+WHERE total_amount > 20000
+ORDER BY total_amount DESC;
+
+
+-- ============================================================
+-- 33. PAYMENTS BY UPI
+-- ============================================================
+
+SELECT
+    payment_id,
+    order_id,
+    payment_method,
+    amount,
+    payment_status
+FROM payments
+WHERE payment_method = 'UPI';
+
+
+-- ============================================================
+-- 34. FAILED PAYMENTS
+-- ============================================================
+
+SELECT
+    payment_id,
+    order_id,
+    payment_method,
+    amount,
+    payment_status
+FROM payments
+WHERE payment_status = 'FAILED';
+
+
+-- ============================================================
+-- 35. PENDING PAYMENTS
+-- ============================================================
+
+SELECT
+    payment_id,
+    order_id,
+    payment_method,
+    amount
+FROM payments
+WHERE payment_status = 'PENDING';
+
+
+-- ============================================================
+-- 36. SUCCESSFUL PAYMENTS ABOVE 10,000
+-- ============================================================
+
+SELECT
+    payment_id,
+    order_id,
+    amount
+FROM payments
+WHERE payment_status = 'SUCCESS'
+  AND amount > 10000;
+
+
+-- ============================================================
+-- 37. AVAILABLE INVENTORY
+-- ============================================================
+
+SELECT
+    inventory_id,
+    product_id,
+    warehouse_id,
+    quantity_available
+FROM inventory
+WHERE quantity_available > 0;
+
+
+-- ============================================================
+-- 38. LOW STOCK PRODUCTS
+-- ============================================================
+
+SELECT
+    product_id,
+    product_name,
+    reorder_level
+FROM products
+WHERE reorder_level > 0;
+
+
+-- ============================================================
+-- 39. INVENTORY BELOW REORDER LEVEL
+-- ============================================================
+
+SELECT
+    product_id,
+    warehouse_id,
+    quantity_available
+FROM inventory
+WHERE quantity_available <= 10;
+
+
+-- ============================================================
+-- 40. SHIPPED ORDERS
+-- ============================================================
+
+SELECT
+    shipment_id,
+    order_id,
+    courier_name,
+    tracking_number,
+    shipment_status
+FROM shipments
+WHERE shipment_status = 'IN_TRANSIT';
+
+
+-- ============================================================
+-- 41. DELIVERED SHIPMENTS
+-- ============================================================
+
+SELECT
+    shipment_id,
+    order_id,
+    courier_name,
+    shipped_at,
+    delivered_at
+FROM shipments
+WHERE shipment_status = 'DELIVERED';
+
+
+-- ============================================================
+-- 42. RETURNS
+-- ============================================================
+
+SELECT
+    return_id,
+    order_id,
+    return_reason,
+    return_status,
+    refund_amount
+FROM returns;
+
+
+-- ============================================================
+-- 43. APPROVED / COMPLETED RETURNS
+-- ============================================================
+
+SELECT
+    return_id,
+    order_id,
+    return_status,
+    refund_amount
+FROM returns
+WHERE return_status IN ('APPROVED', 'COMPLETED', 'REFUNDED');
+
+
+-- ============================================================
+-- 44. CUSTOMERS FROM A SPECIFIC CITY
+-- ============================================================
+
+SELECT
+    customer_id,
+    first_name,
+    last_name,
+    email
+FROM customers
+WHERE customer_id IN
+(
+    SELECT customer_id
+    FROM addresses
+    WHERE city = 'Bengaluru'
+);
+
+
+-- ============================================================
+-- 45. PRODUCTS WITH COST PRICE GREATER THAN 10,000
+-- ============================================================
+
+SELECT
+    product_id,
+    product_name,
+    cost_price,
+    selling_price
+FROM products
+WHERE cost_price > 10000
+ORDER BY cost_price DESC;
+
+
+-- ============================================================
+-- 46. PRODUCTS WHERE SELLING PRICE IS HIGHER THAN COST PRICE
+-- ============================================================
+
+SELECT
+    product_id,
+    product_name,
+    cost_price,
+    selling_price
+FROM products
+WHERE selling_price > cost_price;
+
+
+-- ============================================================
+-- 47. CALCULATE PROFIT PER UNIT
+-- ============================================================
+
+SELECT
+    product_id,
+    product_name,
+    cost_price,
+    selling_price,
+    selling_price - cost_price AS profit_per_unit
+FROM products;
+
+
+-- ============================================================
+-- 48. CUSTOMERS WITH GMAIL ACCOUNTS
+-- ============================================================
+
+SELECT
+    customer_id,
+    first_name,
+    last_name,
+    email
+FROM customers
+WHERE email LIKE '%@gmail.com';
+
+
+-- ============================================================
+-- 49. PRODUCTS WITH "SMART" IN NAME
+-- ============================================================
+
+SELECT
+    product_id,
+    product_name,
+    selling_price
+FROM products
+WHERE product_name LIKE '%Smart%';
+
+
+-- ============================================================
+-- 50. LATEST 10 ORDERS
+-- ============================================================
+
+SELECT
+    order_id,
+    customer_id,
+    order_date,
+    order_status,
+    total_amount
+FROM orders
+ORDER BY order_date DESC
+LIMIT 10;
+
+
+-- ============================================================
+-- 51. HIGHEST VALUE ORDERS
+-- ============================================================
+
+SELECT
+    order_id,
+    customer_id,
+    total_amount
+FROM orders
+ORDER BY total_amount DESC
+LIMIT 10;
+
+
+-- ============================================================
+-- 52. LOWEST VALUE ORDERS
+-- ============================================================
+
+SELECT
+    order_id,
+    customer_id,
+    total_amount
+FROM orders
+ORDER BY total_amount ASC
+LIMIT 10;
+
+
+-- ============================================================
+-- 53. CUSTOMERS WITH ACTIVE STATUS
+-- ============================================================
+
+SELECT
+    customer_id,
+    first_name,
+    last_name,
+    email,
+    status
+FROM customers
+WHERE status = 'ACTIVE';
+
+
+-- ============================================================
+-- 54. ACTIVE SUPPLIERS
+-- ============================================================
+
+SELECT
+    supplier_id,
+    supplier_name,
+    city,
+    state
+FROM suppliers
+WHERE status = 'ACTIVE';
+
+
+-- ============================================================
+-- 55. ACTIVE WAREHOUSES
+-- ============================================================
+
+SELECT
+    warehouse_id,
+    warehouse_code,
+    warehouse_name,
+    city
+FROM warehouses
+WHERE status = 'ACTIVE';
+
+
+-- ============================================================
+-- 56. PRODUCT SEARCH BY SKU
+-- ============================================================
+
+SELECT
+    product_id,
+    product_name,
+    sku,
+    selling_price
+FROM products
+WHERE sku = 'SAM-S24-256';
+
+
+-- ============================================================
+-- 57. ORDERS WITH MULTIPLE CONDITIONS
+-- ============================================================
+
+SELECT
+    order_id,
+    customer_id,
+    order_status,
+    total_amount
+FROM orders
+WHERE order_status = 'DELIVERED'
+  AND total_amount > 10000
+ORDER BY total_amount DESC;
+
+
+-- ============================================================
+-- 58. NON-CANCELLED ORDERS
+-- ============================================================
+
+SELECT
+    order_id,
+    customer_id,
+    order_status,
+    total_amount
+FROM orders
+WHERE order_status <> 'CANCELLED';
+
+
+-- ============================================================
+-- 59. PAYMENT AMOUNTS BETWEEN 5,000 AND 20,000
+-- ============================================================
+
+SELECT
+    payment_id,
+    order_id,
+    payment_method,
+    amount
+FROM payments
+WHERE amount BETWEEN 5000 AND 20000
+ORDER BY amount DESC;
+
+
+-- ============================================================
+-- 60. BASIC DATA VALIDATION
+-- Check products where selling price is less than cost price
+-- ============================================================
+
+SELECT
+    product_id,
+    product_name,
+    cost_price,
+    selling_price
+FROM products
+WHERE selling_price < cost_price;

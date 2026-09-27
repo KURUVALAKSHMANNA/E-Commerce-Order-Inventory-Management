@@ -1,0 +1,957 @@
+USE ecommerce_management_db;
+
+-- ============================================================
+-- E-COMMERCE ORDER, INVENTORY & SALES MANAGEMENT SYSTEM
+-- FILE: 06_Filtering_Queries.sql
+-- TOPIC: ADVANCED FILTERING, CASE, STRING & DATE CONDITIONS
+-- ============================================================
+
+
+-- ============================================================
+-- 1. ACTIVE PRODUCTS ABOVE ₹10,000
+-- ============================================================
+
+SELECT
+    product_id,
+    product_name,
+    selling_price,
+    status
+FROM products
+WHERE status = 'ACTIVE'
+  AND selling_price > 10000;
+
+
+-- ============================================================
+-- 2. PRODUCTS BETWEEN ₹5,000 AND ₹20,000
+-- ============================================================
+
+SELECT
+    product_id,
+    product_name,
+    selling_price
+FROM products
+WHERE selling_price BETWEEN 5000 AND 20000
+ORDER BY selling_price DESC;
+
+
+-- ============================================================
+-- 3. PRODUCTS OUTSIDE PRICE RANGE
+-- ============================================================
+
+SELECT
+    product_id,
+    product_name,
+    selling_price
+FROM products
+WHERE selling_price NOT BETWEEN 5000 AND 20000
+ORDER BY selling_price;
+
+
+-- ============================================================
+-- 4. PRODUCTS FROM SELECTED CATEGORIES
+-- ============================================================
+
+SELECT
+    product_id,
+    product_name,
+    category_id,
+    selling_price
+FROM products
+WHERE category_id IN (1, 2, 3);
+
+
+-- ============================================================
+-- 5. PRODUCTS EXCLUDING SELECTED CATEGORIES
+-- ============================================================
+
+SELECT
+    product_id,
+    product_name,
+    category_id,
+    selling_price
+FROM products
+WHERE category_id NOT IN (1, 2, 3);
+
+
+-- ============================================================
+-- 6. PRODUCT NAME STARTING WITH "S"
+-- ============================================================
+
+SELECT
+    product_id,
+    product_name,
+    selling_price
+FROM products
+WHERE product_name LIKE 'S%';
+
+
+-- ============================================================
+-- 7. PRODUCT NAME ENDING WITH "5"
+-- ============================================================
+
+SELECT
+    product_id,
+    product_name,
+    selling_price
+FROM products
+WHERE product_name LIKE '%5';
+
+
+-- ============================================================
+-- 8. PRODUCT NAME CONTAINING "PRO"
+-- ============================================================
+
+SELECT
+    product_id,
+    product_name,
+    selling_price
+FROM products
+WHERE product_name LIKE '%Pro%';
+
+
+-- ============================================================
+-- 9. PRODUCT NAME CONTAINING "WIRELESS"
+-- ============================================================
+
+SELECT
+    product_id,
+    product_name,
+    selling_price
+FROM products
+WHERE product_name LIKE '%Wireless%';
+
+
+-- ============================================================
+-- 10. PRODUCTS WITH EXACTLY 5-CHARACTER SKU PREFIX
+-- ============================================================
+
+SELECT
+    product_id,
+    product_name,
+    sku
+FROM products
+WHERE sku LIKE '_____%';
+
+
+-- ============================================================
+-- 11. CUSTOMERS WHOSE FIRST NAME STARTS WITH "A"
+-- ============================================================
+
+SELECT
+    customer_id,
+    first_name,
+    last_name,
+    email
+FROM customers
+WHERE first_name LIKE 'A%';
+
+
+-- ============================================================
+-- 12. CUSTOMERS WHOSE LAST NAME ENDS WITH "A"
+-- ============================================================
+
+SELECT
+    customer_id,
+    first_name,
+    last_name
+FROM customers
+WHERE last_name LIKE '%a';
+
+
+-- ============================================================
+-- 13. GMAIL CUSTOMERS
+-- ============================================================
+
+SELECT
+    customer_id,
+    first_name,
+    last_name,
+    email
+FROM customers
+WHERE email LIKE '%@gmail.com';
+
+
+-- ============================================================
+-- 14. CUSTOMERS WITHOUT GMAIL
+-- ============================================================
+
+SELECT
+    customer_id,
+    first_name,
+    last_name,
+    email
+FROM customers
+WHERE email NOT LIKE '%@gmail.com';
+
+
+-- ============================================================
+-- 15. DELIVERED ORDERS ABOVE ₹10,000
+-- ============================================================
+
+SELECT
+    order_id,
+    customer_id,
+    order_status,
+    total_amount
+FROM orders
+WHERE order_status = 'DELIVERED'
+  AND total_amount > 10000
+ORDER BY total_amount DESC;
+
+
+-- ============================================================
+-- 16. ORDERS BETWEEN TWO DATES
+-- ============================================================
+
+SELECT
+    order_id,
+    customer_id,
+    order_date,
+    total_amount
+FROM orders
+WHERE order_date >= '2026-08-01'
+  AND order_date < '2026-08-11'
+ORDER BY order_date;
+
+
+-- ============================================================
+-- 17. ORDERS FROM AUGUST 15 ONWARDS
+-- ============================================================
+
+SELECT
+    order_id,
+    order_date,
+    order_status,
+    total_amount
+FROM orders
+WHERE order_date >= '2026-08-15'
+ORDER BY order_date;
+
+
+-- ============================================================
+-- 18. ORDERS BEFORE AUGUST 10
+-- ============================================================
+
+SELECT
+    order_id,
+    order_date,
+    order_status,
+    total_amount
+FROM orders
+WHERE order_date < '2026-08-10'
+ORDER BY order_date;
+
+
+-- ============================================================
+-- 19. ORDERS CREATED DURING BUSINESS HOURS
+-- 09:00 AM TO 06:00 PM
+-- ============================================================
+
+SELECT
+    order_id,
+    order_date,
+    customer_id
+FROM orders
+WHERE TIME(order_date) BETWEEN '09:00:00' AND '18:00:00';
+
+
+-- ============================================================
+-- 20. ORDERS CREATED ON A SPECIFIC DAY
+-- ============================================================
+
+SELECT
+    order_id,
+    customer_id,
+    order_date,
+    total_amount
+FROM orders
+WHERE DATE(order_date) = '2026-08-10';
+
+
+-- ============================================================
+-- 21. ORDERS CREATED IN AUGUST
+-- ============================================================
+
+SELECT
+    order_id,
+    order_date,
+    total_amount
+FROM orders
+WHERE MONTH(order_date) = 8
+  AND YEAR(order_date) = 2026;
+
+
+-- ============================================================
+-- 22. ORDERS CREATED DURING THE FIRST HALF OF AUGUST
+-- ============================================================
+
+SELECT
+    order_id,
+    order_date,
+    total_amount
+FROM orders
+WHERE DAY(order_date) BETWEEN 1 AND 15
+  AND MONTH(order_date) = 8
+  AND YEAR(order_date) = 2026;
+
+
+-- ============================================================
+-- 23. DELIVERED / SHIPPED ORDERS
+-- ============================================================
+
+SELECT
+    order_id,
+    customer_id,
+    order_status,
+    total_amount
+FROM orders
+WHERE order_status IN ('DELIVERED', 'SHIPPED');
+
+
+-- ============================================================
+-- 24. ORDERS NOT DELIVERED
+-- ============================================================
+
+SELECT
+    order_id,
+    customer_id,
+    order_status,
+    total_amount
+FROM orders
+WHERE order_status <> 'DELIVERED';
+
+
+-- ============================================================
+-- 25. ACTIVE CUSTOMERS WITH VALID PHONE NUMBERS
+-- ============================================================
+
+SELECT
+    customer_id,
+    first_name,
+    last_name,
+    phone
+FROM customers
+WHERE status = 'ACTIVE'
+  AND phone IS NOT NULL;
+
+
+-- ============================================================
+-- 26. CUSTOMERS WITHOUT PHONE NUMBER
+-- ============================================================
+
+SELECT
+    customer_id,
+    first_name,
+    last_name,
+    phone
+FROM customers
+WHERE phone IS NULL;
+
+
+-- ============================================================
+-- 27. ORDERS WITHOUT SHIPPING ADDRESS
+-- ============================================================
+
+SELECT
+    order_id,
+    customer_id,
+    shipping_address_id
+FROM orders
+WHERE shipping_address_id IS NULL;
+
+
+-- ============================================================
+-- 28. PAYMENTS WITH SUCCESS OR REFUNDED STATUS
+-- ============================================================
+
+SELECT
+    payment_id,
+    order_id,
+    amount,
+    payment_status
+FROM payments
+WHERE payment_status IN ('SUCCESS', 'REFUNDED');
+
+
+-- ============================================================
+-- 29. PAYMENTS WHICH ARE NOT SUCCESSFUL
+-- ============================================================
+
+SELECT
+    payment_id,
+    order_id,
+    amount,
+    payment_status
+FROM payments
+WHERE payment_status <> 'SUCCESS';
+
+
+-- ============================================================
+-- 30. FAILED OR PENDING PAYMENTS
+-- ============================================================
+
+SELECT
+    payment_id,
+    order_id,
+    payment_method,
+    amount,
+    payment_status
+FROM payments
+WHERE payment_status IN ('FAILED', 'PENDING');
+
+
+-- ============================================================
+-- 31. CARD PAYMENTS ABOVE ₹10,000
+-- ============================================================
+
+SELECT
+    payment_id,
+    order_id,
+    amount
+FROM payments
+WHERE payment_method = 'CARD'
+  AND amount > 10000;
+
+
+-- ============================================================
+-- 32. UPI PAYMENTS BETWEEN ₹5,000 AND ₹20,000
+-- ============================================================
+
+SELECT
+    payment_id,
+    order_id,
+    amount
+FROM payments
+WHERE payment_method = 'UPI'
+  AND amount BETWEEN 5000 AND 20000;
+
+
+-- ============================================================
+-- 33. COD ORDERS
+-- ============================================================
+
+SELECT
+    payment_id,
+    order_id,
+    amount,
+    payment_status
+FROM payments
+WHERE payment_method = 'COD';
+
+
+-- ============================================================
+-- 34. SHIPMENTS WHICH ARE CURRENTLY IN TRANSIT
+-- ============================================================
+
+SELECT
+    shipment_id,
+    order_id,
+    courier_name,
+    tracking_number,
+    shipped_at
+FROM shipments
+WHERE shipment_status = 'IN_TRANSIT';
+
+
+-- ============================================================
+-- 35. SHIPMENTS WITHOUT DELIVERY DATE
+-- ============================================================
+
+SELECT
+    shipment_id,
+    order_id,
+    courier_name,
+    shipped_at,
+    delivered_at
+FROM shipments
+WHERE delivered_at IS NULL;
+
+
+-- ============================================================
+-- 36. SHIPMENTS DELIVERED WITHIN AUGUST 2026
+-- ============================================================
+
+SELECT
+    shipment_id,
+    order_id,
+    courier_name,
+    delivered_at
+FROM shipments
+WHERE delivered_at >= '2026-08-01'
+  AND delivered_at < '2026-09-01';
+
+
+-- ============================================================
+-- 37. RETURNS WITH REFUND AMOUNT
+-- ============================================================
+
+SELECT
+    return_id,
+    order_id,
+    return_reason,
+    refund_amount
+FROM returns
+WHERE refund_amount > 0;
+
+
+-- ============================================================
+-- 38. HIGH VALUE RETURNS
+-- ============================================================
+
+SELECT
+    return_id,
+    order_id,
+    refund_amount
+FROM returns
+WHERE refund_amount > 5000
+ORDER BY refund_amount DESC;
+
+
+-- ============================================================
+-- 39. RETURNS BY STATUS
+-- ============================================================
+
+SELECT
+    return_id,
+    order_id,
+    return_status,
+    refund_amount
+FROM returns
+WHERE return_status IN ('APPROVED', 'COMPLETED', 'REFUNDED');
+
+
+-- ============================================================
+-- 40. HIGH PRIORITY SUPPORT TICKETS
+-- ============================================================
+
+SELECT
+    ticket_id,
+    customer_id,
+    order_id,
+    issue_type,
+    subject,
+    priority,
+    ticket_status
+FROM support_tickets
+WHERE priority = 'HIGH';
+
+
+-- ============================================================
+-- 41. OPEN SUPPORT TICKETS
+-- ============================================================
+
+SELECT
+    ticket_id,
+    customer_id,
+    order_id,
+    subject,
+    priority
+FROM support_tickets
+WHERE ticket_status NOT IN ('CLOSED', 'RESOLVED');
+
+
+-- ============================================================
+-- 42. PRODUCTS WITH LOW STOCK
+-- ============================================================
+
+SELECT
+    i.product_id,
+    p.product_name,
+    i.warehouse_id,
+    i.quantity_available,
+    p.reorder_level
+FROM inventory i
+JOIN products p
+    ON i.product_id = p.product_id
+WHERE i.quantity_available <= p.reorder_level;
+
+
+-- ============================================================
+-- 43. PRODUCTS WITH STOCK ABOVE 100
+-- ============================================================
+
+SELECT
+    product_id,
+    warehouse_id,
+    quantity_available
+FROM inventory
+WHERE quantity_available > 100;
+
+
+-- ============================================================
+-- 44. INVENTORY WITH RESERVED STOCK
+-- ============================================================
+
+SELECT
+    inventory_id,
+    product_id,
+    warehouse_id,
+    quantity_available,
+    quantity_reserved
+FROM inventory
+WHERE quantity_reserved > 0;
+
+
+-- ============================================================
+-- 45. PRODUCTS WHERE PROFIT MARGIN IS ABOVE 20%
+-- ============================================================
+
+SELECT
+    product_id,
+    product_name,
+    cost_price,
+    selling_price,
+    ROUND(
+        ((selling_price - cost_price) / selling_price) * 100,
+        2
+    ) AS profit_margin_percentage
+FROM products
+WHERE ((selling_price - cost_price) / selling_price) * 100 > 20;
+
+
+-- ============================================================
+-- 46. PRODUCTS WHERE SELLING PRICE IS 2X COST PRICE
+-- ============================================================
+
+SELECT
+    product_id,
+    product_name,
+    cost_price,
+    selling_price
+FROM products
+WHERE selling_price >= cost_price * 2;
+
+
+-- ============================================================
+-- 47. PRODUCTS WITH MISSING DESCRIPTION
+-- ============================================================
+
+SELECT
+    product_id,
+    product_name,
+    description
+FROM products
+WHERE description IS NULL
+   OR description = '';
+
+
+-- ============================================================
+-- 48. SUPPLIERS FROM SELECTED STATES
+-- ============================================================
+
+SELECT
+    supplier_id,
+    supplier_name,
+    city,
+    state
+FROM suppliers
+WHERE state IN ('Karnataka', 'Telangana', 'Maharashtra');
+
+
+-- ============================================================
+-- 49. WAREHOUSES OUTSIDE BENGALURU
+-- ============================================================
+
+SELECT
+    warehouse_id,
+    warehouse_code,
+    warehouse_name,
+    city
+FROM warehouses
+WHERE city <> 'Bengaluru';
+
+
+-- ============================================================
+-- 50. CUSTOMERS REGISTERED AFTER A DATE
+-- ============================================================
+
+SELECT
+    customer_id,
+    first_name,
+    last_name,
+    registration_date
+FROM customers
+WHERE registration_date >= '2026-01-01';
+
+
+-- ============================================================
+-- 51. CUSTOMERS REGISTERED IN 2026
+-- ============================================================
+
+SELECT
+    customer_id,
+    first_name,
+    last_name,
+    registration_date
+FROM customers
+WHERE YEAR(registration_date) = 2026;
+
+
+-- ============================================================
+-- 52. CASE - PRODUCT PRICE CATEGORY
+-- ============================================================
+
+SELECT
+    product_id,
+    product_name,
+    selling_price,
+    CASE
+        WHEN selling_price < 5000 THEN 'LOW PRICE'
+        WHEN selling_price BETWEEN 5000 AND 20000 THEN 'MEDIUM PRICE'
+        WHEN selling_price BETWEEN 20001 AND 50000 THEN 'HIGH PRICE'
+        ELSE 'PREMIUM PRICE'
+    END AS price_category
+FROM products;
+
+
+-- ============================================================
+-- 53. CASE - ORDER VALUE CATEGORY
+-- ============================================================
+
+SELECT
+    order_id,
+    total_amount,
+    CASE
+        WHEN total_amount < 5000 THEN 'LOW VALUE'
+        WHEN total_amount BETWEEN 5000 AND 20000 THEN 'MEDIUM VALUE'
+        WHEN total_amount BETWEEN 20001 AND 50000 THEN 'HIGH VALUE'
+        ELSE 'PREMIUM VALUE'
+    END AS order_value_category
+FROM orders;
+
+
+-- ============================================================
+-- 54. CASE - PAYMENT STATUS
+-- ============================================================
+
+SELECT
+    payment_id,
+    order_id,
+    amount,
+    payment_status,
+    CASE
+        WHEN payment_status = 'SUCCESS' THEN 'COMPLETED'
+        WHEN payment_status = 'PENDING' THEN 'WAITING'
+        WHEN payment_status = 'FAILED' THEN 'ACTION REQUIRED'
+        WHEN payment_status = 'REFUNDED' THEN 'REFUND COMPLETED'
+        ELSE 'UNKNOWN'
+    END AS payment_category
+FROM payments;
+
+
+-- ============================================================
+-- 55. CASE - STOCK STATUS
+-- ============================================================
+
+SELECT
+    i.product_id,
+    p.product_name,
+    i.quantity_available,
+    p.reorder_level,
+    CASE
+        WHEN i.quantity_available = 0 THEN 'OUT OF STOCK'
+        WHEN i.quantity_available <= p.reorder_level THEN 'LOW STOCK'
+        ELSE 'AVAILABLE'
+    END AS stock_status
+FROM inventory i
+JOIN products p
+    ON i.product_id = p.product_id;
+
+
+-- ============================================================
+-- 56. COALESCE - DISPLAY ZERO FOR NULL DISCOUNTS
+-- ============================================================
+
+SELECT
+    order_id,
+    subtotal,
+    COALESCE(discount_amount, 0) AS discount_amount,
+    total_amount
+FROM orders;
+
+
+-- ============================================================
+-- 57. COALESCE - DISPLAY "NOT DELIVERED"
+-- ============================================================
+
+SELECT
+    shipment_id,
+    order_id,
+    shipped_at,
+    COALESCE(
+        DATE_FORMAT(delivered_at, '%Y-%m-%d %H:%i:%s'),
+        'NOT DELIVERED'
+    ) AS delivery_date
+FROM shipments;
+
+
+-- ============================================================
+-- 58. STRING FUNCTION - UPPERCASE PRODUCT NAMES
+-- ============================================================
+
+SELECT
+    product_id,
+    UPPER(product_name) AS product_name
+FROM products;
+
+
+-- ============================================================
+-- 59. STRING FUNCTION - LOWERCASE EMAILS
+-- ============================================================
+
+SELECT
+    customer_id,
+    LOWER(email) AS email
+FROM customers;
+
+
+-- ============================================================
+-- 60. STRING LENGTH
+-- ============================================================
+
+SELECT
+    product_id,
+    product_name,
+    LENGTH(product_name) AS name_length
+FROM products
+ORDER BY name_length DESC;
+
+
+-- ============================================================
+-- 61. CONCAT CUSTOMER FULL NAME
+-- ============================================================
+
+SELECT
+    customer_id,
+    CONCAT(first_name, ' ', last_name) AS customer_name,
+    email
+FROM customers;
+
+
+-- ============================================================
+-- 62. DATE DIFFERENCE - DELIVERY TIME
+-- ============================================================
+
+SELECT
+    shipment_id,
+    order_id,
+    shipped_at,
+    delivered_at,
+    DATEDIFF(delivered_at, shipped_at) AS delivery_days
+FROM shipments
+WHERE delivered_at IS NOT NULL;
+
+
+-- ============================================================
+-- 63. DELIVERY DELAY ABOVE 2 DAYS
+-- ============================================================
+
+SELECT
+    shipment_id,
+    order_id,
+    courier_name,
+    DATEDIFF(delivered_at, shipped_at) AS delivery_days
+FROM shipments
+WHERE delivered_at IS NOT NULL
+  AND DATEDIFF(delivered_at, shipped_at) > 2;
+
+
+-- ============================================================
+-- 64. ORDERS CREATED ON WEEKENDS
+-- ============================================================
+
+SELECT
+    order_id,
+    order_date,
+    DAYNAME(order_date) AS day_name
+FROM orders
+WHERE DAYOFWEEK(order_date) IN (1, 7);
+
+
+-- ============================================================
+-- 65. ORDERS CREATED ON WEEKDAYS
+-- ============================================================
+
+SELECT
+    order_id,
+    order_date,
+    DAYNAME(order_date) AS day_name
+FROM orders
+WHERE DAYOFWEEK(order_date) NOT IN (1, 7);
+
+
+-- ============================================================
+-- 66. PRODUCTS SORTED BY PROFIT
+-- ============================================================
+
+SELECT
+    product_id,
+    product_name,
+    cost_price,
+    selling_price,
+    selling_price - cost_price AS profit_per_unit
+FROM products
+ORDER BY profit_per_unit DESC;
+
+
+-- ============================================================
+-- 67. TOP 5 PRODUCTS BY PROFIT
+-- ============================================================
+
+SELECT
+    product_id,
+    product_name,
+    selling_price - cost_price AS profit_per_unit
+FROM products
+ORDER BY profit_per_unit DESC
+LIMIT 5;
+
+
+-- ============================================================
+-- 68. ORDERS REQUIRING ATTENTION
+-- FAILED PAYMENT OR CANCELLED ORDER
+-- ============================================================
+
+SELECT
+    o.order_id,
+    o.order_status,
+    o.total_amount,
+    p.payment_status
+FROM orders o
+LEFT JOIN payments p
+    ON o.order_id = p.order_id
+WHERE o.order_status = 'CANCELLED'
+   OR p.payment_status = 'FAILED';
+
+
+-- ============================================================
+-- 69. ORDERS WITH PENDING PAYMENT
+-- ============================================================
+
+SELECT
+    o.order_id,
+    o.customer_id,
+    o.order_status,
+    o.total_amount,
+    p.payment_method,
+    p.payment_status
+FROM orders o
+JOIN payments p
+    ON o.order_id = p.order_id
+WHERE p.payment_status = 'PENDING';
+
+
+-- ============================================================
+-- 70. BUSINESS FILTER:
+-- DELIVERED ORDERS ABOVE ₹20,000
+-- ============================================================
+
+SELECT
+    order_id,
+    customer_id,
+    order_date,
+    total_amount
+FROM orders
+WHERE order_status = 'DELIVERED'
+  AND total_amount > 20000
+ORDER BY total_amount DESC;

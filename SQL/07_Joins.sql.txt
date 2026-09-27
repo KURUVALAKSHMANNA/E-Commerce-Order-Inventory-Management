@@ -1,0 +1,876 @@
+USE ecommerce_management_db;
+
+-- ============================================================
+-- E-COMMERCE ORDER, INVENTORY & SALES MANAGEMENT SYSTEM
+-- FILE: 07_Joins.sql
+-- TOPIC: SQL JOINS
+-- ============================================================
+
+
+-- ============================================================
+-- 1. INNER JOIN
+-- Products with their categories
+-- ============================================================
+
+SELECT
+    p.product_id,
+    p.product_name,
+    c.category_name,
+    p.selling_price
+FROM products p
+INNER JOIN categories c
+    ON p.category_id = c.category_id;
+
+
+-- ============================================================
+-- 2. INNER JOIN
+-- Products with suppliers
+-- ============================================================
+
+SELECT
+    p.product_id,
+    p.product_name,
+    s.supplier_name,
+    p.cost_price,
+    p.selling_price
+FROM products p
+INNER JOIN suppliers s
+    ON p.supplier_id = s.supplier_id;
+
+
+-- ============================================================
+-- 3. PRODUCTS + CATEGORY + SUPPLIER
+-- ============================================================
+
+SELECT
+    p.product_id,
+    p.product_name,
+    c.category_name,
+    s.supplier_name,
+    p.cost_price,
+    p.selling_price
+FROM products p
+INNER JOIN categories c
+    ON p.category_id = c.category_id
+INNER JOIN suppliers s
+    ON p.supplier_id = s.supplier_id;
+
+
+-- ============================================================
+-- 4. CUSTOMERS + ADDRESSES
+-- ============================================================
+
+SELECT
+    c.customer_id,
+    c.first_name,
+    c.last_name,
+    a.address_type,
+    a.city,
+    a.state,
+    a.pincode
+FROM customers c
+INNER JOIN addresses a
+    ON c.customer_id = a.customer_id;
+
+
+-- ============================================================
+-- 5. ORDERS + CUSTOMERS
+-- ============================================================
+
+SELECT
+    o.order_id,
+    CONCAT(c.first_name, ' ', c.last_name) AS customer_name,
+    o.order_date,
+    o.order_status,
+    o.total_amount
+FROM orders o
+INNER JOIN customers c
+    ON o.customer_id = c.customer_id;
+
+
+-- ============================================================
+-- 6. ORDERS + CUSTOMERS + ADDRESSES
+-- ============================================================
+
+SELECT
+    o.order_id,
+    CONCAT(c.first_name, ' ', c.last_name) AS customer_name,
+    a.city,
+    a.state,
+    o.order_date,
+    o.total_amount
+FROM orders o
+INNER JOIN customers c
+    ON o.customer_id = c.customer_id
+INNER JOIN addresses a
+    ON o.shipping_address_id = a.address_id;
+
+
+-- ============================================================
+-- 7. ORDERS + ORDER ITEMS
+-- ============================================================
+
+SELECT
+    o.order_id,
+    o.order_date,
+    oi.product_id,
+    oi.quantity,
+    oi.unit_price,
+    oi.subtotal
+FROM orders o
+INNER JOIN order_items oi
+    ON o.order_id = oi.order_id;
+
+
+-- ============================================================
+-- 8. ORDER ITEMS + PRODUCTS
+-- ============================================================
+
+SELECT
+    oi.order_item_id,
+    oi.order_id,
+    p.product_name,
+    oi.quantity,
+    oi.unit_price,
+    oi.subtotal
+FROM order_items oi
+INNER JOIN products p
+    ON oi.product_id = p.product_id;
+
+
+-- ============================================================
+-- 9. ORDER DETAILS
+-- ORDERS + CUSTOMERS + PRODUCTS
+-- ============================================================
+
+SELECT
+    o.order_id,
+    CONCAT(c.first_name, ' ', c.last_name) AS customer_name,
+    p.product_name,
+    oi.quantity,
+    oi.unit_price,
+    oi.subtotal
+FROM orders o
+INNER JOIN customers c
+    ON o.customer_id = c.customer_id
+INNER JOIN order_items oi
+    ON o.order_id = oi.order_id
+INNER JOIN products p
+    ON oi.product_id = p.product_id;
+
+
+-- ============================================================
+-- 10. COMPLETE ORDER INFORMATION
+-- ============================================================
+
+SELECT
+    o.order_id,
+    CONCAT(c.first_name, ' ', c.last_name) AS customer_name,
+    p.product_name,
+    oi.quantity,
+    oi.unit_price,
+    oi.discount_amount,
+    oi.subtotal,
+    o.order_status,
+    o.order_date
+FROM orders o
+INNER JOIN customers c
+    ON o.customer_id = c.customer_id
+INNER JOIN order_items oi
+    ON o.order_id = oi.order_id
+INNER JOIN products p
+    ON oi.product_id = p.product_id;
+
+
+-- ============================================================
+-- 11. ORDERS + PAYMENTS
+-- ============================================================
+
+SELECT
+    o.order_id,
+    o.order_status,
+    o.total_amount,
+    p.payment_method,
+    p.payment_status,
+    p.amount
+FROM orders o
+INNER JOIN payments p
+    ON o.order_id = p.order_id;
+
+
+-- ============================================================
+-- 12. ORDERS WITH SUCCESSFUL PAYMENTS
+-- ============================================================
+
+SELECT
+    o.order_id,
+    o.customer_id,
+    o.total_amount,
+    p.payment_method,
+    p.payment_status
+FROM orders o
+INNER JOIN payments p
+    ON o.order_id = p.order_id
+WHERE p.payment_status = 'SUCCESS';
+
+
+-- ============================================================
+-- 13. ORDERS + SHIPMENTS
+-- ============================================================
+
+SELECT
+    o.order_id,
+    o.order_status,
+    s.courier_name,
+    s.tracking_number,
+    s.shipment_status,
+    s.shipped_at,
+    s.delivered_at
+FROM orders o
+INNER JOIN shipments s
+    ON o.order_id = s.order_id;
+
+
+-- ============================================================
+-- 14. ORDERS + CUSTOMERS + SHIPMENTS
+-- ============================================================
+
+SELECT
+    o.order_id,
+    CONCAT(c.first_name, ' ', c.last_name) AS customer_name,
+    s.courier_name,
+    s.tracking_number,
+    s.shipment_status
+FROM orders o
+INNER JOIN customers c
+    ON o.customer_id = c.customer_id
+INNER JOIN shipments s
+    ON o.order_id = s.order_id;
+
+
+-- ============================================================
+-- 15. SHIPMENTS + WAREHOUSES
+-- ============================================================
+
+SELECT
+    s.shipment_id,
+    s.order_id,
+    w.warehouse_code,
+    w.warehouse_name,
+    w.city,
+    s.courier_name,
+    s.shipment_status
+FROM shipments s
+INNER JOIN warehouses w
+    ON s.warehouse_id = w.warehouse_id;
+
+
+-- ============================================================
+-- 16. INVENTORY + PRODUCTS
+-- ============================================================
+
+SELECT
+    i.inventory_id,
+    p.product_name,
+    i.warehouse_id,
+    i.quantity_available,
+    i.quantity_reserved
+FROM inventory i
+INNER JOIN products p
+    ON i.product_id = p.product_id;
+
+
+-- ============================================================
+-- 17. INVENTORY + PRODUCTS + WAREHOUSES
+-- ============================================================
+
+SELECT
+    p.product_name,
+    w.warehouse_name,
+    w.city,
+    i.quantity_available,
+    i.quantity_reserved
+FROM inventory i
+INNER JOIN products p
+    ON i.product_id = p.product_id
+INNER JOIN warehouses w
+    ON i.warehouse_id = w.warehouse_id;
+
+
+-- ============================================================
+-- 18. LOW STOCK PRODUCTS WITH WAREHOUSE
+-- ============================================================
+
+SELECT
+    p.product_id,
+    p.product_name,
+    w.warehouse_name,
+    i.quantity_available,
+    p.reorder_level
+FROM inventory i
+INNER JOIN products p
+    ON i.product_id = p.product_id
+INNER JOIN warehouses w
+    ON i.warehouse_id = w.warehouse_id
+WHERE i.quantity_available <= p.reorder_level;
+
+
+-- ============================================================
+-- 19. RETURNS + ORDERS
+-- ============================================================
+
+SELECT
+    r.return_id,
+    r.order_id,
+    o.customer_id,
+    r.return_date,
+    r.return_reason,
+    r.return_status,
+    r.refund_amount
+FROM returns r
+INNER JOIN orders o
+    ON r.order_id = o.order_id;
+
+
+-- ============================================================
+-- 20. RETURN ITEMS + PRODUCTS
+-- ============================================================
+
+SELECT
+    ri.return_item_id,
+    ri.return_id,
+    p.product_name,
+    ri.quantity,
+    ri.reason
+FROM return_items ri
+INNER JOIN products p
+    ON ri.product_id = p.product_id;
+
+
+-- ============================================================
+-- 21. COMPLETE RETURN DETAILS
+-- ============================================================
+
+SELECT
+    r.return_id,
+    r.order_id,
+    p.product_name,
+    ri.quantity,
+    ri.reason,
+    r.return_status,
+    r.refund_amount
+FROM returns r
+INNER JOIN return_items ri
+    ON r.return_id = ri.return_id
+INNER JOIN products p
+    ON ri.product_id = p.product_id;
+
+
+-- ============================================================
+-- 22. PRODUCT PRICE HISTORY
+-- ============================================================
+
+SELECT
+    p.product_name,
+    ph.old_price,
+    ph.new_price,
+    ph.changed_at,
+    ph.changed_by
+FROM product_price_history ph
+INNER JOIN products p
+    ON ph.product_id = p.product_id;
+
+
+-- ============================================================
+-- 23. PRODUCTS WHOSE PRICE DECREASED
+-- ============================================================
+
+SELECT
+    p.product_name,
+    ph.old_price,
+    ph.new_price,
+    ph.old_price - ph.new_price AS price_reduction
+FROM product_price_history ph
+INNER JOIN products p
+    ON ph.product_id = p.product_id
+WHERE ph.new_price < ph.old_price;
+
+
+-- ============================================================
+-- 24. REVIEWS + PRODUCTS
+-- ============================================================
+
+SELECT
+    r.review_id,
+    p.product_name,
+    r.rating,
+    r.review_title,
+    r.review_date
+FROM reviews r
+INNER JOIN products p
+    ON r.product_id = p.product_id;
+
+
+-- ============================================================
+-- 25. REVIEWS + CUSTOMERS + PRODUCTS
+-- ============================================================
+
+SELECT
+    r.review_id,
+    CONCAT(c.first_name, ' ', c.last_name) AS customer_name,
+    p.product_name,
+    r.rating,
+    r.review_title,
+    r.review_comment
+FROM reviews r
+INNER JOIN customers c
+    ON r.customer_id = c.customer_id
+INNER JOIN products p
+    ON r.product_id = p.product_id;
+
+
+-- ============================================================
+-- 26. SUPPORT TICKETS + CUSTOMERS
+-- ============================================================
+
+SELECT
+    st.ticket_id,
+    CONCAT(c.first_name, ' ', c.last_name) AS customer_name,
+    st.order_id,
+    st.issue_type,
+    st.subject,
+    st.priority,
+    st.ticket_status
+FROM support_tickets st
+INNER JOIN customers c
+    ON st.customer_id = c.customer_id;
+
+
+-- ============================================================
+-- 27. SUPPORT TICKETS + ORDERS + CUSTOMERS
+-- ============================================================
+
+SELECT
+    st.ticket_id,
+    CONCAT(c.first_name, ' ', c.last_name) AS customer_name,
+    st.order_id,
+    o.order_status,
+    st.issue_type,
+    st.priority,
+    st.ticket_status
+FROM support_tickets st
+INNER JOIN customers c
+    ON st.customer_id = c.customer_id
+INNER JOIN orders o
+    ON st.order_id = o.order_id;
+
+
+-- ============================================================
+-- 28. LEFT JOIN
+-- ALL CUSTOMERS INCLUDING CUSTOMERS WITHOUT ORDERS
+-- ============================================================
+
+SELECT
+    c.customer_id,
+    CONCAT(c.first_name, ' ', c.last_name) AS customer_name,
+    o.order_id,
+    o.order_date,
+    o.total_amount
+FROM customers c
+LEFT JOIN orders o
+    ON c.customer_id = o.customer_id
+ORDER BY c.customer_id;
+
+
+-- ============================================================
+-- 29. CUSTOMERS WITHOUT ORDERS
+-- ============================================================
+
+SELECT
+    c.customer_id,
+    CONCAT(c.first_name, ' ', c.last_name) AS customer_name,
+    c.email
+FROM customers c
+LEFT JOIN orders o
+    ON c.customer_id = o.customer_id
+WHERE o.order_id IS NULL;
+
+
+-- ============================================================
+-- 30. ALL PRODUCTS INCLUDING PRODUCTS NEVER ORDERED
+-- ============================================================
+
+SELECT
+    p.product_id,
+    p.product_name,
+    oi.order_id,
+    oi.quantity
+FROM products p
+LEFT JOIN order_items oi
+    ON p.product_id = oi.product_id
+ORDER BY p.product_id;
+
+
+-- ============================================================
+-- 31. PRODUCTS NEVER ORDERED
+-- ============================================================
+
+SELECT
+    p.product_id,
+    p.product_name,
+    p.selling_price
+FROM products p
+LEFT JOIN order_items oi
+    ON p.product_id = oi.product_id
+WHERE oi.order_item_id IS NULL;
+
+
+-- ============================================================
+-- 32. ALL CATEGORIES INCLUDING EMPTY CATEGORIES
+-- ============================================================
+
+SELECT
+    c.category_id,
+    c.category_name,
+    p.product_id,
+    p.product_name
+FROM categories c
+LEFT JOIN products p
+    ON c.category_id = p.category_id
+ORDER BY c.category_id;
+
+
+-- ============================================================
+-- 33. CATEGORIES WITHOUT PRODUCTS
+-- ============================================================
+
+SELECT
+    c.category_id,
+    c.category_name
+FROM categories c
+LEFT JOIN products p
+    ON c.category_id = p.category_id
+WHERE p.product_id IS NULL;
+
+
+-- ============================================================
+-- 34. ALL WAREHOUSES WITH INVENTORY
+-- ============================================================
+
+SELECT
+    w.warehouse_id,
+    w.warehouse_name,
+    w.city,
+    i.product_id,
+    i.quantity_available
+FROM warehouses w
+LEFT JOIN inventory i
+    ON w.warehouse_id = i.warehouse_id
+ORDER BY w.warehouse_id;
+
+
+-- ============================================================
+-- 35. WAREHOUSES WITHOUT INVENTORY
+-- ============================================================
+
+SELECT
+    w.warehouse_id,
+    w.warehouse_name,
+    w.city
+FROM warehouses w
+LEFT JOIN inventory i
+    ON w.warehouse_id = i.warehouse_id
+WHERE i.inventory_id IS NULL;
+
+
+-- ============================================================
+-- 36. RIGHT JOIN
+-- ALL PRODUCTS AND THEIR ORDERS
+-- ============================================================
+
+SELECT
+    p.product_id,
+    p.product_name,
+    oi.order_id,
+    oi.quantity
+FROM order_items oi
+RIGHT JOIN products p
+    ON oi.product_id = p.product_id;
+
+
+-- ============================================================
+-- 37. RIGHT JOIN
+-- ALL CUSTOMERS AND THEIR ORDERS
+-- ============================================================
+
+SELECT
+    o.order_id,
+    o.order_date,
+    c.customer_id,
+    c.first_name,
+    c.last_name
+FROM orders o
+RIGHT JOIN customers c
+    ON o.customer_id = c.customer_id;
+
+
+-- ============================================================
+-- 38. CROSS JOIN
+-- ALL PRODUCT-WAREHOUSE COMBINATIONS
+-- ============================================================
+
+SELECT
+    p.product_id,
+    p.product_name,
+    w.warehouse_id,
+    w.warehouse_name
+FROM products p
+CROSS JOIN warehouses w;
+
+
+-- ============================================================
+-- 39. CROSS JOIN WITH FILTER
+-- PRODUCTS ABOVE ₹50,000 FOR EACH WAREHOUSE
+-- ============================================================
+
+SELECT
+    p.product_name,
+    p.selling_price,
+    w.warehouse_name
+FROM products p
+CROSS JOIN warehouses w
+WHERE p.selling_price > 50000;
+
+
+-- ============================================================
+-- 40. MULTI-TABLE JOIN
+-- PRODUCT + CATEGORY + SUPPLIER + INVENTORY + WAREHOUSE
+-- ============================================================
+
+SELECT
+    p.product_id,
+    p.product_name,
+    c.category_name,
+    s.supplier_name,
+    w.warehouse_name,
+    i.quantity_available
+FROM products p
+INNER JOIN categories c
+    ON p.category_id = c.category_id
+INNER JOIN suppliers s
+    ON p.supplier_id = s.supplier_id
+INNER JOIN inventory i
+    ON p.product_id = i.product_id
+INNER JOIN warehouses w
+    ON i.warehouse_id = w.warehouse_id;
+
+
+-- ============================================================
+-- 41. COMPLETE ORDER BUSINESS VIEW
+-- CUSTOMER + ORDER + PRODUCT + PAYMENT
+-- ============================================================
+
+SELECT
+    o.order_id,
+    CONCAT(c.first_name, ' ', c.last_name) AS customer_name,
+    p.product_name,
+    oi.quantity,
+    oi.subtotal,
+    o.order_status,
+    pay.payment_method,
+    pay.payment_status
+FROM orders o
+INNER JOIN customers c
+    ON o.customer_id = c.customer_id
+INNER JOIN order_items oi
+    ON o.order_id = oi.order_id
+INNER JOIN products p
+    ON oi.product_id = p.product_id
+LEFT JOIN payments pay
+    ON o.order_id = pay.order_id;
+
+
+-- ============================================================
+-- 42. COMPLETE FULFILLMENT INFORMATION
+-- ORDER + CUSTOMER + SHIPMENT + WAREHOUSE
+-- ============================================================
+
+SELECT
+    o.order_id,
+    CONCAT(c.first_name, ' ', c.last_name) AS customer_name,
+    s.courier_name,
+    s.tracking_number,
+    w.warehouse_name,
+    s.shipment_status
+FROM orders o
+INNER JOIN customers c
+    ON o.customer_id = c.customer_id
+INNER JOIN shipments s
+    ON o.order_id = s.order_id
+INNER JOIN warehouses w
+    ON s.warehouse_id = w.warehouse_id;
+
+
+-- ============================================================
+-- 43. ORDERS WITH FAILED OR PENDING PAYMENTS
+-- ============================================================
+
+SELECT
+    o.order_id,
+    CONCAT(c.first_name, ' ', c.last_name) AS customer_name,
+    o.total_amount,
+    p.payment_method,
+    p.payment_status
+FROM orders o
+INNER JOIN customers c
+    ON o.customer_id = c.customer_id
+INNER JOIN payments p
+    ON o.order_id = p.order_id
+WHERE p.payment_status IN ('FAILED', 'PENDING');
+
+
+-- ============================================================
+-- 44. DELIVERED ORDERS WITH CUSTOMER AND PRODUCT
+-- ============================================================
+
+SELECT
+    o.order_id,
+    CONCAT(c.first_name, ' ', c.last_name) AS customer_name,
+    p.product_name,
+    oi.quantity,
+    o.total_amount
+FROM orders o
+INNER JOIN customers c
+    ON o.customer_id = c.customer_id
+INNER JOIN order_items oi
+    ON o.order_id = oi.order_id
+INNER JOIN products p
+    ON oi.product_id = p.product_id
+WHERE o.order_status = 'DELIVERED';
+
+
+-- ============================================================
+-- 45. RETURNED PRODUCTS WITH CUSTOMER INFORMATION
+-- ============================================================
+
+SELECT
+    r.return_id,
+    o.order_id,
+    CONCAT(c.first_name, ' ', c.last_name) AS customer_name,
+    p.product_name,
+    ri.quantity,
+    r.return_reason,
+    r.refund_amount
+FROM returns r
+INNER JOIN orders o
+    ON r.order_id = o.order_id
+INNER JOIN customers c
+    ON o.customer_id = c.customer_id
+INNER JOIN return_items ri
+    ON r.return_id = ri.return_id
+INNER JOIN products p
+    ON ri.product_id = p.product_id;
+
+
+-- ============================================================
+-- 46. PRODUCTS + INVENTORY + CATEGORY
+-- LOW STOCK BUSINESS REPORT
+-- ============================================================
+
+SELECT
+    p.product_id,
+    p.product_name,
+    c.category_name,
+    w.warehouse_name,
+    i.quantity_available,
+    p.reorder_level
+FROM products p
+INNER JOIN categories c
+    ON p.category_id = c.category_id
+INNER JOIN inventory i
+    ON p.product_id = i.product_id
+INNER JOIN warehouses w
+    ON i.warehouse_id = w.warehouse_id
+WHERE i.quantity_available <= p.reorder_level
+ORDER BY i.quantity_available ASC;
+
+
+-- ============================================================
+-- 47. PRODUCT SALES INFORMATION
+-- ============================================================
+
+SELECT
+    p.product_id,
+    p.product_name,
+    oi.order_id,
+    oi.quantity,
+    oi.unit_price,
+    oi.subtotal
+FROM products p
+INNER JOIN order_items oi
+    ON p.product_id = oi.product_id
+ORDER BY p.product_id;
+
+
+-- ============================================================
+-- 48. ORDERS AND THEIR STATUS HISTORY
+-- ============================================================
+
+SELECT
+    o.order_id,
+    o.order_status,
+    osh.old_status,
+    osh.new_status,
+    osh.changed_at,
+    osh.changed_by
+FROM orders o
+INNER JOIN order_status_history osh
+    ON o.order_id = osh.order_id
+ORDER BY o.order_id, osh.changed_at;
+
+
+-- ============================================================
+-- 49. INVENTORY TRANSACTIONS WITH PRODUCT AND WAREHOUSE
+-- ============================================================
+
+SELECT
+    it.transaction_id,
+    p.product_name,
+    w.warehouse_name,
+    it.transaction_type,
+    it.quantity,
+    it.reference_type,
+    it.reference_id,
+    it.transaction_date
+FROM inventory_transactions it
+INNER JOIN products p
+    ON it.product_id = p.product_id
+INNER JOIN warehouses w
+    ON it.warehouse_id = w.warehouse_id
+ORDER BY it.transaction_date;
+
+
+-- ============================================================
+-- 50. BUSINESS QUERY
+-- CUSTOMER + ORDER + PRODUCT + SHIPMENT
+-- ============================================================
+
+SELECT
+    o.order_id,
+    CONCAT(c.first_name, ' ', c.last_name) AS customer_name,
+    p.product_name,
+    oi.quantity,
+    o.total_amount,
+    s.courier_name,
+    s.tracking_number,
+    s.shipment_status
+FROM orders o
+INNER JOIN customers c
+    ON o.customer_id = c.customer_id
+INNER JOIN order_items oi
+    ON o.order_id = oi.order_id
+INNER JOIN products p
+    ON oi.product_id = p.product_id
+LEFT JOIN shipments s
+    ON o.order_id = s.order_id
+ORDER BY o.order_date DESC;S

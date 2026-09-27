@@ -1,0 +1,294 @@
+USE ecommerce_management_db;
+
+-- ============================================================
+-- E-COMMERCE ORDER, INVENTORY & SALES MANAGEMENT SYSTEM
+-- FILE: 04_Insert_Transactional_Data.sql
+-- ============================================================
+
+
+-- ============================================================
+-- 1. ORDERS
+-- ============================================================
+
+INSERT INTO orders
+(customer_id, order_date, order_status, shipping_address_id, subtotal, discount_amount,
+ tax_amount, shipping_charge, total_amount)
+VALUES
+(1,  '2026-08-01 10:15:00', 'DELIVERED', 1,  79999.00, 1000.00, 14199.82, 0.00, 93198.82),
+(2,  '2026-08-01 11:20:00', 'DELIVERED', 2,  28999.00, 500.00, 5129.82, 99.00, 33727.82),
+(3,  '2026-08-02 09:45:00', 'DELIVERED', 3,  12999.00, 1000.00, 2159.82, 0.00, 14158.82),
+(4,  '2026-08-02 14:10:00', 'SHIPPED',   4,  54999.00, 0.00, 9899.82, 0.00, 64898.82),
+(5,  '2026-08-03 16:30:00', 'DELIVERED', 5,  8499.00, 500.00, 1439.82, 99.00, 9537.82),
+(6,  '2026-08-04 10:05:00', 'DELIVERED', 6,  3999.00, 200.00, 683.82, 99.00, 4581.82),
+(7,  '2026-08-04 12:40:00', 'DELIVERED', 7,  2499.00, 0.00, 449.82, 99.00, 3047.82),
+(8,  '2026-08-05 15:15:00', 'SHIPPED',   8,  24999.00, 1000.00, 4319.82, 0.00, 28318.82),
+(9,  '2026-08-06 09:30:00', 'DELIVERED', 9,  5999.00, 500.00, 989.82, 99.00, 6587.82),
+(10, '2026-08-06 18:20:00', 'PROCESSING', 10, 18999.00, 0.00, 3419.82, 0.00, 22418.82),
+(11, '2026-08-07 11:45:00', 'DELIVERED', 11, 3499.00, 300.00, 575.82, 99.00, 3873.82),
+(12, '2026-08-08 13:10:00', 'CANCELLED', 12,  7499.00, 0.00, 1349.82, 99.00, 8947.82),
+(13, '2026-08-08 17:00:00', 'DELIVERED', 13, 15999.00, 1000.00, 2699.82, 0.00, 17698.82),
+(14, '2026-08-09 10:25:00', 'SHIPPED',   14, 11999.00, 500.00, 2069.82, 99.00, 13667.82),
+(15, '2026-08-10 12:00:00', 'DELIVERED', 15, 4299.00, 0.00, 773.82, 99.00, 5171.82),
+(1,  '2026-08-10 16:40:00', 'DELIVERED', 1,  9999.00, 1000.00, 1619.82, 0.00, 10618.82),
+(2,  '2026-08-11 09:15:00', 'PROCESSING', 2,  6999.00, 500.00, 1169.82, 99.00, 7767.82),
+(3,  '2026-08-11 14:30:00', 'DELIVERED', 3,  29999.00, 1500.00, 5129.82, 0.00, 33628.82),
+(4,  '2026-08-12 11:10:00', 'SHIPPED',   4,  1599.00, 0.00, 287.82, 99.00, 1985.82),
+(5,  '2026-08-13 15:50:00', 'DELIVERED', 5,  4599.00, 300.00, 773.82, 99.00, 5171.82),
+(6,  '2026-08-14 10:35:00', 'DELIVERED', 6,  21999.00, 1000.00, 3779.82, 0.00, 24778.82),
+(7,  '2026-08-15 13:45:00', 'RETURNED',  7,  5499.00, 500.00, 899.82, 99.00, 5997.82),
+(8,  '2026-08-16 17:20:00', 'DELIVERED', 8,  8999.00, 500.00, 1529.82, 99.00, 10127.82),
+(9,  '2026-08-17 09:55:00', 'SHIPPED',   9,  1299.00, 0.00, 233.82, 99.00, 1631.82),
+(10, '2026-08-18 12:25:00', 'DELIVERED', 10, 1899.00, 200.00, 305.82, 99.00, 2103.82),
+(11, '2026-08-19 16:15:00', 'CANCELLED', 11, 69999.00, 1000.00, 12419.82, 0.00, 81418.82),
+(12, '2026-08-20 10:45:00', 'DELIVERED', 12, 10999.00, 500.00, 1889.82, 99.00, 12487.82),
+(13, '2026-08-21 14:05:00', 'PROCESSING', 13, 2499.00, 0.00, 449.82, 99.00, 3047.82),
+(14, '2026-08-22 11:30:00', 'DELIVERED', 14, 3299.00, 300.00, 539.82, 99.00, 3637.82),
+(15, '2026-08-23 18:00:00', 'DELIVERED', 15, 1499.00, 0.00, 269.82, 99.00, 1867.82);
+
+
+-- ============================================================
+-- 2. ORDER ITEMS
+-- ============================================================
+
+INSERT INTO order_items
+(order_id, product_id, quantity, unit_price, discount_amount, subtotal)
+VALUES
+(1,  3, 1, 79999.00, 1000.00, 78999.00),
+(2,  5, 1, 54999.00, 500.00, 54499.00),
+(3,  2, 1, 28999.00, 1000.00, 27999.00),
+(4,  6, 1, 54999.00, 0.00, 54999.00),
+(5,  9, 1, 8499.00, 500.00, 7999.00),
+(6,  10, 1, 3999.00, 200.00, 3799.00),
+(7,  7, 1, 2499.00, 0.00, 2499.00),
+(8,  12, 1, 24999.00, 1000.00, 23999.00),
+(9,  13, 1, 5999.00, 500.00, 5499.00),
+(10, 14, 1, 18999.00, 0.00, 18999.00),
+(11, 15, 1, 3499.00, 300.00, 3199.00),
+(12, 16, 1, 7499.00, 0.00, 7499.00),
+(13, 17, 1, 15999.00, 1000.00, 14999.00),
+(14, 18, 1, 11999.00, 500.00, 11499.00),
+(15, 19, 1, 4299.00, 0.00, 4299.00),
+(16, 20, 1, 9999.00, 1000.00, 8999.00),
+(17, 21, 1, 6999.00, 500.00, 6499.00),
+(18, 1, 1, 29999.00, 1500.00, 28499.00),
+(19, 4, 1, 1599.00, 0.00, 1599.00),
+(20, 8, 1, 4599.00, 300.00, 4299.00),
+(21, 11, 1, 21999.00, 1000.00, 20999.00),
+(22, 9, 1, 5499.00, 500.00, 4999.00),
+(23, 15, 1, 8999.00, 500.00, 8499.00),
+(24, 16, 1, 1299.00, 0.00, 1299.00),
+(25, 17, 1, 1899.00, 200.00, 1699.00),
+(26, 3, 1, 69999.00, 1000.00, 68999.00),
+(27, 18, 1, 10999.00, 500.00, 10499.00),
+(28, 7, 1, 2499.00, 0.00, 2499.00),
+(29, 19, 1, 3299.00, 300.00, 2999.00),
+(30, 20, 1, 1499.00, 0.00, 1499.00);
+
+
+-- ============================================================
+-- 3. PAYMENTS
+-- ============================================================
+
+INSERT INTO payments
+(order_id, payment_date, payment_method, transaction_reference, amount, payment_status)
+VALUES
+(1,  '2026-08-01 10:16:00', 'UPI',         'TXN100001', 93198.82, 'SUCCESS'),
+(2,  '2026-08-01 11:21:00', 'CARD',        'TXN100002', 33727.82, 'SUCCESS'),
+(3,  '2026-08-02 09:46:00', 'UPI',         'TXN100003', 14158.82, 'SUCCESS'),
+(4,  '2026-08-02 14:11:00', 'CARD',        'TXN100004', 64898.82, 'SUCCESS'),
+(5,  '2026-08-03 16:31:00', 'UPI',         'TXN100005', 9537.82,  'SUCCESS'),
+(6,  '2026-08-04 10:06:00', 'NET_BANKING', 'TXN100006', 4581.82,  'SUCCESS'),
+(7,  '2026-08-04 12:41:00', 'CARD',        'TXN100007', 3047.82,  'SUCCESS'),
+(8,  '2026-08-05 15:16:00', 'UPI',         'TXN100008', 28318.82, 'SUCCESS'),
+(9,  '2026-08-06 09:31:00', 'CARD',        'TXN100009', 6587.82,  'SUCCESS'),
+(10, '2026-08-06 18:21:00', 'UPI',         'TXN100010', 22418.82, 'SUCCESS'),
+(11, '2026-08-07 11:46:00', 'CARD',        'TXN100011', 3873.82,  'SUCCESS'),
+(12, '2026-08-08 13:11:00', 'UPI',         'TXN100012', 8947.82,  'REFUNDED'),
+(13, '2026-08-08 17:01:00', 'CARD',        'TXN100013', 17698.82, 'SUCCESS'),
+(14, '2026-08-09 10:26:00', 'UPI',         'TXN100014', 13667.82, 'SUCCESS'),
+(15, '2026-08-10 12:01:00', 'COD',         NULL,         5171.82,  'PENDING'),
+(16, '2026-08-10 16:41:00', 'UPI',         'TXN100016', 10618.82, 'SUCCESS'),
+(17, '2026-08-11 09:16:00', 'CARD',        'TXN100017', 7767.82,  'SUCCESS'),
+(18, '2026-08-11 14:31:00', 'NET_BANKING', 'TXN100018', 33628.82, 'SUCCESS'),
+(19, '2026-08-12 11:11:00', 'UPI',         'TXN100019', 1985.82,  'SUCCESS'),
+(20, '2026-08-13 15:51:00', 'CARD',        'TXN100020', 5171.82,  'SUCCESS'),
+(21, '2026-08-14 10:36:00', 'UPI',         'TXN100021', 24778.82, 'SUCCESS'),
+(22, '2026-08-15 13:46:00', 'CARD',        'TXN100022', 5997.82,  'REFUNDED'),
+(23, '2026-08-16 17:21:00', 'UPI',         'TXN100023', 10127.82, 'SUCCESS'),
+(24, '2026-08-17 09:56:00', 'COD',         NULL,         1631.82,  'PENDING'),
+(25, '2026-08-18 12:26:00', 'UPI',         'TXN100025', 2103.82,  'SUCCESS'),
+(26, '2026-08-19 16:16:00', 'CARD',        'TXN100026', 81418.82, 'FAILED'),
+(27, '2026-08-20 10:46:00', 'UPI',         'TXN100027', 12487.82, 'SUCCESS'),
+(28, '2026-08-21 14:06:00', 'CARD',        'TXN100028', 3047.82,  'SUCCESS'),
+(29, '2026-08-22 11:31:00', 'UPI',         'TXN100029', 3637.82,  'SUCCESS'),
+(30, '2026-08-23 18:01:00', 'CARD',        'TXN100030', 1867.82,  'SUCCESS');
+
+
+-- ============================================================
+-- 4. SHIPMENTS
+-- ============================================================
+
+INSERT INTO shipments
+(order_id, warehouse_id, courier_name, tracking_number, shipped_at, delivered_at, shipment_status)
+VALUES
+(1,  1, 'Delhivery', 'DEL202608010001', '2026-08-02 09:00:00', '2026-08-04 16:30:00', 'DELIVERED'),
+(2,  2, 'BlueDart',  'BD202608010002',  '2026-08-02 10:00:00', '2026-08-05 15:00:00', 'DELIVERED'),
+(3,  1, 'DTDC',      'DT202608020003',  '2026-08-03 09:30:00', '2026-08-05 17:00:00', 'DELIVERED'),
+(4,  3, 'Delhivery', 'DEL202608020004', '2026-08-03 14:00:00', NULL, 'IN_TRANSIT'),
+(5,  2, 'Ecom Express','EC202608030005','2026-08-04 10:00:00', '2026-08-06 14:20:00', 'DELIVERED'),
+(8,  1, 'BlueDart',  'BD202608050008',  '2026-08-06 09:00:00', NULL, 'IN_TRANSIT'),
+(10, 4, 'Delhivery', 'DEL202608060010', '2026-08-07 11:00:00', NULL, 'IN_TRANSIT'),
+(14, 2, 'DTDC',      'DT202608090014',  '2026-08-10 09:30:00', NULL, 'IN_TRANSIT'),
+(17, 1, 'BlueDart',  'BD202608110017',  '2026-08-12 10:00:00', NULL, 'IN_TRANSIT'),
+(19, 3, 'Delhivery', 'DEL202608120019', '2026-08-13 09:00:00', NULL, 'IN_TRANSIT'),
+(24, 4, 'Ecom Express','EC202608170024','2026-08-18 11:00:00', NULL, 'IN_TRANSIT'),
+(28, 2, 'DTDC',      'DT202608210028',  '2026-08-22 09:00:00', NULL, 'IN_TRANSIT');
+
+
+-- ============================================================
+-- 5. RETURNS
+-- ============================================================
+
+INSERT INTO returns
+(order_id, return_date, return_reason, return_status, refund_amount)
+VALUES
+(22, '2026-08-20 10:30:00', 'Product damaged during delivery', 'APPROVED', 5997.82),
+(12, '2026-08-10 14:00:00', 'Customer cancelled order', 'REFUNDED', 8947.82),
+(5,  '2026-08-08 11:30:00', 'Product not as expected', 'COMPLETED', 9537.82),
+(9,  '2026-08-12 16:45:00', 'Wrong product received', 'REJECTED', 0.00);
+
+
+-- ============================================================
+-- 6. RETURN ITEMS
+-- ============================================================
+
+INSERT INTO return_items
+(return_id, product_id, quantity, reason)
+VALUES
+(1, 9, 1, 'Headphone damaged'),
+(2, 16, 1, 'Order cancelled'),
+(3, 9, 1, 'Customer changed mind'),
+(4, 13, 1, 'Wrong product claim');
+
+
+-- ============================================================
+-- 7. ORDER STATUS HISTORY
+-- ============================================================
+
+INSERT INTO order_status_history
+(order_id, old_status, new_status, changed_at, changed_by)
+VALUES
+(1,  'PLACED',      'CONFIRMED',  '2026-08-01 10:20:00', 'SYSTEM'),
+(1,  'CONFIRMED',   'SHIPPED',    '2026-08-02 09:00:00', 'WAREHOUSE_1'),
+(1,  'SHIPPED',     'DELIVERED',  '2026-08-04 16:30:00', 'SYSTEM'),
+(2,  'PLACED',      'CONFIRMED',  '2026-08-01 11:25:00', 'SYSTEM'),
+(2,  'CONFIRMED',   'SHIPPED',    '2026-08-02 10:00:00', 'WAREHOUSE_2'),
+(2,  'SHIPPED',     'DELIVERED',  '2026-08-05 15:00:00', 'SYSTEM'),
+(4,  'PLACED',      'CONFIRMED',  '2026-08-02 14:15:00', 'SYSTEM'),
+(4,  'CONFIRMED',   'SHIPPED',    '2026-08-03 14:00:00', 'WAREHOUSE_3'),
+(8,  'PLACED',      'CONFIRMED',  '2026-08-05 15:20:00', 'SYSTEM'),
+(8,  'CONFIRMED',   'SHIPPED',    '2026-08-06 09:00:00', 'WAREHOUSE_1'),
+(10, 'PLACED',      'CONFIRMED',  '2026-08-06 18:25:00', 'SYSTEM'),
+(17, 'PLACED',      'CONFIRMED',  '2026-08-11 09:20:00', 'SYSTEM'),
+(19, 'PLACED',      'CONFIRMED',  '2026-08-12 11:15:00', 'SYSTEM'),
+(12, 'PLACED',      'CANCELLED',  '2026-08-08 14:30:00', 'CUSTOMER'),
+(26, 'PLACED',      'CANCELLED',  '2026-08-19 17:00:00', 'SYSTEM'),
+(22, 'PLACED',      'CONFIRMED',  '2026-08-15 13:50:00', 'SYSTEM'),
+(22, 'CONFIRMED',   'SHIPPED',    '2026-08-16 09:30:00', 'WAREHOUSE_2'),
+(22, 'SHIPPED',     'DELIVERED',  '2026-08-18 15:30:00', 'SYSTEM'),
+(22, 'DELIVERED',   'RETURNED',   '2026-08-20 10:30:00', 'CUSTOMER');
+
+
+-- ============================================================
+-- 8. INVENTORY TRANSACTIONS
+-- ============================================================
+
+INSERT INTO inventory_transactions
+(product_id, warehouse_id, transaction_type, quantity, reference_type, reference_id, transaction_date, remarks)
+VALUES
+(3,  1, 'SALE',    -1, 'ORDER', 1,  '2026-08-01 10:20:00', 'Product sold'),
+(5,  2, 'SALE',    -1, 'ORDER', 2,  '2026-08-01 11:25:00', 'Product sold'),
+(2,  1, 'SALE',    -1, 'ORDER', 3,  '2026-08-02 09:50:00', 'Product sold'),
+(6,  3, 'SALE',    -1, 'ORDER', 4,  '2026-08-02 14:15:00', 'Product sold'),
+(9,  2, 'SALE',    -1, 'ORDER', 5,  '2026-08-03 16:35:00', 'Product sold'),
+(10, 1, 'SALE',    -1, 'ORDER', 6,  '2026-08-04 10:10:00', 'Product sold'),
+(7,  1, 'SALE',    -1, 'ORDER', 7,  '2026-08-04 12:45:00', 'Product sold'),
+(12, 4, 'SALE',    -1, 'ORDER', 8,  '2026-08-05 15:20:00', 'Product sold'),
+(13, 2, 'SALE',    -1, 'ORDER', 9,  '2026-08-06 09:35:00', 'Product sold'),
+(14, 1, 'SALE',    -1, 'ORDER', 10, '2026-08-06 18:25:00', 'Product sold'),
+(9,  2, 'RETURN',   1, 'RETURN', 3, '2026-08-08 11:35:00', 'Returned product'),
+(16, 4, 'RETURN',   1, 'RETURN', 2, '2026-08-10 14:05:00', 'Cancelled order stock restored'),
+(9,  2, 'RETURN',   1, 'RETURN', 1, '2026-08-20 10:35:00', 'Damaged product returned'),
+(3,  1, 'RESTOCK', 20, 'PURCHASE', 1001, '2026-08-05 09:00:00', 'Supplier restock'),
+(5,  2, 'RESTOCK', 15, 'PURCHASE', 1002, '2026-08-07 10:00:00', 'Supplier restock'),
+(9,  2, 'RESTOCK', 25, 'PURCHASE', 1003, '2026-08-10 09:30:00', 'Supplier restock'),
+(13, 3, 'RESTOCK', 20, 'PURCHASE', 1004, '2026-08-12 11:00:00', 'Supplier restock'),
+(17, 4, 'RESTOCK', 30, 'PURCHASE', 1005, '2026-08-15 10:00:00', 'Supplier restock');
+
+
+-- ============================================================
+-- 9. PRODUCT PRICE HISTORY
+-- ============================================================
+
+INSERT INTO product_price_history
+(product_id, old_price, new_price, changed_at, changed_by)
+VALUES
+(3,  81999.00, 79999.00, '2026-07-25 10:00:00', 'ADMIN'),
+(5,  56999.00, 54999.00, '2026-07-26 11:00:00', 'ADMIN'),
+(9,   8999.00, 8499.00,  '2026-07-27 09:30:00', 'ADMIN'),
+(12, 26999.00, 24999.00, '2026-07-28 14:00:00', 'ADMIN'),
+(13,  6499.00, 5999.00,  '2026-07-29 12:00:00', 'ADMIN'),
+(15,  3799.00, 3499.00,  '2026-07-30 10:15:00', 'ADMIN'),
+(17, 16999.00, 15999.00, '2026-07-31 16:00:00', 'ADMIN'),
+(19,  4499.00, 4299.00,  '2026-08-01 09:00:00', 'ADMIN');
+
+
+-- ============================================================
+-- 10. REVIEWS
+-- ============================================================
+
+INSERT INTO reviews
+(product_id, customer_id, order_id, rating, review_title,
+ review_comment, review_date, status)
+VALUES
+(3,  1, 1,  5, 'Excellent Phone', 'Very good performance and camera quality.', '2026-08-06 18:00:00', 'APPROVED'),
+(5,  2, 2,  4, 'Good Laptop', 'Good performance for office and development work.', '2026-08-07 17:30:00', 'APPROVED'),
+(2,  3, 3,  5, 'Value for Money', 'Smooth performance and good battery backup.', '2026-08-07 10:00:00', 'APPROVED'),
+(9,  5, 5,  4, 'Great Audio', 'Noise cancellation works very well.', '2026-08-07 19:00:00', 'APPROVED'),
+(10, 6, 6,  4, 'Useful Keyboard', 'Comfortable for daily office use.', '2026-08-08 12:30:00', 'APPROVED'),
+(7, 7, 7,  3, 'Average', 'Works fine but keys feel slightly hard.', '2026-08-09 14:00:00', 'APPROVED'),
+(12, 8, 8,  5, 'Great Air Fryer', 'Easy to use and cooking quality is good.', '2026-08-10 16:00:00', 'APPROVED'),
+(13, 9, 9,  5, 'Excellent Kettle', 'Fast boiling and good build quality.', '2026-08-11 09:30:00', 'APPROVED');
+
+
+-- ============================================================
+-- 11. SUPPORT TICKETS
+-- ============================================================
+
+INSERT INTO support_tickets
+(customer_id, order_id, ticket_date, issue_type, subject, description, priority, ticket_status)
+VALUES
+(1,  1,  '2026-08-05 10:00:00', 'DELIVERY', 'Delivery Delay',
+ 'Customer reported delay in delivery.', 'MEDIUM', 'CLOSED'),
+(2,  2,  '2026-08-06 11:30:00', 'PRODUCT', 'Laptop Configuration',
+ 'Customer requested product configuration details.', 'LOW', 'CLOSED'),
+(5,  5,  '2026-08-07 15:00:00', 'RETURN', 'Return Request',
+ 'Customer requested return for the product.', 'HIGH', 'RESOLVED'),
+(8,  8,  '2026-08-09 12:00:00', 'DELIVERY', 'Shipment Tracking',
+ 'Customer requested current shipment status.', 'MEDIUM', 'CLOSED'),
+(7,  22, '2026-08-20 11:00:00', 'DAMAGED_PRODUCT', 'Damaged Product',
+ 'Customer reported damaged headphones.', 'HIGH', 'RESOLVED');
+
+
+-- ============================================================
+-- 12. AUDIT LOGS
+-- ============================================================
+
+INSERT INTO audit_logs
+(table_name, record_id, action_type, old_value, new_value, changed_by, changed_at)
+VALUES
+('orders', 1, 'INSERT', NULL, 'Order created with status PLACED', 'SYSTEM', '2026-08-01 10:15:00'),
+('orders', 12, 'UPDATE', 'PROCESSING', 'CANCELLED', 'CUSTOMER', '2026-08-08 14:30:00'),
+('orders', 22, 'UPDATE', 'DELIVERED', 'RETURNED', 'CUSTOMER', '2026-08-20 10:30:00'),
+('inventory', 3, 'UPDATE', '21', '20', 'SYSTEM', '2026-08-01 10:20:00'),
+('products', 3, 'UPDATE', '81999.00', '79999.00', 'ADMIN', '2026-07-25 10:00:00');

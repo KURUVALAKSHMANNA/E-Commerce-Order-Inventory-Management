@@ -1,0 +1,877 @@
+USE ecommerce_management_db;
+
+-- =========================================================
+-- E-COMMERCE ORDER, INVENTORY & SALES MANAGEMENT SYSTEM
+-- 08_Aggregate_Queries.sql
+-- Topic: Aggregate Functions, GROUP BY, HAVING & Business Analysis
+-- =========================================================
+
+
+-- =========================================================
+-- 1. COUNT() FUNCTIONS
+-- =========================================================
+
+-- 1. Count total customers
+SELECT COUNT(*) AS total_customers
+FROM customers;
+
+
+-- 2. Count total products
+SELECT COUNT(*) AS total_products
+FROM products;
+
+
+-- 3. Count total orders
+SELECT COUNT(*) AS total_orders
+FROM orders;
+
+
+-- 4. Count delivered orders
+SELECT COUNT(*) AS delivered_orders
+FROM orders
+WHERE order_status = 'DELIVERED';
+
+
+-- 5. Count cancelled orders
+SELECT COUNT(*) AS cancelled_orders
+FROM orders
+WHERE order_status = 'CANCELLED';
+
+
+-- 6. Count active products
+SELECT COUNT(*) AS active_products
+FROM products
+WHERE status = 'ACTIVE';
+
+
+-- 7. Count warehouses
+SELECT COUNT(*) AS total_warehouses
+FROM warehouses;
+
+
+-- 8. Count successful payments
+SELECT COUNT(*) AS successful_payments
+FROM payments
+WHERE payment_status = 'SUCCESS';
+
+
+-- 9. Count shipments
+SELECT COUNT(*) AS total_shipments
+FROM shipments;
+
+
+-- 10. Count returned orders
+SELECT COUNT(*) AS returned_orders
+FROM returns;
+
+
+
+-- =========================================================
+-- 2. SUM() FUNCTIONS
+-- =========================================================
+
+-- 11. Total order value
+SELECT SUM(total_amount) AS total_order_value
+FROM orders;
+
+
+-- 12. Total subtotal
+SELECT SUM(subtotal) AS total_subtotal
+FROM orders;
+
+
+-- 13. Total discounts given
+SELECT SUM(discount_amount) AS total_discounts
+FROM orders;
+
+
+-- 14. Total tax collected
+SELECT SUM(tax_amount) AS total_tax
+FROM orders;
+
+
+-- 15. Total shipping charges
+SELECT SUM(shipping_charge) AS total_shipping_charges
+FROM orders;
+
+
+-- 16. Total successful payment amount
+SELECT SUM(amount) AS total_successful_payment_amount
+FROM payments
+WHERE payment_status = 'SUCCESS';
+
+
+-- 17. Total refunded amount
+SELECT SUM(amount) AS total_refunded_amount
+FROM payments
+WHERE payment_status = 'REFUNDED';
+
+
+-- 18. Total inventory available
+SELECT SUM(quantity_available) AS total_inventory
+FROM inventory;
+
+
+-- 19. Total reserved inventory
+SELECT SUM(quantity_reserved) AS total_reserved_inventory
+FROM inventory;
+
+
+-- 20. Total returned/refunded amount
+SELECT SUM(refund_amount) AS total_refund_amount
+FROM returns;
+
+
+
+-- =========================================================
+-- 3. AVG(), MIN(), MAX()
+-- =========================================================
+
+-- 21. Average product selling price
+SELECT AVG(selling_price) AS average_selling_price
+FROM products;
+
+
+-- 22. Minimum product selling price
+SELECT MIN(selling_price) AS minimum_selling_price
+FROM products;
+
+
+-- 23. Maximum product selling price
+SELECT MAX(selling_price) AS maximum_selling_price
+FROM products;
+
+
+-- 24. Average product cost price
+SELECT AVG(cost_price) AS average_cost_price
+FROM products;
+
+
+-- 25. Average order value
+SELECT AVG(total_amount) AS average_order_value
+FROM orders;
+
+
+-- 26. Minimum order value
+SELECT MIN(total_amount) AS minimum_order_value
+FROM orders;
+
+
+-- 27. Maximum order value
+SELECT MAX(total_amount) AS maximum_order_value
+FROM orders;
+
+
+-- 28. Average order discount
+SELECT AVG(discount_amount) AS average_discount
+FROM orders;
+
+
+-- 29. Average payment amount
+SELECT AVG(amount) AS average_payment_amount
+FROM payments;
+
+
+-- 30. Average product rating
+SELECT AVG(rating) AS average_rating
+FROM reviews;
+
+
+
+-- =========================================================
+-- 4. GROUP BY
+-- =========================================================
+
+-- 31. Count products by category
+SELECT
+    category_id,
+    COUNT(*) AS product_count
+FROM products
+GROUP BY category_id
+ORDER BY product_count DESC;
+
+
+-- 32. Count products by supplier
+SELECT
+    supplier_id,
+    COUNT(*) AS product_count
+FROM products
+GROUP BY supplier_id
+ORDER BY product_count DESC;
+
+
+-- 33. Count customers by status
+SELECT
+    status,
+    COUNT(*) AS customer_count
+FROM customers
+GROUP BY status;
+
+
+-- 34. Count orders by status
+SELECT
+    order_status,
+    COUNT(*) AS order_count
+FROM orders
+GROUP BY order_status
+ORDER BY order_count DESC;
+
+
+-- 35. Count payments by payment method
+SELECT
+    payment_method,
+    COUNT(*) AS payment_count
+FROM payments
+GROUP BY payment_method
+ORDER BY payment_count DESC;
+
+
+-- 36. Payment amount by payment method
+SELECT
+    payment_method,
+    SUM(amount) AS total_amount
+FROM payments
+GROUP BY payment_method
+ORDER BY total_amount DESC;
+
+
+-- 37. Count payments by payment status
+SELECT
+    payment_status,
+    COUNT(*) AS payment_count
+FROM payments
+GROUP BY payment_status;
+
+
+-- 38. Shipment count by courier
+SELECT
+    courier_name,
+    COUNT(*) AS shipment_count
+FROM shipments
+GROUP BY courier_name
+ORDER BY shipment_count DESC;
+
+
+-- 39. Shipment count by status
+SELECT
+    shipment_status,
+    COUNT(*) AS shipment_count
+FROM shipments
+GROUP BY shipment_status;
+
+
+-- 40. Return count by status
+SELECT
+    return_status,
+    COUNT(*) AS return_count
+FROM returns
+GROUP BY return_status;
+
+
+
+-- =========================================================
+-- 5. GROUP BY WITH SUM()
+-- =========================================================
+
+-- 41. Total sales by customer
+SELECT
+    customer_id,
+    SUM(total_amount) AS total_sales
+FROM orders
+GROUP BY customer_id
+ORDER BY total_sales DESC;
+
+
+-- 42. Number of orders placed by each customer
+SELECT
+    customer_id,
+    COUNT(*) AS order_count
+FROM orders
+GROUP BY customer_id
+ORDER BY order_count DESC;
+
+
+-- 43. Total discount by customer
+SELECT
+    customer_id,
+    SUM(discount_amount) AS total_discount
+FROM orders
+GROUP BY customer_id
+ORDER BY total_discount DESC;
+
+
+-- 44. Total tax collected by order status
+SELECT
+    order_status,
+    SUM(tax_amount) AS total_tax
+FROM orders
+GROUP BY order_status
+ORDER BY total_tax DESC;
+
+
+-- 45. Total shipping charges by order status
+SELECT
+    order_status,
+    SUM(shipping_charge) AS total_shipping_charge
+FROM orders
+GROUP BY order_status;
+
+
+
+-- =========================================================
+-- 6. AGGREGATES WITH JOINS
+-- =========================================================
+
+-- 46. Sales by customer with customer name
+SELECT
+    c.customer_id,
+    CONCAT(c.first_name, ' ', c.last_name) AS customer_name,
+    COUNT(o.order_id) AS order_count,
+    SUM(o.total_amount) AS total_sales
+FROM customers c
+JOIN orders o
+    ON c.customer_id = o.customer_id
+GROUP BY
+    c.customer_id,
+    c.first_name,
+    c.last_name
+ORDER BY total_sales DESC;
+
+
+-- 47. Category-wise product count
+SELECT
+    c.category_name,
+    COUNT(p.product_id) AS product_count
+FROM categories c
+LEFT JOIN products p
+    ON c.category_id = p.category_id
+GROUP BY c.category_id, c.category_name
+ORDER BY product_count DESC;
+
+
+-- 48. Category-wise average selling price
+SELECT
+    c.category_name,
+    ROUND(AVG(p.selling_price), 2) AS average_selling_price
+FROM categories c
+JOIN products p
+    ON c.category_id = p.category_id
+GROUP BY c.category_id, c.category_name
+ORDER BY average_selling_price DESC;
+
+
+-- 49. Category-wise total inventory
+SELECT
+    c.category_name,
+    SUM(i.quantity_available) AS total_available_stock
+FROM categories c
+JOIN products p
+    ON c.category_id = p.category_id
+JOIN inventory i
+    ON p.product_id = i.product_id
+GROUP BY c.category_id, c.category_name
+ORDER BY total_available_stock DESC;
+
+
+-- 50. Supplier-wise product count and average price
+SELECT
+    s.supplier_name,
+    COUNT(p.product_id) AS product_count,
+    ROUND(AVG(p.selling_price), 2) AS average_price
+FROM suppliers s
+JOIN products p
+    ON s.supplier_id = p.supplier_id
+GROUP BY s.supplier_id, s.supplier_name
+ORDER BY product_count DESC;
+
+
+-- 51. Warehouse-wise inventory
+SELECT
+    w.warehouse_name,
+    SUM(i.quantity_available) AS available_stock,
+    SUM(i.quantity_reserved) AS reserved_stock
+FROM warehouses w
+JOIN inventory i
+    ON w.warehouse_id = i.warehouse_id
+GROUP BY w.warehouse_id, w.warehouse_name
+ORDER BY available_stock DESC;
+
+
+-- 52. Warehouse-wise number of products
+SELECT
+    w.warehouse_name,
+    COUNT(i.product_id) AS product_count
+FROM warehouses w
+LEFT JOIN inventory i
+    ON w.warehouse_id = i.warehouse_id
+GROUP BY w.warehouse_id, w.warehouse_name
+ORDER BY product_count DESC;
+
+
+
+-- =========================================================
+-- 7. ORDER ITEM AGGREGATION
+-- =========================================================
+
+-- 53. Total quantity sold for each product
+SELECT
+    product_id,
+    SUM(quantity) AS total_quantity_sold
+FROM order_items
+GROUP BY product_id
+ORDER BY total_quantity_sold DESC;
+
+
+-- 54. Number of orders containing each product
+SELECT
+    product_id,
+    COUNT(DISTINCT order_id) AS order_count
+FROM order_items
+GROUP BY product_id
+ORDER BY order_count DESC;
+
+
+-- 55. Total sales generated by each product
+SELECT
+    product_id,
+    SUM(subtotal) AS total_sales
+FROM order_items
+GROUP BY product_id
+ORDER BY total_sales DESC;
+
+
+-- 56. Product-wise average selling price
+SELECT
+    product_id,
+    ROUND(AVG(unit_price), 2) AS average_selling_price
+FROM order_items
+GROUP BY product_id
+ORDER BY average_selling_price DESC;
+
+
+-- 57. Product sales with product names
+SELECT
+    p.product_id,
+    p.product_name,
+    SUM(oi.quantity) AS total_quantity_sold,
+    SUM(oi.subtotal) AS total_sales
+FROM products p
+JOIN order_items oi
+    ON p.product_id = oi.product_id
+GROUP BY p.product_id, p.product_name
+ORDER BY total_sales DESC;
+
+
+
+-- =========================================================
+-- 8. HAVING
+-- =========================================================
+
+-- 58. Customers who placed more than 2 orders
+SELECT
+    customer_id,
+    COUNT(*) AS order_count
+FROM orders
+GROUP BY customer_id
+HAVING COUNT(*) > 2
+ORDER BY order_count DESC;
+
+
+-- 59. Customers whose total purchase exceeds 50000
+SELECT
+    customer_id,
+    SUM(total_amount) AS total_purchase
+FROM orders
+GROUP BY customer_id
+HAVING SUM(total_amount) > 50000
+ORDER BY total_purchase DESC;
+
+
+-- 60. Products sold more than 10 units
+SELECT
+    product_id,
+    SUM(quantity) AS total_quantity_sold
+FROM order_items
+GROUP BY product_id
+HAVING SUM(quantity) > 10
+ORDER BY total_quantity_sold DESC;
+
+
+-- 61. Categories containing more than 2 products
+SELECT
+    category_id,
+    COUNT(*) AS product_count
+FROM products
+GROUP BY category_id
+HAVING COUNT(*) > 2
+ORDER BY product_count DESC;
+
+
+-- 62. Payment methods with successful payments above 50000
+SELECT
+    payment_method,
+    SUM(amount) AS successful_amount
+FROM payments
+WHERE payment_status = 'SUCCESS'
+GROUP BY payment_method
+HAVING SUM(amount) > 50000
+ORDER BY successful_amount DESC;
+
+
+
+-- =========================================================
+-- 9. CONDITIONAL AGGREGATION
+-- =========================================================
+
+-- 63. Count orders by status in one result
+SELECT
+    COUNT(*) AS total_orders,
+    SUM(order_status = 'DELIVERED') AS delivered_orders,
+    SUM(order_status = 'SHIPPED') AS shipped_orders,
+    SUM(order_status = 'PROCESSING') AS processing_orders,
+    SUM(order_status = 'CANCELLED') AS cancelled_orders,
+    SUM(order_status = 'RETURNED') AS returned_orders
+FROM orders;
+
+
+-- 64. Payment status summary
+SELECT
+    COUNT(*) AS total_payments,
+    SUM(payment_status = 'SUCCESS') AS successful_payments,
+    SUM(payment_status = 'FAILED') AS failed_payments,
+    SUM(payment_status = 'PENDING') AS pending_payments,
+    SUM(payment_status = 'REFUNDED') AS refunded_payments
+FROM payments;
+
+
+-- 65. Inventory stock classification
+SELECT
+    SUM(quantity_available = 0) AS out_of_stock,
+    SUM(quantity_available > 0
+        AND quantity_available <= 10) AS low_stock,
+    SUM(quantity_available > 10) AS sufficient_stock
+FROM inventory;
+
+
+-- 66. Customer order classification
+SELECT
+    COUNT(DISTINCT customer_id) AS total_customers,
+    COUNT(DISTINCT CASE
+        WHEN total_amount >= 10000 THEN customer_id
+    END) AS high_value_customers
+FROM orders;
+
+
+
+-- =========================================================
+-- 10. BUSINESS SALES ANALYSIS
+-- =========================================================
+
+-- 67. Total revenue from delivered orders
+SELECT
+    SUM(total_amount) AS delivered_revenue
+FROM orders
+WHERE order_status = 'DELIVERED';
+
+
+-- 68. Revenue by order status
+SELECT
+    order_status,
+    SUM(total_amount) AS total_revenue
+FROM orders
+GROUP BY order_status
+ORDER BY total_revenue DESC;
+
+
+-- 69. Average order value by order status
+SELECT
+    order_status,
+    ROUND(AVG(total_amount), 2) AS average_order_value
+FROM orders
+GROUP BY order_status
+ORDER BY average_order_value DESC;
+
+
+-- 70. Monthly order count
+SELECT
+    YEAR(order_date) AS order_year,
+    MONTH(order_date) AS order_month,
+    COUNT(*) AS order_count
+FROM orders
+GROUP BY
+    YEAR(order_date),
+    MONTH(order_date)
+ORDER BY
+    order_year,
+    order_month;
+
+
+-- 71. Monthly sales
+SELECT
+    YEAR(order_date) AS order_year,
+    MONTH(order_date) AS order_month,
+    SUM(total_amount) AS monthly_sales
+FROM orders
+GROUP BY
+    YEAR(order_date),
+    MONTH(order_date)
+ORDER BY
+    order_year,
+    order_month;
+
+
+-- 72. Monthly average order value
+SELECT
+    YEAR(order_date) AS order_year,
+    MONTH(order_date) AS order_month,
+    ROUND(AVG(total_amount), 2) AS average_order_value
+FROM orders
+GROUP BY
+    YEAR(order_date),
+    MONTH(order_date)
+ORDER BY
+    order_year,
+    order_month;
+
+
+
+-- =========================================================
+-- 11. RETURN ANALYSIS
+-- =========================================================
+
+-- 73. Total returns by reason
+SELECT
+    return_reason,
+    COUNT(*) AS return_count,
+    SUM(refund_amount) AS total_refund
+FROM returns
+GROUP BY return_reason
+ORDER BY return_count DESC;
+
+
+-- 74. Average refund amount by return status
+SELECT
+    return_status,
+    COUNT(*) AS return_count,
+    ROUND(AVG(refund_amount), 2) AS average_refund
+FROM returns
+GROUP BY return_status
+ORDER BY return_count DESC;
+
+
+-- 75. Total returned quantity by product
+SELECT
+    product_id,
+    SUM(quantity) AS total_returned_quantity
+FROM return_items
+GROUP BY product_id
+ORDER BY total_returned_quantity DESC;
+
+
+
+-- =========================================================
+-- 12. REVIEW ANALYSIS
+-- =========================================================
+
+-- 76. Average rating for each product
+SELECT
+    product_id,
+    ROUND(AVG(rating), 2) AS average_rating,
+    COUNT(*) AS review_count
+FROM reviews
+GROUP BY product_id
+ORDER BY average_rating DESC;
+
+
+-- 77. Rating distribution
+SELECT
+    rating,
+    COUNT(*) AS review_count
+FROM reviews
+GROUP BY rating
+ORDER BY rating DESC;
+
+
+-- 78. Products with at least 2 reviews
+SELECT
+    product_id,
+    COUNT(*) AS review_count
+FROM reviews
+GROUP BY product_id
+HAVING COUNT(*) >= 2
+ORDER BY review_count DESC;
+
+
+
+-- =========================================================
+-- 13. SUPPORT TICKET ANALYSIS
+-- =========================================================
+
+-- 79. Tickets by issue type
+SELECT
+    issue_type,
+    COUNT(*) AS ticket_count
+FROM support_tickets
+GROUP BY issue_type
+ORDER BY ticket_count DESC;
+
+
+-- 80. Tickets by priority
+SELECT
+    priority,
+    COUNT(*) AS ticket_count
+FROM support_tickets
+GROUP BY priority
+ORDER BY ticket_count DESC;
+
+
+-- 81. Tickets by status
+SELECT
+    ticket_status,
+    COUNT(*) AS ticket_count
+FROM support_tickets
+GROUP BY ticket_status
+ORDER BY ticket_count DESC;
+
+
+-- 82. High-priority unresolved tickets
+SELECT
+    priority,
+    ticket_status,
+    COUNT(*) AS ticket_count
+FROM support_tickets
+WHERE priority = 'HIGH'
+  AND ticket_status <> 'CLOSED'
+GROUP BY priority, ticket_status
+ORDER BY ticket_count DESC;
+
+
+
+-- =========================================================
+-- 14. COMBINED BUSINESS REPORTS
+-- =========================================================
+
+-- 83. Customer sales report
+SELECT
+    c.customer_id,
+    CONCAT(c.first_name, ' ', c.last_name) AS customer_name,
+    COUNT(o.order_id) AS total_orders,
+    COALESCE(SUM(o.total_amount), 0) AS total_spent,
+    ROUND(COALESCE(AVG(o.total_amount), 0), 2) AS average_order_value
+FROM customers c
+LEFT JOIN orders o
+    ON c.customer_id = o.customer_id
+GROUP BY
+    c.customer_id,
+    c.first_name,
+    c.last_name
+ORDER BY total_spent DESC;
+
+
+-- 84. Product performance report
+SELECT
+    p.product_id,
+    p.product_name,
+    COUNT(DISTINCT oi.order_id) AS orders_count,
+    COALESCE(SUM(oi.quantity), 0) AS units_sold,
+    COALESCE(SUM(oi.subtotal), 0) AS sales_amount
+FROM products p
+LEFT JOIN order_items oi
+    ON p.product_id = oi.product_id
+GROUP BY
+    p.product_id,
+    p.product_name
+ORDER BY sales_amount DESC;
+
+
+-- 85. Category sales report
+SELECT
+    c.category_name,
+    COUNT(DISTINCT p.product_id) AS product_count,
+    COALESCE(SUM(oi.quantity), 0) AS units_sold,
+    COALESCE(SUM(oi.subtotal), 0) AS sales_amount
+FROM categories c
+LEFT JOIN products p
+    ON c.category_id = p.category_id
+LEFT JOIN order_items oi
+    ON p.product_id = oi.product_id
+GROUP BY
+    c.category_id,
+    c.category_name
+ORDER BY sales_amount DESC;
+
+
+-- 86. Warehouse inventory report
+SELECT
+    w.warehouse_name,
+    COUNT(DISTINCT i.product_id) AS product_count,
+    SUM(i.quantity_available) AS available_stock,
+    SUM(i.quantity_reserved) AS reserved_stock
+FROM warehouses w
+LEFT JOIN inventory i
+    ON w.warehouse_id = i.warehouse_id
+GROUP BY
+    w.warehouse_id,
+    w.warehouse_name
+ORDER BY available_stock DESC;
+
+
+-- 87. Payment collection report
+SELECT
+    payment_method,
+    COUNT(*) AS total_transactions,
+    SUM(CASE
+        WHEN payment_status = 'SUCCESS' THEN amount
+        ELSE 0
+    END) AS successful_amount,
+    SUM(CASE
+        WHEN payment_status = 'REFUNDED' THEN amount
+        ELSE 0
+    END) AS refunded_amount
+FROM payments
+GROUP BY payment_method
+ORDER BY successful_amount DESC;
+
+
+-- 88. Order status revenue report
+SELECT
+    order_status,
+    COUNT(*) AS order_count,
+    SUM(total_amount) AS total_amount,
+    ROUND(AVG(total_amount), 2) AS average_order_value
+FROM orders
+GROUP BY order_status
+ORDER BY total_amount DESC;
+
+
+-- 89. Top customers by order value
+SELECT
+    c.customer_id,
+    CONCAT(c.first_name, ' ', c.last_name) AS customer_name,
+    COUNT(o.order_id) AS total_orders,
+    SUM(o.total_amount) AS total_spent
+FROM customers c
+JOIN orders o
+    ON c.customer_id = o.customer_id
+GROUP BY
+    c.customer_id,
+    c.first_name,
+    c.last_name
+ORDER BY total_spent DESC
+LIMIT 10;
+
+
+-- 90. Top-selling products
+SELECT
+    p.product_id,
+    p.product_name,
+    SUM(oi.quantity) AS units_sold,
+    SUM(oi.subtotal) AS sales_amount
+FROM products p
+JOIN order_items oi
+    ON p.product_id = oi.product_id
+GROUP BY
+    p.product_id,
+    p.product_name
+ORDER BY units_sold DESC
+LIMIT 10;
