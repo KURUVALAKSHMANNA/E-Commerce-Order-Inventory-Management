@@ -1,0 +1,1236 @@
+USE ecommerce_management_db;
+
+-- =========================================================
+-- 11_Window_Functions.sql
+-- ROW_NUMBER, RANK, DENSE_RANK, LAG, LEAD,
+-- Running Totals, Moving Averages & Business Analytics
+-- =========================================================
+
+
+-- =========================================================
+-- 1. ROW_NUMBER()
+-- =========================================================
+
+-- 1. Assign row number to all products by selling price
+SELECT
+    product_id,
+    product_name,
+    selling_price,
+    ROW_NUMBER() OVER (
+        ORDER BY selling_price DESC
+    ) AS row_num
+FROM products;
+
+
+-- 2. Assign row number to orders by latest order date
+SELECT
+    order_id,
+    customer_id,
+    order_date,
+    total_amount,
+    ROW_NUMBER() OVER (
+        ORDER BY order_date DESC
+    ) AS row_num
+FROM orders;
+
+
+-- 3. Number customers alphabetically
+SELECT
+    customer_id,
+    CONCAT(first_name, ' ', last_name) AS customer_name,
+    ROW_NUMBER() OVER (
+        ORDER BY first_name, last_name
+    ) AS customer_number
+FROM customers;
+
+
+-- 4. Number products within each category
+SELECT
+    product_id,
+    product_name,
+    category_id,
+    selling_price,
+    ROW_NUMBER() OVER (
+        PARTITION BY category_id
+        ORDER BY selling_price DESC
+    ) AS category_row_number
+FROM products;
+
+
+-- 5. Number orders for each customer
+SELECT
+    order_id,
+    customer_id,
+    order_date,
+    total_amount,
+    ROW_NUMBER() OVER (
+        PARTITION BY customer_id
+        ORDER BY order_date
+    ) AS customer_order_number
+FROM orders;
+
+
+
+-- =========================================================
+-- 2. RANK()
+-- =========================================================
+
+-- 6. Rank products by selling price
+SELECT
+    product_id,
+    product_name,
+    selling_price,
+    RANK() OVER (
+        ORDER BY selling_price DESC
+    ) AS price_rank
+FROM products;
+
+
+-- 7. Rank customers by total spending
+WITH customer_sales AS (
+    SELECT
+        customer_id,
+        SUM(total_amount) AS total_spending
+    FROM orders
+    GROUP BY customer_id
+)
+SELECT
+    customer_id,
+    total_spending,
+    RANK() OVER (
+        ORDER BY total_spending DESC
+    ) AS spending_rank
+FROM customer_sales;
+
+
+-- 8. Rank products within each category
+SELECT
+    product_id,
+    product_name,
+    category_id,
+    selling_price,
+    RANK() OVER (
+        PARTITION BY category_id
+        ORDER BY selling_price DESC
+    ) AS category_price_rank
+FROM products;
+
+
+-- 9. Rank suppliers by product count
+WITH supplier_products AS (
+    SELECT
+        supplier_id,
+        COUNT(*) AS product_count
+    FROM products
+    GROUP BY supplier_id
+)
+SELECT
+    supplier_id,
+    product_count,
+    RANK() OVER (
+        ORDER BY product_count DESC
+    ) AS supplier_rank
+FROM supplier_products;
+
+
+
+-- =========================================================
+-- 3. DENSE_RANK()
+-- =========================================================
+
+-- 10. Dense rank products by price
+SELECT
+    product_id,
+    product_name,
+    selling_price,
+    DENSE_RANK() OVER (
+        ORDER BY selling_price DESC
+    ) AS price_rank
+FROM products;
+
+
+-- 11. Dense rank products within categories
+SELECT
+    product_id,
+    product_name,
+    category_id,
+    selling_price,
+    DENSE_RANK() OVER (
+        PARTITION BY category_id
+        ORDER BY selling_price DESC
+    ) AS category_rank
+FROM products;
+
+
+-- 12. Dense rank customers by spending
+WITH customer_sales AS (
+    SELECT
+        customer_id,
+        SUM(total_amount) AS total_spending
+    FROM orders
+    GROUP BY customer_id
+)
+SELECT
+    customer_id,
+    total_spending,
+    DENSE_RANK() OVER (
+        ORDER BY total_spending DESC
+    ) AS spending_rank
+FROM customer_sales;
+
+
+
+-- =========================================================
+-- 4. TOP-N ANALYSIS
+-- =========================================================
+
+-- 13. Top 5 most expensive products
+WITH ranked_products AS (
+    SELECT
+        product_id,
+        product_name,
+        selling_price,
+        ROW_NUMBER() OVER (
+            ORDER BY selling_price DESC
+        ) AS rn
+    FROM products
+)
+SELECT
+    product_id,
+    product_name,
+    selling_price
+FROM ranked_products
+WHERE rn <= 5
+ORDER BY selling_price DESC;
+
+
+-- 14. Top 5 customers by spending
+WITH customer_sales AS (
+    SELECT
+        customer_id,
+        SUM(total_amount) AS total_spending
+    FROM orders
+    GROUP BY customer_id
+),
+ranked_customers AS (
+    SELECT
+        customer_id,
+        total_spending,
+        ROW_NUMBER() OVER (
+            ORDER BY total_spending DESC
+        ) AS rn
+    FROM customer_sales
+)
+SELECT
+    customer_id,
+    total_spending
+FROM ranked_customers
+WHERE rn <= 5
+ORDER BY total_spending DESC;
+
+
+-- 15. Top 3 products by quantity sold
+WITH product_sales AS (
+    SELECT
+        product_id,
+        SUM(quantity) AS units_sold
+    FROM order_items
+    GROUP BY product_id
+),
+ranked_products AS (
+    SELECT
+        product_id,
+        units_sold,
+        ROW_NUMBER() OVER (
+            ORDER BY units_sold DESC
+        ) AS rn
+    FROM product_sales
+)
+SELECT
+    product_id,
+    units_sold
+FROM ranked_products
+WHERE rn <= 3
+ORDER BY units_sold DESC;
+
+
+-- 16. Top 3 products in every category
+WITH ranked_products AS (
+    SELECT
+        product_id,
+        product_name,
+        category_id,
+        selling_price,
+        ROW_NUMBER() OVER (
+            PARTITION BY category_id
+            ORDER BY selling_price DESC
+        ) AS rn
+    FROM products
+)
+SELECT
+    product_id,
+    product_name,
+    category_id,
+    selling_price
+FROM ranked_products
+WHERE rn <= 3
+ORDER BY category_id, selling_price DESC;
+
+
+
+-- =========================================================
+-- 5. LAG()
+-- =========================================================
+
+-- 17. Compare each order with previous order
+SELECT
+    order_id,
+    order_date,
+    total_amount,
+    LAG(total_amount) OVER (
+        ORDER BY order_date, order_id
+    ) AS previous_order_amount
+FROM orders;
+
+
+-- 18. Difference between current and previous order
+SELECT
+    order_id,
+    order_date,
+    total_amount,
+    LAG(total_amount) OVER (
+        ORDER BY order_date, order_id
+    ) AS previous_order_amount,
+    total_amount -
+    LAG(total_amount) OVER (
+        ORDER BY order_date, order_id
+    ) AS amount_difference
+FROM orders;
+
+
+-- 19. Compare customer's current order with previous order
+SELECT
+    order_id,
+    customer_id,
+    order_date,
+    total_amount,
+    LAG(total_amount) OVER (
+        PARTITION BY customer_id
+        ORDER BY order_date, order_id
+    ) AS previous_customer_order
+FROM orders;
+
+
+-- 20. Customer order spending change
+SELECT
+    order_id,
+    customer_id,
+    order_date,
+    total_amount,
+    total_amount -
+    LAG(total_amount) OVER (
+        PARTITION BY customer_id
+        ORDER BY order_date, order_id
+    ) AS spending_change
+FROM orders;
+
+
+
+-- =========================================================
+-- 6. LEAD()
+-- =========================================================
+
+-- 21. Find next order amount
+SELECT
+    order_id,
+    order_date,
+    total_amount,
+    LEAD(total_amount) OVER (
+        ORDER BY order_date, order_id
+    ) AS next_order_amount
+FROM orders;
+
+
+-- 22. Find next order date for each customer
+SELECT
+    order_id,
+    customer_id,
+    order_date,
+    LEAD(order_date) OVER (
+        PARTITION BY customer_id
+        ORDER BY order_date, order_id
+    ) AS next_order_date
+FROM orders;
+
+
+-- 23. Days until customer's next order
+SELECT
+    order_id,
+    customer_id,
+    order_date,
+    LEAD(order_date) OVER (
+        PARTITION BY customer_id
+        ORDER BY order_date, order_id
+    ) AS next_order_date,
+    DATEDIFF(
+        LEAD(order_date) OVER (
+            PARTITION BY customer_id
+            ORDER BY order_date, order_id
+        ),
+        order_date
+    ) AS days_until_next_order
+FROM orders;
+
+
+
+-- =========================================================
+-- 7. FIRST_VALUE() AND LAST_VALUE()
+-- =========================================================
+
+-- 24. First order amount for each customer
+SELECT
+    order_id,
+    customer_id,
+    order_date,
+    total_amount,
+    FIRST_VALUE(total_amount) OVER (
+        PARTITION BY customer_id
+        ORDER BY order_date, order_id
+    ) AS first_order_amount
+FROM orders;
+
+
+-- 25. First order date for each customer
+SELECT
+    order_id,
+    customer_id,
+    order_date,
+    FIRST_VALUE(order_date) OVER (
+        PARTITION BY customer_id
+        ORDER BY order_date, order_id
+    ) AS first_order_date
+FROM orders;
+
+
+-- 26. Latest order amount for each customer
+SELECT
+    order_id,
+    customer_id,
+    order_date,
+    total_amount,
+    LAST_VALUE(total_amount) OVER (
+        PARTITION BY customer_id
+        ORDER BY order_date, order_id
+        ROWS BETWEEN UNBOUNDED PRECEDING
+        AND UNBOUNDED FOLLOWING
+    ) AS latest_order_amount
+FROM orders;
+
+
+
+-- =========================================================
+-- 8. RUNNING TOTALS
+-- =========================================================
+
+-- 27. Running sales total
+SELECT
+    order_id,
+    order_date,
+    total_amount,
+    SUM(total_amount) OVER (
+        ORDER BY order_date, order_id
+        ROWS BETWEEN UNBOUNDED PRECEDING
+        AND CURRENT ROW
+    ) AS running_sales
+FROM orders;
+
+
+-- 28. Running sales by customer
+SELECT
+    order_id,
+    customer_id,
+    order_date,
+    total_amount,
+    SUM(total_amount) OVER (
+        PARTITION BY customer_id
+        ORDER BY order_date, order_id
+        ROWS BETWEEN UNBOUNDED PRECEDING
+        AND CURRENT ROW
+    ) AS customer_running_sales
+FROM orders;
+
+
+-- 29. Running quantity sold by product
+SELECT
+    order_item_id,
+    product_id,
+    quantity,
+    SUM(quantity) OVER (
+        PARTITION BY product_id
+        ORDER BY order_item_id
+        ROWS BETWEEN UNBOUNDED PRECEDING
+        AND CURRENT ROW
+    ) AS running_quantity
+FROM order_items;
+
+
+
+-- =========================================================
+-- 9. RUNNING AVERAGES
+-- =========================================================
+
+-- 30. Running average order value
+SELECT
+    order_id,
+    order_date,
+    total_amount,
+    ROUND(
+        AVG(total_amount) OVER (
+            ORDER BY order_date, order_id
+            ROWS BETWEEN UNBOUNDED PRECEDING
+            AND CURRENT ROW
+        ),
+        2
+    ) AS running_average_order_value
+FROM orders;
+
+
+-- 31. Running average spending for each customer
+SELECT
+    order_id,
+    customer_id,
+    order_date,
+    total_amount,
+    ROUND(
+        AVG(total_amount) OVER (
+            PARTITION BY customer_id
+            ORDER BY order_date, order_id
+            ROWS BETWEEN UNBOUNDED PRECEDING
+            AND CURRENT ROW
+        ),
+        2
+    ) AS customer_running_average
+FROM orders;
+
+
+
+-- =========================================================
+-- 10. MOVING AVERAGES
+-- =========================================================
+
+-- 32. Three-order moving average
+SELECT
+    order_id,
+    order_date,
+    total_amount,
+    ROUND(
+        AVG(total_amount) OVER (
+            ORDER BY order_date, order_id
+            ROWS BETWEEN 2 PRECEDING AND CURRENT ROW
+        ),
+        2
+    ) AS three_order_moving_average
+FROM orders;
+
+
+-- 33. Three-order moving average per customer
+SELECT
+    order_id,
+    customer_id,
+    order_date,
+    total_amount,
+    ROUND(
+        AVG(total_amount) OVER (
+            PARTITION BY customer_id
+            ORDER BY order_date, order_id
+            ROWS BETWEEN 2 PRECEDING AND CURRENT ROW
+        ),
+        2
+    ) AS customer_moving_average
+FROM orders;
+
+
+
+-- =========================================================
+-- 11. SALES ANALYSIS
+-- =========================================================
+
+-- 34. Monthly sales with ranking
+WITH monthly_sales AS (
+    SELECT
+        YEAR(order_date) AS order_year,
+        MONTH(order_date) AS order_month,
+        SUM(total_amount) AS total_sales
+    FROM orders
+    GROUP BY
+        YEAR(order_date),
+        MONTH(order_date)
+)
+SELECT
+    order_year,
+    order_month,
+    total_sales,
+    RANK() OVER (
+        ORDER BY total_sales DESC
+    ) AS sales_rank
+FROM monthly_sales
+ORDER BY order_year, order_month;
+
+
+-- 35. Monthly sales with previous month sales
+WITH monthly_sales AS (
+    SELECT
+        YEAR(order_date) AS order_year,
+        MONTH(order_date) AS order_month,
+        SUM(total_amount) AS total_sales
+    FROM orders
+    GROUP BY
+        YEAR(order_date),
+        MONTH(order_date)
+)
+SELECT
+    order_year,
+    order_month,
+    total_sales,
+    LAG(total_sales) OVER (
+        ORDER BY order_year, order_month
+    ) AS previous_month_sales
+FROM monthly_sales
+ORDER BY order_year, order_month;
+
+
+-- 36. Monthly sales growth
+WITH monthly_sales AS (
+    SELECT
+        YEAR(order_date) AS order_year,
+        MONTH(order_date) AS order_month,
+        SUM(total_amount) AS total_sales
+    FROM orders
+    GROUP BY
+        YEAR(order_date),
+        MONTH(order_date)
+),
+sales_comparison AS (
+    SELECT
+        order_year,
+        order_month,
+        total_sales,
+        LAG(total_sales) OVER (
+            ORDER BY order_year, order_month
+        ) AS previous_month_sales
+    FROM monthly_sales
+)
+SELECT
+    order_year,
+    order_month,
+    total_sales,
+    previous_month_sales,
+    ROUND(
+        (
+            (total_sales - previous_month_sales)
+            / NULLIF(previous_month_sales, 0)
+        ) * 100,
+        2
+    ) AS growth_percentage
+FROM sales_comparison
+ORDER BY order_year, order_month;
+
+
+
+-- =========================================================
+-- 12. CUSTOMER RANKING
+-- =========================================================
+
+-- 37. Customer ranking by total spending
+WITH customer_sales AS (
+    SELECT
+        customer_id,
+        SUM(total_amount) AS total_spending
+    FROM orders
+    GROUP BY customer_id
+)
+SELECT
+    c.customer_id,
+    CONCAT(c.first_name, ' ', c.last_name) AS customer_name,
+    cs.total_spending,
+    RANK() OVER (
+        ORDER BY cs.total_spending DESC
+    ) AS customer_rank
+FROM customer_sales cs
+JOIN customers c
+    ON cs.customer_id = c.customer_id
+ORDER BY customer_rank;
+
+
+-- 38. Customer ranking within spending groups
+WITH customer_sales AS (
+    SELECT
+        customer_id,
+        SUM(total_amount) AS total_spending
+    FROM orders
+    GROUP BY customer_id
+)
+SELECT
+    customer_id,
+    total_spending,
+    NTILE(4) OVER (
+        ORDER BY total_spending DESC
+    ) AS customer_quartile
+FROM customer_sales
+ORDER BY total_spending DESC;
+
+
+
+-- =========================================================
+-- 13. PRODUCT PERFORMANCE
+-- =========================================================
+
+-- 39. Product sales ranking
+WITH product_sales AS (
+    SELECT
+        product_id,
+        SUM(quantity) AS units_sold,
+        SUM(subtotal) AS total_sales
+    FROM order_items
+    GROUP BY product_id
+)
+SELECT
+    p.product_id,
+    p.product_name,
+    ps.units_sold,
+    ps.total_sales,
+    RANK() OVER (
+        ORDER BY ps.total_sales DESC
+    ) AS sales_rank
+FROM product_sales ps
+JOIN products p
+    ON ps.product_id = p.product_id
+ORDER BY sales_rank;
+
+
+-- 40. Product ranking within category
+WITH product_sales AS (
+    SELECT
+        p.product_id,
+        p.product_name,
+        p.category_id,
+        SUM(oi.quantity) AS units_sold,
+        SUM(oi.subtotal) AS total_sales
+    FROM products p
+    JOIN order_items oi
+        ON p.product_id = oi.product_id
+    GROUP BY
+        p.product_id,
+        p.product_name,
+        p.category_id
+)
+SELECT
+    product_id,
+    product_name,
+    category_id,
+    units_sold,
+    total_sales,
+    RANK() OVER (
+        PARTITION BY category_id
+        ORDER BY total_sales DESC
+    ) AS category_sales_rank
+FROM product_sales
+ORDER BY category_id, category_sales_rank;
+
+
+
+-- =========================================================
+-- 14. INVENTORY ANALYSIS
+-- =========================================================
+
+-- 41. Rank products by available inventory
+WITH product_stock AS (
+    SELECT
+        product_id,
+        SUM(quantity_available) AS available_stock
+    FROM inventory
+    GROUP BY product_id
+)
+SELECT
+    p.product_id,
+    p.product_name,
+    ps.available_stock,
+    RANK() OVER (
+        ORDER BY ps.available_stock DESC
+    ) AS stock_rank
+FROM product_stock ps
+JOIN products p
+    ON ps.product_id = p.product_id
+ORDER BY stock_rank;
+
+
+-- 42. Rank inventory within each warehouse
+SELECT
+    warehouse_id,
+    product_id,
+    quantity_available,
+    RANK() OVER (
+        PARTITION BY warehouse_id
+        ORDER BY quantity_available DESC
+    ) AS warehouse_stock_rank
+FROM inventory;
+
+
+-- 43. Lowest-stock products within each warehouse
+WITH ranked_inventory AS (
+    SELECT
+        warehouse_id,
+        product_id,
+        quantity_available,
+        ROW_NUMBER() OVER (
+            PARTITION BY warehouse_id
+            ORDER BY quantity_available
+        ) AS rn
+    FROM inventory
+)
+SELECT
+    warehouse_id,
+    product_id,
+    quantity_available
+FROM ranked_inventory
+WHERE rn <= 3
+ORDER BY warehouse_id, quantity_available;
+
+
+
+-- =========================================================
+-- 15. PERCENT_RANK() AND CUME_DIST()
+-- =========================================================
+
+-- 44. Product price percentile
+SELECT
+    product_id,
+    product_name,
+    selling_price,
+    ROUND(
+        PERCENT_RANK() OVER (
+            ORDER BY selling_price
+        ),
+        4
+    ) AS price_percentile
+FROM products
+ORDER BY selling_price;
+
+
+-- 45. Product price cumulative distribution
+SELECT
+    product_id,
+    product_name,
+    selling_price,
+    ROUND(
+        CUME_DIST() OVER (
+            ORDER BY selling_price
+        ),
+        4
+    ) AS cumulative_distribution
+FROM products
+ORDER BY selling_price;
+
+
+
+-- =========================================================
+-- 16. NTILE()
+-- =========================================================
+
+-- 46. Divide customers into 4 spending groups
+WITH customer_sales AS (
+    SELECT
+        customer_id,
+        SUM(total_amount) AS total_spending
+    FROM orders
+    GROUP BY customer_id
+)
+SELECT
+    customer_id,
+    total_spending,
+    NTILE(4) OVER (
+        ORDER BY total_spending DESC
+    ) AS spending_quartile
+FROM customer_sales
+ORDER BY spending_quartile, total_spending DESC;
+
+
+-- 47. Divide products into 3 price groups
+SELECT
+    product_id,
+    product_name,
+    selling_price,
+    NTILE(3) OVER (
+        ORDER BY selling_price DESC
+    ) AS price_group
+FROM products
+ORDER BY price_group, selling_price DESC;
+
+
+
+-- =========================================================
+-- 17. FIRST / LAST ORDER ANALYSIS
+-- =========================================================
+
+-- 48. First and latest order for every customer
+SELECT
+    order_id,
+    customer_id,
+    order_date,
+    total_amount,
+    FIRST_VALUE(order_date) OVER (
+        PARTITION BY customer_id
+        ORDER BY order_date, order_id
+    ) AS first_order_date,
+    LAST_VALUE(order_date) OVER (
+        PARTITION BY customer_id
+        ORDER BY order_date, order_id
+        ROWS BETWEEN UNBOUNDED PRECEDING
+        AND UNBOUNDED FOLLOWING
+    ) AS latest_order_date
+FROM orders;
+
+
+-- 49. First and latest order amount
+SELECT
+    order_id,
+    customer_id,
+    total_amount,
+    FIRST_VALUE(total_amount) OVER (
+        PARTITION BY customer_id
+        ORDER BY order_date, order_id
+    ) AS first_order_amount,
+    LAST_VALUE(total_amount) OVER (
+        PARTITION BY customer_id
+        ORDER BY order_date, order_id
+        ROWS BETWEEN UNBOUNDED PRECEDING
+        AND UNBOUNDED FOLLOWING
+    ) AS latest_order_amount
+FROM orders;
+
+
+
+-- =========================================================
+-- 18. REAL E-COMMERCE BUSINESS PROBLEMS
+-- =========================================================
+
+-- 50. Top-selling product in each category
+WITH product_sales AS (
+    SELECT
+        p.product_id,
+        p.product_name,
+        p.category_id,
+        SUM(oi.quantity) AS units_sold
+    FROM products p
+    JOIN order_items oi
+        ON p.product_id = oi.product_id
+    GROUP BY
+        p.product_id,
+        p.product_name,
+        p.category_id
+),
+ranked_products AS (
+    SELECT
+        product_id,
+        product_name,
+        category_id,
+        units_sold,
+        ROW_NUMBER() OVER (
+            PARTITION BY category_id
+            ORDER BY units_sold DESC, product_id
+        ) AS rn
+    FROM product_sales
+)
+SELECT
+    product_id,
+    product_name,
+    category_id,
+    units_sold
+FROM ranked_products
+WHERE rn = 1;
+
+
+-- 51. Highest-spending customer
+WITH customer_sales AS (
+    SELECT
+        customer_id,
+        SUM(total_amount) AS total_spending
+    FROM orders
+    GROUP BY customer_id
+),
+ranked_customers AS (
+    SELECT
+        customer_id,
+        total_spending,
+        RANK() OVER (
+            ORDER BY total_spending DESC
+        ) AS spending_rank
+    FROM customer_sales
+)
+SELECT
+    c.customer_id,
+    CONCAT(c.first_name, ' ', c.last_name) AS customer_name,
+    rc.total_spending
+FROM ranked_customers rc
+JOIN customers c
+    ON rc.customer_id = c.customer_id
+WHERE rc.spending_rank = 1;
+
+
+-- 52. Second-highest selling product
+WITH product_sales AS (
+    SELECT
+        product_id,
+        SUM(subtotal) AS total_sales
+    FROM order_items
+    GROUP BY product_id
+),
+ranked_products AS (
+    SELECT
+        product_id,
+        total_sales,
+        DENSE_RANK() OVER (
+            ORDER BY total_sales DESC
+        ) AS sales_rank
+    FROM product_sales
+)
+SELECT
+    p.product_id,
+    p.product_name,
+    rp.total_sales
+FROM ranked_products rp
+JOIN products p
+    ON rp.product_id = p.product_id
+WHERE rp.sales_rank = 2;
+
+
+-- 53. Customers with increasing order values
+WITH customer_orders AS (
+    SELECT
+        order_id,
+        customer_id,
+        order_date,
+        total_amount,
+        LAG(total_amount) OVER (
+            PARTITION BY customer_id
+            ORDER BY order_date, order_id
+        ) AS previous_amount
+    FROM orders
+)
+SELECT
+    order_id,
+    customer_id,
+    order_date,
+    total_amount,
+    previous_amount
+FROM customer_orders
+WHERE previous_amount IS NOT NULL
+  AND total_amount > previous_amount;
+
+
+-- 54. Customers whose latest order is higher than their first order
+WITH customer_orders AS (
+    SELECT
+        order_id,
+        customer_id,
+        order_date,
+        total_amount,
+        FIRST_VALUE(total_amount) OVER (
+            PARTITION BY customer_id
+            ORDER BY order_date, order_id
+        ) AS first_order_amount,
+        LAST_VALUE(total_amount) OVER (
+            PARTITION BY customer_id
+            ORDER BY order_date, order_id
+            ROWS BETWEEN UNBOUNDED PRECEDING
+            AND UNBOUNDED FOLLOWING
+        ) AS latest_order_amount
+    FROM orders
+)
+SELECT DISTINCT
+    customer_id,
+    first_order_amount,
+    latest_order_amount
+FROM customer_orders
+WHERE latest_order_amount > first_order_amount;
+
+
+-- 55. Products whose sales are above category average
+WITH product_sales AS (
+    SELECT
+        p.product_id,
+        p.product_name,
+        p.category_id,
+        SUM(oi.subtotal) AS total_sales
+    FROM products p
+    JOIN order_items oi
+        ON p.product_id = oi.product_id
+    GROUP BY
+        p.product_id,
+        p.product_name,
+        p.category_id
+),
+category_comparison AS (
+    SELECT
+        product_id,
+        product_name,
+        category_id,
+        total_sales,
+        AVG(total_sales) OVER (
+            PARTITION BY category_id
+        ) AS category_average_sales
+    FROM product_sales
+)
+SELECT
+    product_id,
+    product_name,
+    category_id,
+    total_sales,
+    ROUND(category_average_sales, 2) AS category_average_sales
+FROM category_comparison
+WHERE total_sales > category_average_sales
+ORDER BY category_id, total_sales DESC;
+
+
+-- 56. Customer sales contribution to total sales
+WITH customer_sales AS (
+    SELECT
+        customer_id,
+        SUM(total_amount) AS total_spending
+    FROM orders
+    GROUP BY customer_id
+),
+sales_with_total AS (
+    SELECT
+        customer_id,
+        total_spending,
+        SUM(total_spending) OVER () AS overall_sales
+    FROM customer_sales
+)
+SELECT
+    customer_id,
+    total_spending,
+    ROUND(
+        total_spending * 100.0 /
+        NULLIF(overall_sales, 0),
+        2
+    ) AS sales_contribution_percentage
+FROM sales_with_total
+ORDER BY total_spending DESC;
+
+
+-- 57. Product sales contribution
+WITH product_sales AS (
+    SELECT
+        product_id,
+        SUM(subtotal) AS total_sales
+    FROM order_items
+    GROUP BY product_id
+),
+sales_with_total AS (
+    SELECT
+        product_id,
+        total_sales,
+        SUM(total_sales) OVER () AS overall_sales
+    FROM product_sales
+)
+SELECT
+    p.product_id,
+    p.product_name,
+    ps.total_sales,
+    ROUND(
+        ps.total_sales * 100.0 /
+        NULLIF(ps.overall_sales, 0),
+        2
+    ) AS sales_contribution_percentage
+FROM sales_with_total ps
+JOIN products p
+    ON ps.product_id = p.product_id
+ORDER BY ps.total_sales DESC;
+
+
+-- 58. Order status distribution
+WITH status_summary AS (
+    SELECT
+        order_status,
+        COUNT(*) AS order_count
+    FROM orders
+    GROUP BY order_status
+)
+SELECT
+    order_status,
+    order_count,
+    ROUND(
+        order_count * 100.0 /
+        SUM(order_count) OVER (),
+        2
+    ) AS status_percentage
+FROM status_summary
+ORDER BY order_count DESC;
+
+
+-- 59. Warehouse inventory contribution
+WITH warehouse_stock AS (
+    SELECT
+        warehouse_id,
+        SUM(quantity_available) AS available_stock
+    FROM inventory
+    GROUP BY warehouse_id
+)
+SELECT
+    w.warehouse_id,
+    w.warehouse_name,
+    ws.available_stock,
+    ROUND(
+        ws.available_stock * 100.0 /
+        NULLIF(SUM(ws.available_stock) OVER (), 0),
+        2
+    ) AS stock_contribution_percentage
+FROM warehouse_stock ws
+JOIN warehouses w
+    ON ws.warehouse_id = w.warehouse_id
+ORDER BY ws.available_stock DESC;
+
+
+-- 60. Complete product performance ranking
+WITH product_performance AS (
+    SELECT
+        p.product_id,
+        p.product_name,
+        p.category_id,
+        SUM(oi.quantity) AS units_sold,
+        SUM(oi.subtotal) AS total_sales
+    FROM products p
+    JOIN order_items oi
+        ON p.product_id = oi.product_id
+    GROUP BY
+        p.product_id,
+        p.product_name,
+        p.category_id
+),
+ranked_products AS (
+    SELECT
+        product_id,
+        product_name,
+        category_id,
+        units_sold,
+        total_sales,
+        RANK() OVER (
+            ORDER BY total_sales DESC
+        ) AS overall_rank,
+        RANK() OVER (
+            PARTITION BY category_id
+            ORDER BY total_sales DESC
+        ) AS category_rank
+    FROM product_performance
+)
+SELECT
+    product_id,
+    product_name,
+    category_id,
+    units_sold,
+    total_sales,
+    overall_rank,
+    category_rank
+FROM ranked_products
+ORDER BY overall_rank;

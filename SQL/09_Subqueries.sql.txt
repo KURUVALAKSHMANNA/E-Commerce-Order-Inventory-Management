@@ -1,0 +1,1178 @@
+USE ecommerce_management_db;
+
+-- =========================================================
+-- 09_Subqueries.sql
+-- Single-Row, Multi-Row, Correlated & Nested Subqueries
+-- =========================================================
+
+
+-- =========================================================
+-- 1. SINGLE-ROW SUBQUERIES
+-- =========================================================
+
+-- 1. Products priced above the average selling price
+SELECT
+    product_id,
+    product_name,
+    selling_price
+FROM products
+WHERE selling_price > (
+    SELECT AVG(selling_price)
+    FROM products
+)
+ORDER BY selling_price DESC;
+
+
+-- 2. Products priced below the average selling price
+SELECT
+    product_id,
+    product_name,
+    selling_price
+FROM products
+WHERE selling_price < (
+    SELECT AVG(selling_price)
+    FROM products
+)
+ORDER BY selling_price;
+
+
+-- 3. Most expensive product
+SELECT
+    product_id,
+    product_name,
+    selling_price
+FROM products
+WHERE selling_price = (
+    SELECT MAX(selling_price)
+    FROM products
+);
+
+
+-- 4. Cheapest product
+SELECT
+    product_id,
+    product_name,
+    selling_price
+FROM products
+WHERE selling_price = (
+    SELECT MIN(selling_price)
+    FROM products
+);
+
+
+-- 5. Orders above average order value
+SELECT
+    order_id,
+    customer_id,
+    total_amount
+FROM orders
+WHERE total_amount > (
+    SELECT AVG(total_amount)
+    FROM orders
+)
+ORDER BY total_amount DESC;
+
+
+-- 6. Orders below average order value
+SELECT
+    order_id,
+    customer_id,
+    total_amount
+FROM orders
+WHERE total_amount < (
+    SELECT AVG(total_amount)
+    FROM orders
+)
+ORDER BY total_amount;
+
+
+-- 7. Payments above average payment amount
+SELECT
+    payment_id,
+    order_id,
+    amount
+FROM payments
+WHERE amount > (
+    SELECT AVG(amount)
+    FROM payments
+)
+ORDER BY amount DESC;
+
+
+-- 8. Products with maximum cost price
+SELECT
+    product_id,
+    product_name,
+    cost_price
+FROM products
+WHERE cost_price = (
+    SELECT MAX(cost_price)
+    FROM products
+);
+
+
+-- 9. Products with minimum cost price
+SELECT
+    product_id,
+    product_name,
+    cost_price
+FROM products
+WHERE cost_price = (
+    SELECT MIN(cost_price)
+    FROM products
+);
+
+
+
+-- =========================================================
+-- 2. SUBQUERY WITH CALCULATIONS
+-- =========================================================
+
+-- 10. Products having profit above average product profit
+SELECT
+    product_id,
+    product_name,
+    cost_price,
+    selling_price,
+    (selling_price - cost_price) AS profit
+FROM products
+WHERE (selling_price - cost_price) > (
+    SELECT AVG(selling_price - cost_price)
+    FROM products
+)
+ORDER BY profit DESC;
+
+
+-- 11. Products with selling price more than twice the minimum price
+SELECT
+    product_id,
+    product_name,
+    selling_price
+FROM products
+WHERE selling_price > (
+    2 * (
+        SELECT MIN(selling_price)
+        FROM products
+    )
+)
+ORDER BY selling_price DESC;
+
+
+-- 12. Orders whose discount is greater than average discount
+SELECT
+    order_id,
+    customer_id,
+    discount_amount
+FROM orders
+WHERE discount_amount > (
+    SELECT AVG(discount_amount)
+    FROM orders
+)
+ORDER BY discount_amount DESC;
+
+
+-- 13. Inventory records with stock above average inventory
+SELECT
+    inventory_id,
+    product_id,
+    warehouse_id,
+    quantity_available
+FROM inventory
+WHERE quantity_available > (
+    SELECT AVG(quantity_available)
+    FROM inventory
+)
+ORDER BY quantity_available DESC;
+
+
+
+-- =========================================================
+-- 3. MULTI-ROW SUBQUERIES WITH IN
+-- =========================================================
+
+-- 14. Products belonging to categories containing
+-- more than 2 products
+SELECT
+    product_id,
+    product_name,
+    category_id
+FROM products
+WHERE category_id IN (
+    SELECT category_id
+    FROM products
+    GROUP BY category_id
+    HAVING COUNT(*) > 2
+)
+ORDER BY category_id, product_name;
+
+
+-- 15. Customers who have placed at least one order
+SELECT
+    customer_id,
+    first_name,
+    last_name,
+    email
+FROM customers
+WHERE customer_id IN (
+    SELECT DISTINCT customer_id
+    FROM orders
+);
+
+
+-- 16. Customers who have never placed an order
+SELECT
+    customer_id,
+    first_name,
+    last_name,
+    email
+FROM customers
+WHERE customer_id NOT IN (
+    SELECT DISTINCT customer_id
+    FROM orders
+    WHERE customer_id IS NOT NULL
+);
+
+
+-- 17. Products that have been ordered
+SELECT
+    product_id,
+    product_name,
+    selling_price
+FROM products
+WHERE product_id IN (
+    SELECT DISTINCT product_id
+    FROM order_items
+);
+
+
+-- 18. Products that have never been ordered
+SELECT
+    product_id,
+    product_name,
+    selling_price
+FROM products
+WHERE product_id NOT IN (
+    SELECT DISTINCT product_id
+    FROM order_items
+    WHERE product_id IS NOT NULL
+);
+
+
+-- 19. Customers who made successful payments
+SELECT
+    customer_id,
+    first_name,
+    last_name
+FROM customers
+WHERE customer_id IN (
+    SELECT DISTINCT o.customer_id
+    FROM orders o
+    JOIN payments p
+        ON o.order_id = p.order_id
+    WHERE p.payment_status = 'SUCCESS'
+);
+
+
+-- 20. Customers with returned orders
+SELECT
+    customer_id,
+    first_name,
+    last_name
+FROM customers
+WHERE customer_id IN (
+    SELECT DISTINCT customer_id
+    FROM orders
+    WHERE order_id IN (
+        SELECT order_id
+        FROM returns
+    )
+);
+
+
+
+-- =========================================================
+-- 4. SUBQUERY WITH MAX / MIN BY GROUP
+-- =========================================================
+
+-- 21. Products having the highest price in their category
+SELECT
+    p.product_id,
+    p.product_name,
+    p.category_id,
+    p.selling_price
+FROM products p
+WHERE p.selling_price = (
+    SELECT MAX(p2.selling_price)
+    FROM products p2
+    WHERE p2.category_id = p.category_id
+)
+ORDER BY p.category_id;
+
+
+-- 22. Products having the lowest price in their category
+SELECT
+    p.product_id,
+    p.product_name,
+    p.category_id,
+    p.selling_price
+FROM products p
+WHERE p.selling_price = (
+    SELECT MIN(p2.selling_price)
+    FROM products p2
+    WHERE p2.category_id = p.category_id
+)
+ORDER BY p.category_id;
+
+
+-- 23. Most expensive product supplied by each supplier
+SELECT
+    p.product_id,
+    p.product_name,
+    p.supplier_id,
+    p.selling_price
+FROM products p
+WHERE p.selling_price = (
+    SELECT MAX(p2.selling_price)
+    FROM products p2
+    WHERE p2.supplier_id = p.supplier_id
+)
+ORDER BY p.supplier_id;
+
+
+-- 24. Cheapest product supplied by each supplier
+SELECT
+    p.product_id,
+    p.product_name,
+    p.supplier_id,
+    p.selling_price
+FROM products p
+WHERE p.selling_price = (
+    SELECT MIN(p2.selling_price)
+    FROM products p2
+    WHERE p2.supplier_id = p.supplier_id
+)
+ORDER BY p.supplier_id;
+
+
+
+-- =========================================================
+-- 5. CORRELATED SUBQUERIES
+-- =========================================================
+
+-- 25. Products priced above their category average
+SELECT
+    p.product_id,
+    p.product_name,
+    p.category_id,
+    p.selling_price
+FROM products p
+WHERE p.selling_price > (
+    SELECT AVG(p2.selling_price)
+    FROM products p2
+    WHERE p2.category_id = p.category_id
+)
+ORDER BY p.category_id, p.selling_price DESC;
+
+
+-- 26. Products priced below their category average
+SELECT
+    p.product_id,
+    p.product_name,
+    p.category_id,
+    p.selling_price
+FROM products p
+WHERE p.selling_price < (
+    SELECT AVG(p2.selling_price)
+    FROM products p2
+    WHERE p2.category_id = p.category_id
+)
+ORDER BY p.category_id, p.selling_price;
+
+
+-- 27. Products with profit above their category average profit
+SELECT
+    p.product_id,
+    p.product_name,
+    p.category_id,
+    (p.selling_price - p.cost_price) AS profit
+FROM products p
+WHERE (p.selling_price - p.cost_price) > (
+    SELECT AVG(p2.selling_price - p2.cost_price)
+    FROM products p2
+    WHERE p2.category_id = p.category_id
+)
+ORDER BY profit DESC;
+
+
+-- 28. Customers whose order value is above their own average order value
+SELECT
+    o.order_id,
+    o.customer_id,
+    o.total_amount
+FROM orders o
+WHERE o.total_amount > (
+    SELECT AVG(o2.total_amount)
+    FROM orders o2
+    WHERE o2.customer_id = o.customer_id
+)
+ORDER BY o.customer_id, o.total_amount DESC;
+
+
+
+-- =========================================================
+-- 6. EXISTS
+-- =========================================================
+
+-- 29. Customers who have placed orders
+SELECT
+    c.customer_id,
+    c.first_name,
+    c.last_name,
+    c.email
+FROM customers c
+WHERE EXISTS (
+    SELECT 1
+    FROM orders o
+    WHERE o.customer_id = c.customer_id
+);
+
+
+-- 30. Customers who have not placed any orders
+SELECT
+    c.customer_id,
+    c.first_name,
+    c.last_name,
+    c.email
+FROM customers c
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM orders o
+    WHERE o.customer_id = c.customer_id
+);
+
+
+-- 31. Products that have been ordered
+SELECT
+    p.product_id,
+    p.product_name
+FROM products p
+WHERE EXISTS (
+    SELECT 1
+    FROM order_items oi
+    WHERE oi.product_id = p.product_id
+);
+
+
+-- 32. Products that have never been ordered
+SELECT
+    p.product_id,
+    p.product_name
+FROM products p
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM order_items oi
+    WHERE oi.product_id = p.product_id
+);
+
+
+-- 33. Customers who have at least one successful payment
+SELECT
+    c.customer_id,
+    c.first_name,
+    c.last_name
+FROM customers c
+WHERE EXISTS (
+    SELECT 1
+    FROM orders o
+    JOIN payments p
+        ON o.order_id = p.order_id
+    WHERE o.customer_id = c.customer_id
+      AND p.payment_status = 'SUCCESS'
+);
+
+
+-- 34. Products that have inventory in at least one warehouse
+SELECT
+    p.product_id,
+    p.product_name
+FROM products p
+WHERE EXISTS (
+    SELECT 1
+    FROM inventory i
+    WHERE i.product_id = p.product_id
+);
+
+
+
+-- =========================================================
+-- 7. NOT EXISTS
+-- =========================================================
+
+-- 35. Categories without products
+SELECT
+    c.category_id,
+    c.category_name
+FROM categories c
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM products p
+    WHERE p.category_id = c.category_id
+);
+
+
+-- 36. Suppliers without products
+SELECT
+    s.supplier_id,
+    s.supplier_name
+FROM suppliers s
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM products p
+    WHERE p.supplier_id = s.supplier_id
+);
+
+
+-- 37. Warehouses without inventory records
+SELECT
+    w.warehouse_id,
+    w.warehouse_name
+FROM warehouses w
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM inventory i
+    WHERE i.warehouse_id = w.warehouse_id
+);
+
+
+-- 38. Customers without reviews
+SELECT
+    c.customer_id,
+    c.first_name,
+    c.last_name
+FROM customers c
+WHERE NOT EXISTS (
+    SELECT 1
+    FROM reviews r
+    WHERE r.customer_id = c.customer_id
+);
+
+
+
+-- =========================================================
+-- 8. ANY
+-- =========================================================
+
+-- 39. Products whose price is greater than ANY product
+-- in the Mobiles & Accessories category
+SELECT
+    p.product_id,
+    p.product_name,
+    p.selling_price
+FROM products p
+WHERE p.selling_price > ANY (
+    SELECT p2.selling_price
+    FROM products p2
+    JOIN categories c2
+        ON p2.category_id = c2.category_id
+    WHERE c2.category_name = 'Mobiles & Accessories'
+)
+ORDER BY p.selling_price DESC;
+
+
+-- 40. Products whose price is less than ANY product
+-- in the Laptops & Computers category
+SELECT
+    p.product_id,
+    p.product_name,
+    p.selling_price
+FROM products p
+WHERE p.selling_price < ANY (
+    SELECT p2.selling_price
+    FROM products p2
+    JOIN categories c2
+        ON p2.category_id = c2.category_id
+    WHERE c2.category_name = 'Laptops & Computers'
+)
+ORDER BY p.selling_price;
+
+
+
+-- =========================================================
+-- 9. ALL
+-- =========================================================
+
+-- 41. Products whose price is greater than ALL
+-- products in the Audio & Headphones category
+SELECT
+    p.product_id,
+    p.product_name,
+    p.selling_price
+FROM products p
+WHERE p.selling_price > ALL (
+    SELECT p2.selling_price
+    FROM products p2
+    JOIN categories c2
+        ON p2.category_id = c2.category_id
+    WHERE c2.category_name = 'Audio & Headphones'
+)
+ORDER BY p.selling_price DESC;
+
+
+-- 42. Products whose price is greater than ALL
+-- products supplied by a particular supplier
+SELECT
+    p.product_id,
+    p.product_name,
+    p.selling_price
+FROM products p
+WHERE p.selling_price > ALL (
+    SELECT p2.selling_price
+    FROM products p2
+    WHERE p2.supplier_id = 1
+)
+ORDER BY p.selling_price DESC;
+
+
+
+-- =========================================================
+-- 10. NESTED SUBQUERIES
+-- =========================================================
+
+-- 43. Customers whose total spending is above
+-- the average customer spending
+SELECT
+    c.customer_id,
+    CONCAT(c.first_name, ' ', c.last_name) AS customer_name,
+    SUM(o.total_amount) AS total_spending
+FROM customers c
+JOIN orders o
+    ON c.customer_id = o.customer_id
+GROUP BY
+    c.customer_id,
+    c.first_name,
+    c.last_name
+HAVING SUM(o.total_amount) > (
+    SELECT AVG(customer_total)
+    FROM (
+        SELECT
+            customer_id,
+            SUM(total_amount) AS customer_total
+        FROM orders
+        GROUP BY customer_id
+    ) AS customer_sales
+)
+ORDER BY total_spending DESC;
+
+
+-- 44. Products whose total sales are above
+-- the average product sales
+SELECT
+    p.product_id,
+    p.product_name,
+    SUM(oi.subtotal) AS total_sales
+FROM products p
+JOIN order_items oi
+    ON p.product_id = oi.product_id
+GROUP BY
+    p.product_id,
+    p.product_name
+HAVING SUM(oi.subtotal) > (
+    SELECT AVG(product_sales)
+    FROM (
+        SELECT
+            product_id,
+            SUM(subtotal) AS product_sales
+        FROM order_items
+        GROUP BY product_id
+    ) AS sales_summary
+)
+ORDER BY total_sales DESC;
+
+
+-- 45. Categories whose total sales are above
+-- average category sales
+SELECT
+    p.category_id,
+    SUM(oi.subtotal) AS category_sales
+FROM products p
+JOIN order_items oi
+    ON p.product_id = oi.product_id
+GROUP BY p.category_id
+HAVING SUM(oi.subtotal) > (
+    SELECT AVG(category_total)
+    FROM (
+        SELECT
+            p2.category_id,
+            SUM(oi2.subtotal) AS category_total
+        FROM products p2
+        JOIN order_items oi2
+            ON p2.product_id = oi2.product_id
+        GROUP BY p2.category_id
+    ) AS category_sales_summary
+)
+ORDER BY category_sales DESC;
+
+
+
+-- =========================================================
+-- 11. SUBQUERY WITH ORDER DETAILS
+-- =========================================================
+
+-- 46. Orders containing the most expensive product
+SELECT DISTINCT
+    o.order_id,
+    o.customer_id,
+    o.total_amount
+FROM orders o
+JOIN order_items oi
+    ON o.order_id = oi.order_id
+WHERE oi.product_id = (
+    SELECT product_id
+    FROM products
+    WHERE selling_price = (
+        SELECT MAX(selling_price)
+        FROM products
+    )
+);
+
+
+-- 47. Orders containing products priced above average
+SELECT DISTINCT
+    o.order_id,
+    o.customer_id,
+    o.total_amount
+FROM orders o
+JOIN order_items oi
+    ON o.order_id = oi.order_id
+WHERE oi.product_id IN (
+    SELECT product_id
+    FROM products
+    WHERE selling_price > (
+        SELECT AVG(selling_price)
+        FROM products
+    )
+);
+
+
+-- 48. Customers who purchased products from
+-- the Mobiles & Accessories category
+SELECT DISTINCT
+    c.customer_id,
+    c.first_name,
+    c.last_name
+FROM customers c
+WHERE c.customer_id IN (
+    SELECT o.customer_id
+    FROM orders o
+    WHERE o.order_id IN (
+        SELECT oi.order_id
+        FROM order_items oi
+        WHERE oi.product_id IN (
+            SELECT p.product_id
+            FROM products p
+            JOIN categories cat
+                ON p.category_id = cat.category_id
+            WHERE cat.category_name = 'Mobiles & Accessories'
+        )
+    )
+);
+
+
+
+-- =========================================================
+-- 12. INVENTORY SUBQUERIES
+-- =========================================================
+
+-- 49. Products whose available stock is below
+-- the average stock
+SELECT
+    p.product_id,
+    p.product_name,
+    i.quantity_available
+FROM products p
+JOIN inventory i
+    ON p.product_id = i.product_id
+WHERE i.quantity_available < (
+    SELECT AVG(quantity_available)
+    FROM inventory
+)
+ORDER BY i.quantity_available;
+
+
+-- 50. Products with stock below their reorder level
+SELECT
+    p.product_id,
+    p.product_name,
+    i.quantity_available,
+    p.reorder_level
+FROM products p
+JOIN inventory i
+    ON p.product_id = i.product_id
+WHERE i.quantity_available < p.reorder_level
+ORDER BY i.quantity_available;
+
+
+-- 51. Products that are out of stock in at least one warehouse
+SELECT DISTINCT
+    p.product_id,
+    p.product_name
+FROM products p
+WHERE EXISTS (
+    SELECT 1
+    FROM inventory i
+    WHERE i.product_id = p.product_id
+      AND i.quantity_available = 0
+);
+
+
+-- 52. Products having inventory in every warehouse
+SELECT
+    p.product_id,
+    p.product_name
+FROM products p
+WHERE (
+    SELECT COUNT(DISTINCT i.warehouse_id)
+    FROM inventory i
+    WHERE i.product_id = p.product_id
+) = (
+    SELECT COUNT(*)
+    FROM warehouses
+);
+
+
+
+-- =========================================================
+-- 13. CUSTOMER SUBQUERIES
+-- =========================================================
+
+-- 53. Customers whose latest order is above 10000
+SELECT
+    c.customer_id,
+    c.first_name,
+    c.last_name
+FROM customers c
+WHERE (
+    SELECT o.total_amount
+    FROM orders o
+    WHERE o.customer_id = c.customer_id
+    ORDER BY o.order_date DESC, o.order_id DESC
+    LIMIT 1
+) > 10000;
+
+
+-- 54. Customers with more orders than the average customer
+SELECT
+    c.customer_id,
+    c.first_name,
+    c.last_name
+FROM customers c
+WHERE (
+    SELECT COUNT(*)
+    FROM orders o
+    WHERE o.customer_id = c.customer_id
+) > (
+    SELECT AVG(order_count)
+    FROM (
+        SELECT
+            customer_id,
+            COUNT(*) AS order_count
+        FROM orders
+        GROUP BY customer_id
+    ) AS customer_orders
+);
+
+
+-- 55. Customers whose total discount exceeds
+-- the average customer discount
+SELECT
+    c.customer_id,
+    c.first_name,
+    c.last_name
+FROM customers c
+WHERE (
+    SELECT COALESCE(SUM(o.discount_amount), 0)
+    FROM orders o
+    WHERE o.customer_id = c.customer_id
+) > (
+    SELECT AVG(customer_discount)
+    FROM (
+        SELECT
+            customer_id,
+            SUM(discount_amount) AS customer_discount
+        FROM orders
+        GROUP BY customer_id
+    ) AS discount_summary
+);
+
+
+
+-- =========================================================
+-- 14. PAYMENT SUBQUERIES
+-- =========================================================
+
+-- 56. Orders having successful payment greater than
+-- average successful payment
+SELECT
+    o.order_id,
+    o.customer_id,
+    p.amount
+FROM orders o
+JOIN payments p
+    ON o.order_id = p.order_id
+WHERE p.payment_status = 'SUCCESS'
+  AND p.amount > (
+      SELECT AVG(amount)
+      FROM payments
+      WHERE payment_status = 'SUCCESS'
+  )
+ORDER BY p.amount DESC;
+
+
+-- 57. Customers who have at least one failed payment
+SELECT DISTINCT
+    c.customer_id,
+    c.first_name,
+    c.last_name
+FROM customers c
+WHERE EXISTS (
+    SELECT 1
+    FROM orders o
+    JOIN payments p
+        ON o.order_id = p.order_id
+    WHERE o.customer_id = c.customer_id
+      AND p.payment_status = 'FAILED'
+);
+
+
+
+-- =========================================================
+-- 15. RETURN SUBQUERIES
+-- =========================================================
+
+-- 58. Customers who have returned at least one order
+SELECT
+    c.customer_id,
+    c.first_name,
+    c.last_name
+FROM customers c
+WHERE EXISTS (
+    SELECT 1
+    FROM orders o
+    JOIN returns r
+        ON o.order_id = r.order_id
+    WHERE o.customer_id = c.customer_id
+);
+
+
+-- 59. Products that have been returned
+SELECT
+    p.product_id,
+    p.product_name
+FROM products p
+WHERE EXISTS (
+    SELECT 1
+    FROM return_items ri
+    WHERE ri.product_id = p.product_id
+);
+
+
+-- 60. Products whose returned quantity is greater than
+-- the average returned quantity
+SELECT
+    p.product_id,
+    p.product_name,
+    (
+        SELECT SUM(ri.quantity)
+        FROM return_items ri
+        WHERE ri.product_id = p.product_id
+    ) AS returned_quantity
+FROM products p
+WHERE (
+    SELECT COALESCE(SUM(ri.quantity), 0)
+    FROM return_items ri
+    WHERE ri.product_id = p.product_id
+) > (
+    SELECT AVG(returned_total)
+    FROM (
+        SELECT
+            product_id,
+            SUM(quantity) AS returned_total
+        FROM return_items
+        GROUP BY product_id
+    ) AS return_summary
+)
+ORDER BY returned_quantity DESC;
+
+
+
+-- =========================================================
+-- 16. INTERVIEW-STYLE SUBQUERY QUESTIONS
+-- =========================================================
+
+-- 61. Second highest product selling price
+SELECT MAX(selling_price) AS second_highest_price
+FROM products
+WHERE selling_price < (
+    SELECT MAX(selling_price)
+    FROM products
+);
+
+
+-- 62. Second highest order value
+SELECT MAX(total_amount) AS second_highest_order_value
+FROM orders
+WHERE total_amount < (
+    SELECT MAX(total_amount)
+    FROM orders
+);
+
+
+-- 63. Third highest product selling price
+SELECT MAX(selling_price) AS third_highest_price
+FROM products
+WHERE selling_price < (
+    SELECT MAX(selling_price)
+    FROM products
+    WHERE selling_price < (
+        SELECT MAX(selling_price)
+        FROM products
+    )
+);
+
+
+-- 64. Customers who placed the highest-value order
+SELECT
+    c.customer_id,
+    c.first_name,
+    c.last_name,
+    o.order_id,
+    o.total_amount
+FROM customers c
+JOIN orders o
+    ON c.customer_id = o.customer_id
+WHERE o.total_amount = (
+    SELECT MAX(total_amount)
+    FROM orders
+);
+
+
+-- 65. Products having the same price as another product
+SELECT
+    product_id,
+    product_name,
+    selling_price
+FROM products
+WHERE selling_price IN (
+    SELECT selling_price
+    FROM products
+    GROUP BY selling_price
+    HAVING COUNT(*) > 1
+)
+ORDER BY selling_price, product_name;
+
+
+-- 66. Customers with duplicate phone numbers
+SELECT
+    customer_id,
+    first_name,
+    last_name,
+    phone
+FROM customers
+WHERE phone IN (
+    SELECT phone
+    FROM customers
+    GROUP BY phone
+    HAVING COUNT(*) > 1
+);
+
+
+-- 67. Products whose selling price is greater than
+-- their supplier's average product price
+SELECT
+    p.product_id,
+    p.product_name,
+    p.supplier_id,
+    p.selling_price
+FROM products p
+WHERE p.selling_price > (
+    SELECT AVG(p2.selling_price)
+    FROM products p2
+    WHERE p2.supplier_id = p.supplier_id
+)
+ORDER BY p.supplier_id, p.selling_price DESC;
+
+
+-- 68. Customers whose number of orders is equal to
+-- the maximum number of orders by any customer
+SELECT
+    c.customer_id,
+    c.first_name,
+    c.last_name
+FROM customers c
+WHERE (
+    SELECT COUNT(*)
+    FROM orders o
+    WHERE o.customer_id = c.customer_id
+) = (
+    SELECT MAX(order_count)
+    FROM (
+        SELECT
+            customer_id,
+            COUNT(*) AS order_count
+        FROM orders
+        GROUP BY customer_id
+    ) AS customer_order_counts
+);
+
+
+-- 69. Product with the highest total quantity sold
+SELECT
+    p.product_id,
+    p.product_name,
+    (
+        SELECT SUM(oi.quantity)
+        FROM order_items oi
+        WHERE oi.product_id = p.product_id
+    ) AS total_quantity_sold
+FROM products p
+WHERE (
+    SELECT COALESCE(SUM(oi.quantity), 0)
+    FROM order_items oi
+    WHERE oi.product_id = p.product_id
+) = (
+    SELECT MAX(product_quantity)
+    FROM (
+        SELECT
+            product_id,
+            SUM(quantity) AS product_quantity
+        FROM order_items
+        GROUP BY product_id
+    ) AS product_sales
+);
+
+
+-- 70. Customer with the highest total spending
+SELECT
+    c.customer_id,
+    c.first_name,
+    c.last_name,
+    (
+        SELECT SUM(o.total_amount)
+        FROM orders o
+        WHERE o.customer_id = c.customer_id
+    ) AS total_spending
+FROM customers c
+WHERE (
+    SELECT COALESCE(SUM(o.total_amount), 0)
+    FROM orders o
+    WHERE o.customer_id = c.customer_id
+) = (
+    SELECT MAX(customer_total)
+    FROM (
+        SELECT
+            customer_id,
+            SUM(total_amount) AS customer_total
+        FROM orders
+        GROUP BY customer_id
+    ) AS customer_spending
+);

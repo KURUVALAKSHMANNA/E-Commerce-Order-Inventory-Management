@@ -1,0 +1,1136 @@
+USE ecommerce_management_db;
+
+-- =========================================================
+-- 10_CTE_Queries.sql
+-- Common Table Expressions (CTEs)
+-- Basic CTEs, Multiple CTEs, CTE + JOIN,
+-- CTE + Aggregation, Recursive CTEs
+-- =========================================================
+
+
+-- =========================================================
+-- 1. BASIC CTE
+-- =========================================================
+
+-- 1. Products above average selling price
+WITH average_price AS (
+    SELECT AVG(selling_price) AS avg_price
+    FROM products
+)
+SELECT
+    p.product_id,
+    p.product_name,
+    p.selling_price
+FROM products p
+CROSS JOIN average_price a
+WHERE p.selling_price > a.avg_price
+ORDER BY p.selling_price DESC;
+
+
+-- 2. Orders above average order value
+WITH average_order AS (
+    SELECT AVG(total_amount) AS avg_order_value
+    FROM orders
+)
+SELECT
+    order_id,
+    customer_id,
+    total_amount
+FROM orders
+WHERE total_amount > (
+    SELECT avg_order_value
+    FROM average_order
+)
+ORDER BY total_amount DESC;
+
+
+-- 3. Active products
+WITH active_products AS (
+    SELECT *
+    FROM products
+    WHERE status = 'ACTIVE'
+)
+SELECT
+    product_id,
+    product_name,
+    selling_price
+FROM active_products
+ORDER BY selling_price DESC;
+
+
+-- 4. Delivered orders
+WITH delivered_orders AS (
+    SELECT *
+    FROM orders
+    WHERE order_status = 'DELIVERED'
+)
+SELECT
+    order_id,
+    customer_id,
+    order_date,
+    total_amount
+FROM delivered_orders
+ORDER BY order_date DESC;
+
+
+
+-- =========================================================
+-- 2. CTE WITH AGGREGATION
+-- =========================================================
+
+-- 5. Customer-wise total spending
+WITH customer_sales AS (
+    SELECT
+        customer_id,
+        COUNT(*) AS order_count,
+        SUM(total_amount) AS total_spending
+    FROM orders
+    GROUP BY customer_id
+)
+SELECT
+    customer_id,
+    order_count,
+    total_spending
+FROM customer_sales
+ORDER BY total_spending DESC;
+
+
+-- 6. Product-wise sales
+WITH product_sales AS (
+    SELECT
+        product_id,
+        SUM(quantity) AS units_sold,
+        SUM(subtotal) AS total_sales
+    FROM order_items
+    GROUP BY product_id
+)
+SELECT
+    product_id,
+    units_sold,
+    total_sales
+FROM product_sales
+ORDER BY total_sales DESC;
+
+
+-- 7. Category-wise sales
+WITH category_sales AS (
+    SELECT
+        p.category_id,
+        SUM(oi.quantity) AS units_sold,
+        SUM(oi.subtotal) AS total_sales
+    FROM products p
+    JOIN order_items oi
+        ON p.product_id = oi.product_id
+    GROUP BY p.category_id
+)
+SELECT
+    category_id,
+    units_sold,
+    total_sales
+FROM category_sales
+ORDER BY total_sales DESC;
+
+
+-- 8. Warehouse inventory summary
+WITH warehouse_stock AS (
+    SELECT
+        warehouse_id,
+        SUM(quantity_available) AS available_stock,
+        SUM(quantity_reserved) AS reserved_stock
+    FROM inventory
+    GROUP BY warehouse_id
+)
+SELECT
+    warehouse_id,
+    available_stock,
+    reserved_stock
+FROM warehouse_stock
+ORDER BY available_stock DESC;
+
+
+
+-- =========================================================
+-- 3. CTE WITH JOIN
+-- =========================================================
+
+-- 9. Customer sales report
+WITH customer_sales AS (
+    SELECT
+        customer_id,
+        COUNT(*) AS order_count,
+        SUM(total_amount) AS total_spending,
+        AVG(total_amount) AS average_order_value
+    FROM orders
+    GROUP BY customer_id
+)
+SELECT
+    c.customer_id,
+    CONCAT(c.first_name, ' ', c.last_name) AS customer_name,
+    cs.order_count,
+    ROUND(cs.total_spending, 2) AS total_spending,
+    ROUND(cs.average_order_value, 2) AS average_order_value
+FROM customers c
+JOIN customer_sales cs
+    ON c.customer_id = cs.customer_id
+ORDER BY cs.total_spending DESC;
+
+
+-- 10. Product sales report
+WITH product_sales AS (
+    SELECT
+        product_id,
+        SUM(quantity) AS units_sold,
+        SUM(subtotal) AS total_sales
+    FROM order_items
+    GROUP BY product_id
+)
+SELECT
+    p.product_id,
+    p.product_name,
+    ps.units_sold,
+    ps.total_sales
+FROM products p
+JOIN product_sales ps
+    ON p.product_id = ps.product_id
+ORDER BY ps.total_sales DESC;
+
+
+-- 11. Category sales report
+WITH category_sales AS (
+    SELECT
+        p.category_id,
+        SUM(oi.quantity) AS units_sold,
+        SUM(oi.subtotal) AS total_sales
+    FROM products p
+    JOIN order_items oi
+        ON p.product_id = oi.product_id
+    GROUP BY p.category_id
+)
+SELECT
+    c.category_id,
+    c.category_name,
+    cs.units_sold,
+    cs.total_sales
+FROM categories c
+JOIN category_sales cs
+    ON c.category_id = cs.category_id
+ORDER BY cs.total_sales DESC;
+
+
+-- 12. Supplier performance report
+WITH supplier_sales AS (
+    SELECT
+        p.supplier_id,
+        SUM(oi.quantity) AS units_sold,
+        SUM(oi.subtotal) AS total_sales
+    FROM products p
+    JOIN order_items oi
+        ON p.product_id = oi.product_id
+    GROUP BY p.supplier_id
+)
+SELECT
+    s.supplier_id,
+    s.supplier_name,
+    ss.units_sold,
+    ss.total_sales
+FROM suppliers s
+JOIN supplier_sales ss
+    ON s.supplier_id = ss.supplier_id
+ORDER BY ss.total_sales DESC;
+
+
+
+-- =========================================================
+-- 4. MULTIPLE CTEs
+-- =========================================================
+
+-- 13. Customer sales + customer information
+WITH customer_sales AS (
+    SELECT
+        customer_id,
+        COUNT(*) AS order_count,
+        SUM(total_amount) AS total_spending
+    FROM orders
+    GROUP BY customer_id
+),
+customer_average AS (
+    SELECT
+        AVG(total_spending) AS average_customer_spending
+    FROM customer_sales
+)
+SELECT
+    c.customer_id,
+    CONCAT(c.first_name, ' ', c.last_name) AS customer_name,
+    cs.order_count,
+    cs.total_spending
+FROM customers c
+JOIN customer_sales cs
+    ON c.customer_id = cs.customer_id
+CROSS JOIN customer_average ca
+WHERE cs.total_spending > ca.average_customer_spending
+ORDER BY cs.total_spending DESC;
+
+
+-- 14. Product sales + average product sales
+WITH product_sales AS (
+    SELECT
+        product_id,
+        SUM(quantity) AS units_sold,
+        SUM(subtotal) AS total_sales
+    FROM order_items
+    GROUP BY product_id
+),
+average_sales AS (
+    SELECT
+        AVG(total_sales) AS avg_product_sales
+    FROM product_sales
+)
+SELECT
+    p.product_id,
+    p.product_name,
+    ps.units_sold,
+    ps.total_sales
+FROM products p
+JOIN product_sales ps
+    ON p.product_id = ps.product_id
+CROSS JOIN average_sales a
+WHERE ps.total_sales > a.avg_product_sales
+ORDER BY ps.total_sales DESC;
+
+
+-- 15. Category sales + average category sales
+WITH category_sales AS (
+    SELECT
+        p.category_id,
+        SUM(oi.subtotal) AS total_sales
+    FROM products p
+    JOIN order_items oi
+        ON p.product_id = oi.product_id
+    GROUP BY p.category_id
+),
+average_category_sales AS (
+    SELECT
+        AVG(total_sales) AS avg_sales
+    FROM category_sales
+)
+SELECT
+    c.category_name,
+    cs.total_sales
+FROM categories c
+JOIN category_sales cs
+    ON c.category_id = cs.category_id
+CROSS JOIN average_category_sales a
+WHERE cs.total_sales > a.avg_sales
+ORDER BY cs.total_sales DESC;
+
+
+
+-- =========================================================
+-- 5. CTE FOR INVENTORY ANALYSIS
+-- =========================================================
+
+-- 16. Products below reorder level
+WITH stock_status AS (
+    SELECT
+        p.product_id,
+        p.product_name,
+        p.reorder_level,
+        SUM(i.quantity_available) AS available_stock
+    FROM products p
+    JOIN inventory i
+        ON p.product_id = i.product_id
+    GROUP BY
+        p.product_id,
+        p.product_name,
+        p.reorder_level
+)
+SELECT
+    product_id,
+    product_name,
+    available_stock,
+    reorder_level
+FROM stock_status
+WHERE available_stock < reorder_level
+ORDER BY available_stock;
+
+
+-- 17. Out-of-stock products
+WITH product_stock AS (
+    SELECT
+        product_id,
+        SUM(quantity_available) AS total_stock
+    FROM inventory
+    GROUP BY product_id
+)
+SELECT
+    p.product_id,
+    p.product_name,
+    COALESCE(ps.total_stock, 0) AS total_stock
+FROM products p
+LEFT JOIN product_stock ps
+    ON p.product_id = ps.product_id
+WHERE COALESCE(ps.total_stock, 0) = 0;
+
+
+-- 18. Products with sufficient stock
+WITH product_stock AS (
+    SELECT
+        product_id,
+        SUM(quantity_available) AS total_stock
+    FROM inventory
+    GROUP BY product_id
+)
+SELECT
+    p.product_id,
+    p.product_name,
+    ps.total_stock
+FROM products p
+JOIN product_stock ps
+    ON p.product_id = ps.product_id
+WHERE ps.total_stock > p.reorder_level
+ORDER BY ps.total_stock DESC;
+
+
+-- 19. Warehouse stock report
+WITH warehouse_stock AS (
+    SELECT
+        warehouse_id,
+        SUM(quantity_available) AS available_stock,
+        SUM(quantity_reserved) AS reserved_stock,
+        COUNT(DISTINCT product_id) AS product_count
+    FROM inventory
+    GROUP BY warehouse_id
+)
+SELECT
+    w.warehouse_id,
+    w.warehouse_name,
+    ws.product_count,
+    ws.available_stock,
+    ws.reserved_stock
+FROM warehouses w
+JOIN warehouse_stock ws
+    ON w.warehouse_id = ws.warehouse_id
+ORDER BY ws.available_stock DESC;
+
+
+
+-- =========================================================
+-- 6. CTE FOR ORDER ANALYSIS
+-- =========================================================
+
+-- 20. High-value orders
+WITH order_classification AS (
+    SELECT
+        order_id,
+        customer_id,
+        total_amount,
+        CASE
+            WHEN total_amount >= 20000 THEN 'HIGH VALUE'
+            WHEN total_amount >= 10000 THEN 'MEDIUM VALUE'
+            ELSE 'LOW VALUE'
+        END AS order_category
+    FROM orders
+)
+SELECT *
+FROM order_classification
+WHERE order_category = 'HIGH VALUE'
+ORDER BY total_amount DESC;
+
+
+-- 21. Customer order classification
+WITH customer_orders AS (
+    SELECT
+        customer_id,
+        COUNT(*) AS order_count,
+        SUM(total_amount) AS total_spending
+    FROM orders
+    GROUP BY customer_id
+)
+SELECT
+    customer_id,
+    order_count,
+    total_spending,
+    CASE
+        WHEN total_spending >= 50000 THEN 'PREMIUM'
+        WHEN total_spending >= 25000 THEN 'REGULAR'
+        ELSE 'OCCASIONAL'
+    END AS customer_segment
+FROM customer_orders
+ORDER BY total_spending DESC;
+
+
+-- 22. Cancelled order analysis
+WITH cancelled_orders AS (
+    SELECT
+        customer_id,
+        COUNT(*) AS cancelled_count,
+        SUM(total_amount) AS cancelled_value
+    FROM orders
+    WHERE order_status = 'CANCELLED'
+    GROUP BY customer_id
+)
+SELECT
+    c.customer_id,
+    CONCAT(c.first_name, ' ', c.last_name) AS customer_name,
+    co.cancelled_count,
+    co.cancelled_value
+FROM customers c
+JOIN cancelled_orders co
+    ON c.customer_id = co.customer_id
+ORDER BY co.cancelled_value DESC;
+
+
+
+-- =========================================================
+-- 7. CTE FOR PAYMENT ANALYSIS
+-- =========================================================
+
+-- 23. Successful payment summary
+WITH successful_payments AS (
+    SELECT
+        payment_method,
+        COUNT(*) AS transaction_count,
+        SUM(amount) AS total_amount
+    FROM payments
+    WHERE payment_status = 'SUCCESS'
+    GROUP BY payment_method
+)
+SELECT
+    payment_method,
+    transaction_count,
+    total_amount
+FROM successful_payments
+ORDER BY total_amount DESC;
+
+
+-- 24. Failed payment analysis
+WITH failed_payments AS (
+    SELECT
+        order_id,
+        COUNT(*) AS failed_attempts
+    FROM payments
+    WHERE payment_status = 'FAILED'
+    GROUP BY order_id
+)
+SELECT
+    order_id,
+    failed_attempts
+FROM failed_payments
+ORDER BY failed_attempts DESC;
+
+
+-- 25. Payment success percentage
+WITH payment_summary AS (
+    SELECT
+        COUNT(*) AS total_payments,
+        SUM(payment_status = 'SUCCESS') AS successful_payments
+    FROM payments
+)
+SELECT
+    total_payments,
+    successful_payments,
+    ROUND(
+        successful_payments * 100.0 / NULLIF(total_payments, 0),
+        2
+    ) AS success_percentage
+FROM payment_summary;
+
+
+
+-- =========================================================
+-- 8. CTE FOR RETURN ANALYSIS
+-- =========================================================
+
+-- 26. Return summary by reason
+WITH return_summary AS (
+    SELECT
+        return_reason,
+        COUNT(*) AS return_count,
+        SUM(refund_amount) AS total_refund
+    FROM returns
+    GROUP BY return_reason
+)
+SELECT
+    return_reason,
+    return_count,
+    total_refund
+FROM return_summary
+ORDER BY return_count DESC;
+
+
+-- 27. Products with highest returned quantity
+WITH returned_products AS (
+    SELECT
+        product_id,
+        SUM(quantity) AS returned_quantity
+    FROM return_items
+    GROUP BY product_id
+)
+SELECT
+    p.product_id,
+    p.product_name,
+    rp.returned_quantity
+FROM products p
+JOIN returned_products rp
+    ON p.product_id = rp.product_id
+ORDER BY rp.returned_quantity DESC;
+
+
+
+-- =========================================================
+-- 9. CTE FOR REVIEW ANALYSIS
+-- =========================================================
+
+-- 28. Product rating summary
+WITH product_reviews AS (
+    SELECT
+        product_id,
+        COUNT(*) AS review_count,
+        AVG(rating) AS average_rating
+    FROM reviews
+    GROUP BY product_id
+)
+SELECT
+    p.product_id,
+    p.product_name,
+    pr.review_count,
+    ROUND(pr.average_rating, 2) AS average_rating
+FROM products p
+JOIN product_reviews pr
+    ON p.product_id = pr.product_id
+ORDER BY average_rating DESC;
+
+
+-- 29. Products with average rating below 3
+WITH product_reviews AS (
+    SELECT
+        product_id,
+        AVG(rating) AS average_rating,
+        COUNT(*) AS review_count
+    FROM reviews
+    GROUP BY product_id
+)
+SELECT
+    p.product_id,
+    p.product_name,
+    ROUND(pr.average_rating, 2) AS average_rating,
+    pr.review_count
+FROM products p
+JOIN product_reviews pr
+    ON p.product_id = pr.product_id
+WHERE pr.average_rating < 3
+ORDER BY pr.average_rating;
+
+
+
+-- =========================================================
+-- 10. CTE + HAVING
+-- =========================================================
+
+-- 30. Customers with more than 2 orders
+WITH customer_orders AS (
+    SELECT
+        customer_id,
+        COUNT(*) AS order_count,
+        SUM(total_amount) AS total_spending
+    FROM orders
+    GROUP BY customer_id
+)
+SELECT
+    customer_id,
+    order_count,
+    total_spending
+FROM customer_orders
+WHERE order_count > 2
+ORDER BY order_count DESC;
+
+
+-- 31. Products selling more than 10 units
+WITH product_sales AS (
+    SELECT
+        product_id,
+        SUM(quantity) AS units_sold
+    FROM order_items
+    GROUP BY product_id
+)
+SELECT
+    product_id,
+    units_sold
+FROM product_sales
+WHERE units_sold > 10
+ORDER BY units_sold DESC;
+
+
+-- 32. Categories generating more than 50000 sales
+WITH category_sales AS (
+    SELECT
+        p.category_id,
+        SUM(oi.subtotal) AS total_sales
+    FROM products p
+    JOIN order_items oi
+        ON p.product_id = oi.product_id
+    GROUP BY p.category_id
+)
+SELECT
+    c.category_name,
+    cs.total_sales
+FROM categories c
+JOIN category_sales cs
+    ON c.category_id = cs.category_id
+WHERE cs.total_sales > 50000
+ORDER BY cs.total_sales DESC;
+
+
+
+-- =========================================================
+-- 11. MULTI-LEVEL CTE
+-- =========================================================
+
+-- 33. Top customers based on spending
+WITH customer_sales AS (
+    SELECT
+        customer_id,
+        SUM(total_amount) AS total_spending
+    FROM orders
+    GROUP BY customer_id
+),
+top_customer_value AS (
+    SELECT
+        MAX(total_spending) AS highest_spending
+    FROM customer_sales
+)
+SELECT
+    c.customer_id,
+    CONCAT(c.first_name, ' ', c.last_name) AS customer_name,
+    cs.total_spending
+FROM customers c
+JOIN customer_sales cs
+    ON c.customer_id = cs.customer_id
+CROSS JOIN top_customer_value tv
+WHERE cs.total_spending = tv.highest_spending;
+
+
+-- 34. Best-selling product
+WITH product_sales AS (
+    SELECT
+        product_id,
+        SUM(quantity) AS units_sold
+    FROM order_items
+    GROUP BY product_id
+),
+top_product AS (
+    SELECT
+        MAX(units_sold) AS highest_units_sold
+    FROM product_sales
+)
+SELECT
+    p.product_id,
+    p.product_name,
+    ps.units_sold
+FROM products p
+JOIN product_sales ps
+    ON p.product_id = ps.product_id
+CROSS JOIN top_product tp
+WHERE ps.units_sold = tp.highest_units_sold;
+
+
+
+-- =========================================================
+-- 12. CTE FOR MONTHLY SALES
+-- =========================================================
+
+-- 35. Monthly sales
+WITH monthly_sales AS (
+    SELECT
+        YEAR(order_date) AS order_year,
+        MONTH(order_date) AS order_month,
+        COUNT(*) AS order_count,
+        SUM(total_amount) AS total_sales
+    FROM orders
+    GROUP BY
+        YEAR(order_date),
+        MONTH(order_date)
+)
+SELECT
+    order_year,
+    order_month,
+    order_count,
+    total_sales
+FROM monthly_sales
+ORDER BY order_year, order_month;
+
+
+-- 36. Monthly average order value
+WITH monthly_sales AS (
+    SELECT
+        YEAR(order_date) AS order_year,
+        MONTH(order_date) AS order_month,
+        AVG(total_amount) AS average_order_value
+    FROM orders
+    GROUP BY
+        YEAR(order_date),
+        MONTH(order_date)
+)
+SELECT
+    order_year,
+    order_month,
+    ROUND(average_order_value, 2) AS average_order_value
+FROM monthly_sales
+ORDER BY order_year, order_month;
+
+
+
+-- =========================================================
+-- 13. CTE FOR CUSTOMER + PRODUCT ANALYSIS
+-- =========================================================
+
+-- 37. Customer's purchased product quantity
+WITH customer_product_sales AS (
+    SELECT
+        o.customer_id,
+        oi.product_id,
+        SUM(oi.quantity) AS total_quantity
+    FROM orders o
+    JOIN order_items oi
+        ON o.order_id = oi.order_id
+    GROUP BY
+        o.customer_id,
+        oi.product_id
+)
+SELECT
+    c.customer_id,
+    CONCAT(c.first_name, ' ', c.last_name) AS customer_name,
+    p.product_name,
+    cps.total_quantity
+FROM customer_product_sales cps
+JOIN customers c
+    ON cps.customer_id = c.customer_id
+JOIN products p
+    ON cps.product_id = p.product_id
+ORDER BY cps.total_quantity DESC;
+
+
+-- 38. Customer spending by category
+WITH customer_category_sales AS (
+    SELECT
+        o.customer_id,
+        p.category_id,
+        SUM(oi.subtotal) AS total_spending
+    FROM orders o
+    JOIN order_items oi
+        ON o.order_id = oi.order_id
+    JOIN products p
+        ON oi.product_id = p.product_id
+    GROUP BY
+        o.customer_id,
+        p.category_id
+)
+SELECT
+    c.customer_id,
+    CONCAT(c.first_name, ' ', c.last_name) AS customer_name,
+    cat.category_name,
+    ccs.total_spending
+FROM customer_category_sales ccs
+JOIN customers c
+    ON ccs.customer_id = c.customer_id
+JOIN categories cat
+    ON ccs.category_id = cat.category_id
+ORDER BY ccs.total_spending DESC;
+
+
+
+-- =========================================================
+-- 14. CTE FOR PRODUCT PROFIT
+-- =========================================================
+
+-- 39. Product profit analysis
+WITH product_profit AS (
+    SELECT
+        product_id,
+        product_name,
+        cost_price,
+        selling_price,
+        (selling_price - cost_price) AS profit_per_unit
+    FROM products
+)
+SELECT
+    product_id,
+    product_name,
+    cost_price,
+    selling_price,
+    profit_per_unit
+FROM product_profit
+ORDER BY profit_per_unit DESC;
+
+
+-- 40. Products with above-average profit
+WITH product_profit AS (
+    SELECT
+        product_id,
+        product_name,
+        (selling_price - cost_price) AS profit_per_unit
+    FROM products
+),
+average_profit AS (
+    SELECT
+        AVG(profit_per_unit) AS avg_profit
+    FROM product_profit
+)
+SELECT
+    pp.product_id,
+    pp.product_name,
+    pp.profit_per_unit
+FROM product_profit pp
+CROSS JOIN average_profit ap
+WHERE pp.profit_per_unit > ap.avg_profit
+ORDER BY pp.profit_per_unit DESC;
+
+
+
+-- =========================================================
+-- 15. RECURSIVE CTE
+-- =========================================================
+
+-- 41. Generate numbers from 1 to 10
+WITH RECURSIVE numbers AS (
+    SELECT 1 AS number
+
+    UNION ALL
+
+    SELECT number + 1
+    FROM numbers
+    WHERE number < 10
+)
+SELECT number
+FROM numbers;
+
+
+-- 42. Generate dates for the next 7 days
+WITH RECURSIVE date_series AS (
+    SELECT CURDATE() AS report_date
+
+    UNION ALL
+
+    SELECT DATE_ADD(report_date, INTERVAL 1 DAY)
+    FROM date_series
+    WHERE report_date < DATE_ADD(CURDATE(), INTERVAL 6 DAY)
+)
+SELECT report_date
+FROM date_series;
+
+
+-- 43. Generate monthly periods
+WITH RECURSIVE months AS (
+    SELECT
+        DATE_FORMAT(MIN(order_date), '%Y-%m-01') AS month_start
+    FROM orders
+
+    UNION ALL
+
+    SELECT
+        DATE_ADD(month_start, INTERVAL 1 MONTH)
+    FROM months
+    WHERE month_start < (
+        SELECT DATE_FORMAT(MAX(order_date), '%Y-%m-01')
+        FROM orders
+    )
+)
+SELECT
+    DATE_FORMAT(month_start, '%Y-%m') AS sales_month
+FROM months;
+
+
+
+-- =========================================================
+-- 16. REAL E-COMMERCE BUSINESS REPORTS
+-- =========================================================
+
+-- 44. Customer lifetime value report
+WITH customer_value AS (
+    SELECT
+        customer_id,
+        COUNT(order_id) AS total_orders,
+        SUM(total_amount) AS lifetime_value,
+        AVG(total_amount) AS average_order_value
+    FROM orders
+    GROUP BY customer_id
+)
+SELECT
+    c.customer_id,
+    CONCAT(c.first_name, ' ', c.last_name) AS customer_name,
+    cv.total_orders,
+    ROUND(cv.lifetime_value, 2) AS lifetime_value,
+    ROUND(cv.average_order_value, 2) AS average_order_value
+FROM customers c
+JOIN customer_value cv
+    ON c.customer_id = cv.customer_id
+ORDER BY cv.lifetime_value DESC;
+
+
+-- 45. Product performance report
+WITH product_performance AS (
+    SELECT
+        product_id,
+        SUM(quantity) AS units_sold,
+        SUM(subtotal) AS sales_value,
+        COUNT(DISTINCT order_id) AS order_count
+    FROM order_items
+    GROUP BY product_id
+)
+SELECT
+    p.product_id,
+    p.product_name,
+    pp.units_sold,
+    pp.order_count,
+    pp.sales_value
+FROM products p
+JOIN product_performance pp
+    ON p.product_id = pp.product_id
+ORDER BY pp.sales_value DESC;
+
+
+-- 46. Inventory risk report
+WITH inventory_summary AS (
+    SELECT
+        product_id,
+        SUM(quantity_available) AS total_stock,
+        SUM(quantity_reserved) AS reserved_stock
+    FROM inventory
+    GROUP BY product_id
+)
+SELECT
+    p.product_id,
+    p.product_name,
+    p.reorder_level,
+    COALESCE(isum.total_stock, 0) AS total_stock,
+    COALESCE(isum.reserved_stock, 0) AS reserved_stock,
+    CASE
+        WHEN COALESCE(isum.total_stock, 0) = 0
+            THEN 'OUT OF STOCK'
+        WHEN isum.total_stock < p.reorder_level
+            THEN 'REORDER REQUIRED'
+        ELSE 'NORMAL'
+    END AS stock_status
+FROM products p
+LEFT JOIN inventory_summary isum
+    ON p.product_id = isum.product_id
+ORDER BY total_stock;
+
+
+-- 47. Customer purchase frequency
+WITH customer_orders AS (
+    SELECT
+        customer_id,
+        COUNT(*) AS order_count,
+        MIN(order_date) AS first_order_date,
+        MAX(order_date) AS latest_order_date
+    FROM orders
+    GROUP BY customer_id
+)
+SELECT
+    c.customer_id,
+    CONCAT(c.first_name, ' ', c.last_name) AS customer_name,
+    co.order_count,
+    co.first_order_date,
+    co.latest_order_date,
+    DATEDIFF(
+        co.latest_order_date,
+        co.first_order_date
+    ) AS customer_period_days
+FROM customers c
+JOIN customer_orders co
+    ON c.customer_id = co.customer_id
+ORDER BY co.order_count DESC;
+
+
+-- 48. Sales vs returned amount
+WITH sales AS (
+    SELECT
+        SUM(total_amount) AS total_sales
+    FROM orders
+    WHERE order_status = 'DELIVERED'
+),
+refunds AS (
+    SELECT
+        COALESCE(SUM(refund_amount), 0) AS total_refunds
+    FROM returns
+)
+SELECT
+    sales.total_sales,
+    refunds.total_refunds,
+    sales.total_sales - refunds.total_refunds AS net_sales
+FROM sales
+CROSS JOIN refunds;
+
+
+-- 49. Payment collection vs order value
+WITH order_totals AS (
+    SELECT
+        SUM(total_amount) AS order_value
+    FROM orders
+),
+successful_payments AS (
+    SELECT
+        SUM(amount) AS collected_amount
+    FROM payments
+    WHERE payment_status = 'SUCCESS'
+)
+SELECT
+    ot.order_value,
+    sp.collected_amount,
+    ot.order_value - sp.collected_amount AS difference
+FROM order_totals ot
+CROSS JOIN successful_payments sp;
+
+
+-- 50. Overall e-commerce dashboard summary
+WITH
+order_summary AS (
+    SELECT
+        COUNT(*) AS total_orders,
+        SUM(total_amount) AS total_order_value,
+        AVG(total_amount) AS average_order_value
+    FROM orders
+),
+customer_summary AS (
+    SELECT
+        COUNT(*) AS total_customers
+    FROM customers
+),
+product_summary AS (
+    SELECT
+        COUNT(*) AS total_products
+    FROM products
+),
+inventory_summary AS (
+    SELECT
+        SUM(quantity_available) AS total_stock
+    FROM inventory
+),
+payment_summary AS (
+    SELECT
+        SUM(
+            CASE
+                WHEN payment_status = 'SUCCESS'
+                THEN amount
+                ELSE 0
+            END
+        ) AS successful_payment_amount
+    FROM payments
+)
+SELECT
+    cs.total_customers,
+    ps.total_products,
+    os.total_orders,
+    ROUND(os.total_order_value, 2) AS total_order_value,
+    ROUND(os.average_order_value, 2) AS average_order_value,
+    isum.total_stock,
+    ROUND(
+        pms.successful_payment_amount,
+        2
+    ) AS successful_payment_amount
+FROM customer_summary cs
+CROSS JOIN product_summary ps
+CROSS JOIN order_summary os
+CROSS JOIN inventory_summary isum
+CROSS JOIN payment_summary pms;

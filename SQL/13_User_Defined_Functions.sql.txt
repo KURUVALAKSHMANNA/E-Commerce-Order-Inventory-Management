@@ -1,0 +1,1248 @@
+USE ecommerce_management_db;
+
+-- =========================================================
+-- 13_User_Defined_Functions.sql
+-- MySQL User-Defined Functions
+-- E-Commerce Business Logic Functions
+-- =========================================================
+
+
+-- =========================================================
+-- 1. CALCULATE PROFIT
+-- =========================================================
+
+DROP FUNCTION IF EXISTS calculate_profit;
+
+DELIMITER $$
+
+CREATE FUNCTION calculate_profit(
+    p_cost_price DECIMAL(12,2),
+    p_selling_price DECIMAL(12,2)
+)
+RETURNS DECIMAL(12,2)
+DETERMINISTIC
+BEGIN
+    RETURN ROUND(
+        p_selling_price - p_cost_price,
+        2
+    );
+END $$
+
+DELIMITER ;
+
+
+-- Test
+SELECT calculate_profit(1000, 1250) AS profit;
+
+
+-- =========================================================
+-- 2. CALCULATE PROFIT MARGIN
+-- =========================================================
+
+DROP FUNCTION IF EXISTS calculate_profit_margin;
+
+DELIMITER $$
+
+CREATE FUNCTION calculate_profit_margin(
+    p_cost_price DECIMAL(12,2),
+    p_selling_price DECIMAL(12,2)
+)
+RETURNS DECIMAL(10,2)
+DETERMINISTIC
+BEGIN
+    RETURN ROUND(
+        (
+            (p_selling_price - p_cost_price)
+            / NULLIF(p_cost_price, 0)
+        ) * 100,
+        2
+    );
+END $$
+
+DELIMITER ;
+
+
+-- Test
+SELECT calculate_profit_margin(1000, 1250)
+AS profit_margin_percentage;
+
+
+-- =========================================================
+-- 3. CALCULATE DISCOUNT AMOUNT
+-- =========================================================
+
+DROP FUNCTION IF EXISTS calculate_discount;
+
+DELIMITER $$
+
+CREATE FUNCTION calculate_discount(
+    p_amount DECIMAL(12,2),
+    p_discount_percent DECIMAL(5,2)
+)
+RETURNS DECIMAL(12,2)
+DETERMINISTIC
+BEGIN
+    RETURN ROUND(
+        p_amount * p_discount_percent / 100,
+        2
+    );
+END $$
+
+DELIMITER ;
+
+
+-- Test
+SELECT calculate_discount(10000, 15)
+AS discount_amount;
+
+
+-- =========================================================
+-- 4. CALCULATE PRICE AFTER DISCOUNT
+-- =========================================================
+
+DROP FUNCTION IF EXISTS calculate_discounted_price;
+
+DELIMITER $$
+
+CREATE FUNCTION calculate_discounted_price(
+    p_amount DECIMAL(12,2),
+    p_discount_percent DECIMAL(5,2)
+)
+RETURNS DECIMAL(12,2)
+DETERMINISTIC
+BEGIN
+    RETURN ROUND(
+        p_amount -
+        (p_amount * p_discount_percent / 100),
+        2
+    );
+END $$
+
+DELIMITER ;
+
+
+-- Test
+SELECT calculate_discounted_price(10000, 15)
+AS discounted_price;
+
+
+-- =========================================================
+-- 5. CALCULATE TAX
+-- =========================================================
+
+DROP FUNCTION IF EXISTS calculate_tax;
+
+DELIMITER $$
+
+CREATE FUNCTION calculate_tax(
+    p_amount DECIMAL(12,2),
+    p_tax_percent DECIMAL(5,2)
+)
+RETURNS DECIMAL(12,2)
+DETERMINISTIC
+BEGIN
+    RETURN ROUND(
+        p_amount * p_tax_percent / 100,
+        2
+    );
+END $$
+
+DELIMITER ;
+
+
+-- Test
+SELECT calculate_tax(10000, 18)
+AS tax_amount;
+
+
+-- =========================================================
+-- 6. CALCULATE FINAL PRICE WITH TAX
+-- =========================================================
+
+DROP FUNCTION IF EXISTS calculate_price_with_tax;
+
+DELIMITER $$
+
+CREATE FUNCTION calculate_price_with_tax(
+    p_amount DECIMAL(12,2),
+    p_tax_percent DECIMAL(5,2)
+)
+RETURNS DECIMAL(12,2)
+DETERMINISTIC
+BEGIN
+    RETURN ROUND(
+        p_amount +
+        (p_amount * p_tax_percent / 100),
+        2
+    );
+END $$
+
+DELIMITER ;
+
+
+-- Test
+SELECT calculate_price_with_tax(10000, 18)
+AS final_price;
+
+
+-- =========================================================
+-- 7. CALCULATE ORDER TOTAL
+-- =========================================================
+
+DROP FUNCTION IF EXISTS calculate_order_total;
+
+DELIMITER $$
+
+CREATE FUNCTION calculate_order_total(
+    p_subtotal DECIMAL(12,2),
+    p_discount DECIMAL(12,2),
+    p_tax DECIMAL(12,2),
+    p_shipping DECIMAL(12,2)
+)
+RETURNS DECIMAL(12,2)
+DETERMINISTIC
+BEGIN
+    RETURN ROUND(
+        p_subtotal
+        - p_discount
+        + p_tax
+        + p_shipping,
+        2
+    );
+END $$
+
+DELIMITER ;
+
+
+-- Test
+SELECT calculate_order_total(
+    15000,
+    1000,
+    2520,
+    100
+) AS order_total;
+
+
+-- =========================================================
+-- 8. CALCULATE ORDER ITEM SUBTOTAL
+-- =========================================================
+
+DROP FUNCTION IF EXISTS calculate_item_subtotal;
+
+DELIMITER $$
+
+CREATE FUNCTION calculate_item_subtotal(
+    p_quantity INT,
+    p_unit_price DECIMAL(12,2),
+    p_discount DECIMAL(12,2)
+)
+RETURNS DECIMAL(12,2)
+DETERMINISTIC
+BEGIN
+    RETURN ROUND(
+        (p_quantity * p_unit_price)
+        - p_discount,
+        2
+    );
+END $$
+
+DELIMITER ;
+
+
+-- Test
+SELECT calculate_item_subtotal(
+    3,
+    2500,
+    500
+) AS item_subtotal;
+
+
+-- =========================================================
+-- 9. CALCULATE INVENTORY VALUE
+-- =========================================================
+
+DROP FUNCTION IF EXISTS calculate_inventory_value;
+
+DELIMITER $$
+
+CREATE FUNCTION calculate_inventory_value(
+    p_quantity INT,
+    p_unit_cost DECIMAL(12,2)
+)
+RETURNS DECIMAL(14,2)
+DETERMINISTIC
+BEGIN
+    RETURN ROUND(
+        p_quantity * p_unit_cost,
+        2
+    );
+END $$
+
+DELIMITER ;
+
+
+-- Test
+SELECT calculate_inventory_value(
+    100,
+    2500
+) AS inventory_value;
+
+
+-- =========================================================
+-- 10. CALCULATE POTENTIAL SALES VALUE
+-- =========================================================
+
+DROP FUNCTION IF EXISTS calculate_sales_value;
+
+DELIMITER $$
+
+CREATE FUNCTION calculate_sales_value(
+    p_quantity INT,
+    p_selling_price DECIMAL(12,2)
+)
+RETURNS DECIMAL(14,2)
+DETERMINISTIC
+BEGIN
+    RETURN ROUND(
+        p_quantity * p_selling_price,
+        2
+    );
+END $$
+
+DELIMITER ;
+
+
+-- Test
+SELECT calculate_sales_value(
+    50,
+    3000
+) AS potential_sales_value;
+
+
+-- =========================================================
+-- 11. CALCULATE POTENTIAL INVENTORY PROFIT
+-- =========================================================
+
+DROP FUNCTION IF EXISTS calculate_inventory_profit;
+
+DELIMITER $$
+
+CREATE FUNCTION calculate_inventory_profit(
+    p_quantity INT,
+    p_cost_price DECIMAL(12,2),
+    p_selling_price DECIMAL(12,2)
+)
+RETURNS DECIMAL(14,2)
+DETERMINISTIC
+BEGIN
+    RETURN ROUND(
+        p_quantity *
+        (p_selling_price - p_cost_price),
+        2
+    );
+END $$
+
+DELIMITER ;
+
+
+-- Test
+SELECT calculate_inventory_profit(
+    100,
+    2000,
+    2500
+) AS potential_profit;
+
+
+-- =========================================================
+-- 12. CALCULATE DELIVERY DAYS
+-- =========================================================
+
+DROP FUNCTION IF EXISTS calculate_delivery_days;
+
+DELIMITER $$
+
+CREATE FUNCTION calculate_delivery_days(
+    p_shipped_date DATETIME,
+    p_delivered_date DATETIME
+)
+RETURNS INT
+DETERMINISTIC
+BEGIN
+    IF p_shipped_date IS NULL
+       OR p_delivered_date IS NULL THEN
+        RETURN NULL;
+    END IF;
+
+    RETURN DATEDIFF(
+        p_delivered_date,
+        p_shipped_date
+    );
+END $$
+
+DELIMITER ;
+
+
+-- Test
+SELECT calculate_delivery_days(
+    '2026-09-01',
+    '2026-09-05'
+) AS delivery_days;
+
+
+-- =========================================================
+-- 13. CUSTOMER ORDER AGE
+-- =========================================================
+
+DROP FUNCTION IF EXISTS calculate_order_age;
+
+DELIMITER $$
+
+CREATE FUNCTION calculate_order_age(
+    p_order_date DATETIME
+)
+RETURNS INT
+DETERMINISTIC
+BEGIN
+    IF p_order_date IS NULL THEN
+        RETURN NULL;
+    END IF;
+
+    RETURN DATEDIFF(
+        CURDATE(),
+        DATE(p_order_date)
+    );
+END $$
+
+DELIMITER ;
+
+
+-- Test
+SELECT calculate_order_age(
+    '2026-09-01'
+) AS order_age_days;
+
+
+-- =========================================================
+-- 14. STOCK STATUS
+-- =========================================================
+
+DROP FUNCTION IF EXISTS get_stock_status;
+
+DELIMITER $$
+
+CREATE FUNCTION get_stock_status(
+    p_available_quantity INT,
+    p_reorder_level INT
+)
+RETURNS VARCHAR(30)
+DETERMINISTIC
+BEGIN
+
+    IF p_available_quantity IS NULL THEN
+        RETURN 'UNKNOWN';
+
+    ELSEIF p_available_quantity = 0 THEN
+        RETURN 'OUT OF STOCK';
+
+    ELSEIF p_available_quantity < p_reorder_level THEN
+        RETURN 'REORDER REQUIRED';
+
+    ELSE
+        RETURN 'SUFFICIENT STOCK';
+    END IF;
+
+END $$
+
+DELIMITER ;
+
+
+-- Test
+SELECT get_stock_status(5, 10)
+AS stock_status;
+
+
+-- =========================================================
+-- 15. ORDER VALUE CATEGORY
+-- =========================================================
+
+DROP FUNCTION IF EXISTS get_order_category;
+
+DELIMITER $$
+
+CREATE FUNCTION get_order_category(
+    p_order_amount DECIMAL(12,2)
+)
+RETURNS VARCHAR(30)
+DETERMINISTIC
+BEGIN
+
+    IF p_order_amount IS NULL THEN
+        RETURN 'UNKNOWN';
+
+    ELSEIF p_order_amount >= 50000 THEN
+        RETURN 'PREMIUM';
+
+    ELSEIF p_order_amount >= 20000 THEN
+        RETURN 'HIGH VALUE';
+
+    ELSEIF p_order_amount >= 10000 THEN
+        RETURN 'MEDIUM VALUE';
+
+    ELSE
+        RETURN 'LOW VALUE';
+    END IF;
+
+END $$
+
+DELIMITER ;
+
+
+-- Test
+SELECT get_order_category(27500)
+AS order_category;
+
+
+-- =========================================================
+-- 16. PRODUCT PRICE CATEGORY
+-- =========================================================
+
+DROP FUNCTION IF EXISTS get_price_category;
+
+DELIMITER $$
+
+CREATE FUNCTION get_price_category(
+    p_selling_price DECIMAL(12,2)
+)
+RETURNS VARCHAR(30)
+DETERMINISTIC
+BEGIN
+
+    IF p_selling_price IS NULL THEN
+        RETURN 'UNKNOWN';
+
+    ELSEIF p_selling_price >= 50000 THEN
+        RETURN 'PREMIUM';
+
+    ELSEIF p_selling_price >= 20000 THEN
+        RETURN 'HIGH';
+
+    ELSEIF p_selling_price >= 5000 THEN
+        RETURN 'MEDIUM';
+
+    ELSE
+        RETURN 'LOW';
+    END IF;
+
+END $$
+
+DELIMITER ;
+
+
+-- Test
+SELECT get_price_category(35000)
+AS price_category;
+
+
+-- =========================================================
+-- 17. CUSTOMER SEGMENT
+-- =========================================================
+
+DROP FUNCTION IF EXISTS get_customer_segment;
+
+DELIMITER $$
+
+CREATE FUNCTION get_customer_segment(
+    p_total_spending DECIMAL(14,2)
+)
+RETURNS VARCHAR(30)
+DETERMINISTIC
+BEGIN
+
+    IF p_total_spending IS NULL
+       OR p_total_spending = 0 THEN
+        RETURN 'NO PURCHASE';
+
+    ELSEIF p_total_spending >= 100000 THEN
+        RETURN 'PLATINUM';
+
+    ELSEIF p_total_spending >= 50000 THEN
+        RETURN 'GOLD';
+
+    ELSEIF p_total_spending >= 25000 THEN
+        RETURN 'SILVER';
+
+    ELSE
+        RETURN 'REGULAR';
+    END IF;
+
+END $$
+
+DELIMITER ;
+
+
+-- Test
+SELECT get_customer_segment(75000)
+AS customer_segment;
+
+
+-- =========================================================
+-- 18. PAYMENT STATUS DESCRIPTION
+-- =========================================================
+
+DROP FUNCTION IF EXISTS get_payment_description;
+
+DELIMITER $$
+
+CREATE FUNCTION get_payment_description(
+    p_payment_status VARCHAR(30)
+)
+RETURNS VARCHAR(40)
+DETERMINISTIC
+BEGIN
+
+    RETURN CASE UPPER(p_payment_status)
+
+        WHEN 'SUCCESS'
+            THEN 'PAYMENT COMPLETED'
+
+        WHEN 'FAILED'
+            THEN 'PAYMENT FAILED'
+
+        WHEN 'PENDING'
+            THEN 'PAYMENT PENDING'
+
+        WHEN 'REFUNDED'
+            THEN 'PAYMENT REFUNDED'
+
+        ELSE 'UNKNOWN STATUS'
+
+    END;
+
+END $$
+
+DELIMITER ;
+
+
+-- Test
+SELECT get_payment_description('SUCCESS')
+AS payment_description;
+
+
+-- =========================================================
+-- 19. RETURN STATUS DESCRIPTION
+-- =========================================================
+
+DROP FUNCTION IF EXISTS get_return_description;
+
+DELIMITER $$
+
+CREATE FUNCTION get_return_description(
+    p_return_status VARCHAR(30)
+)
+RETURNS VARCHAR(40)
+DETERMINISTIC
+BEGIN
+
+    RETURN CASE UPPER(p_return_status)
+
+        WHEN 'REQUESTED'
+            THEN 'RETURN REQUESTED'
+
+        WHEN 'APPROVED'
+            THEN 'RETURN APPROVED'
+
+        WHEN 'RECEIVED'
+            THEN 'PRODUCT RECEIVED'
+
+        WHEN 'REFUNDED'
+            THEN 'REFUND COMPLETED'
+
+        WHEN 'REJECTED'
+            THEN 'RETURN REJECTED'
+
+        ELSE 'UNKNOWN STATUS'
+
+    END;
+
+END $$
+
+DELIMITER ;
+
+
+-- Test
+SELECT get_return_description('REFUNDED')
+AS return_description;
+
+
+-- =========================================================
+-- 20. CUSTOMER FULL NAME
+-- =========================================================
+
+DROP FUNCTION IF EXISTS get_customer_full_name;
+
+DELIMITER $$
+
+CREATE FUNCTION get_customer_full_name(
+    p_first_name VARCHAR(100),
+    p_last_name VARCHAR(100)
+)
+RETURNS VARCHAR(250)
+DETERMINISTIC
+BEGIN
+    RETURN TRIM(
+        CONCAT(
+            COALESCE(p_first_name, ''),
+            ' ',
+            COALESCE(p_last_name, '')
+        )
+    );
+END $$
+
+DELIMITER ;
+
+
+-- Test
+SELECT get_customer_full_name(
+    'Lakshmanna',
+    'Kuruva'
+) AS full_name;
+
+
+-- =========================================================
+-- 21. EMAIL DOMAIN
+-- =========================================================
+
+DROP FUNCTION IF EXISTS get_email_domain;
+
+DELIMITER $$
+
+CREATE FUNCTION get_email_domain(
+    p_email VARCHAR(255)
+)
+RETURNS VARCHAR(100)
+DETERMINISTIC
+BEGIN
+
+    IF p_email IS NULL
+       OR LOCATE('@', p_email) = 0 THEN
+        RETURN NULL;
+    END IF;
+
+    RETURN SUBSTRING_INDEX(
+        LOWER(TRIM(p_email)),
+        '@',
+        -1
+    );
+
+END $$
+
+DELIMITER ;
+
+
+-- Test
+SELECT get_email_domain(
+    'customer@gmail.com'
+) AS email_domain;
+
+
+-- =========================================================
+-- 22. EMAIL VALIDATION
+-- =========================================================
+
+DROP FUNCTION IF EXISTS is_valid_email;
+
+DELIMITER $$
+
+CREATE FUNCTION is_valid_email(
+    p_email VARCHAR(255)
+)
+RETURNS VARCHAR(20)
+DETERMINISTIC
+BEGIN
+
+    IF p_email IS NULL
+       OR TRIM(p_email) = '' THEN
+        RETURN 'INVALID';
+
+    ELSEIF p_email LIKE '%@%.%' THEN
+        RETURN 'VALID';
+
+    ELSE
+        RETURN 'INVALID';
+    END IF;
+
+END $$
+
+DELIMITER ;
+
+
+-- Test
+SELECT is_valid_email(
+    'customer@gmail.com'
+) AS email_status;
+
+
+-- =========================================================
+-- 23. COUPON DISCOUNT CALCULATION
+-- =========================================================
+
+DROP FUNCTION IF EXISTS calculate_coupon_discount;
+
+DELIMITER $$
+
+CREATE FUNCTION calculate_coupon_discount(
+    p_order_amount DECIMAL(12,2),
+    p_discount_type VARCHAR(20),
+    p_discount_value DECIMAL(12,2),
+    p_maximum_discount DECIMAL(12,2)
+)
+RETURNS DECIMAL(12,2)
+DETERMINISTIC
+BEGIN
+
+    DECLARE v_discount DECIMAL(12,2);
+
+    IF p_order_amount IS NULL
+       OR p_order_amount <= 0 THEN
+        RETURN 0;
+    END IF;
+
+    IF UPPER(p_discount_type) = 'PERCENTAGE' THEN
+
+        SET v_discount =
+            p_order_amount *
+            p_discount_value / 100;
+
+    ELSEIF UPPER(p_discount_type) = 'FIXED' THEN
+
+        SET v_discount =
+            p_discount_value;
+
+    ELSE
+
+        SET v_discount = 0;
+
+    END IF;
+
+    IF p_maximum_discount IS NOT NULL
+       AND v_discount > p_maximum_discount THEN
+
+        SET v_discount = p_maximum_discount;
+
+    END IF;
+
+    IF v_discount > p_order_amount THEN
+        SET v_discount = p_order_amount;
+    END IF;
+
+    RETURN ROUND(v_discount, 2);
+
+END $$
+
+DELIMITER ;
+
+
+-- Test
+SELECT calculate_coupon_discount(
+    10000,
+    'PERCENTAGE',
+    15,
+    1000
+) AS coupon_discount;
+
+
+-- =========================================================
+-- 24. FINAL ORDER AMOUNT AFTER COUPON
+-- =========================================================
+
+DROP FUNCTION IF EXISTS calculate_final_order_amount;
+
+DELIMITER $$
+
+CREATE FUNCTION calculate_final_order_amount(
+    p_subtotal DECIMAL(12,2),
+    p_coupon_discount DECIMAL(12,2),
+    p_tax DECIMAL(12,2),
+    p_shipping_charge DECIMAL(12,2)
+)
+RETURNS DECIMAL(12,2)
+DETERMINISTIC
+BEGIN
+
+    RETURN ROUND(
+        COALESCE(p_subtotal, 0)
+        - COALESCE(p_coupon_discount, 0)
+        + COALESCE(p_tax, 0)
+        + COALESCE(p_shipping_charge, 0),
+        2
+    );
+
+END $$
+
+DELIMITER ;
+
+
+-- Test
+SELECT calculate_final_order_amount(
+    20000,
+    1500,
+    3330,
+    100
+) AS final_order_amount;
+
+
+
+-- =========================================================
+-- 25. USE FUNCTIONS WITH PRODUCTS
+-- =========================================================
+
+SELECT
+    product_id,
+    product_name,
+    cost_price,
+    selling_price,
+
+    calculate_profit(
+        cost_price,
+        selling_price
+    ) AS profit,
+
+    calculate_profit_margin(
+        cost_price,
+        selling_price
+    ) AS profit_margin,
+
+    get_price_category(
+        selling_price
+    ) AS price_category
+
+FROM products
+ORDER BY profit DESC;
+
+
+
+-- =========================================================
+-- 26. USE FUNCTIONS WITH INVENTORY
+-- =========================================================
+
+SELECT
+    p.product_id,
+    p.product_name,
+
+    SUM(i.quantity_available)
+        AS available_quantity,
+
+    p.reorder_level,
+
+    get_stock_status(
+        SUM(i.quantity_available),
+        p.reorder_level
+    ) AS stock_status,
+
+    calculate_inventory_value(
+        SUM(i.quantity_available),
+        p.cost_price
+    ) AS inventory_value
+
+FROM products p
+
+JOIN inventory i
+    ON p.product_id = i.product_id
+
+GROUP BY
+    p.product_id,
+    p.product_name,
+    p.reorder_level,
+    p.cost_price
+
+ORDER BY available_quantity;
+
+
+
+-- =========================================================
+-- 27. USE FUNCTIONS WITH ORDERS
+-- =========================================================
+
+SELECT
+    order_id,
+    customer_id,
+    order_date,
+    subtotal,
+    discount_amount,
+    tax_amount,
+    shipping_charge,
+
+    calculate_order_total(
+        subtotal,
+        discount_amount,
+        tax_amount,
+        shipping_charge
+    ) AS calculated_total,
+
+    get_order_category(
+        total_amount
+    ) AS order_category,
+
+    calculate_order_age(
+        order_date
+    ) AS order_age_days
+
+FROM orders
+ORDER BY total_amount DESC;
+
+
+
+-- =========================================================
+-- 28. CUSTOMER SPENDING USING FUNCTION
+-- =========================================================
+
+SELECT
+    c.customer_id,
+
+    get_customer_full_name(
+        c.first_name,
+        c.last_name
+    ) AS customer_name,
+
+    COALESCE(
+        SUM(o.total_amount),
+        0
+    ) AS total_spending,
+
+    get_customer_segment(
+        COALESCE(SUM(o.total_amount), 0)
+    ) AS customer_segment
+
+FROM customers c
+
+LEFT JOIN orders o
+    ON c.customer_id = o.customer_id
+
+GROUP BY
+    c.customer_id,
+    c.first_name,
+    c.last_name
+
+ORDER BY total_spending DESC;
+
+
+
+-- =========================================================
+-- 29. PRODUCT INVENTORY PROFIT
+-- =========================================================
+
+SELECT
+    p.product_id,
+    p.product_name,
+
+    SUM(i.quantity_available)
+        AS available_quantity,
+
+    calculate_inventory_profit(
+        SUM(i.quantity_available),
+        p.cost_price,
+        p.selling_price
+    ) AS potential_inventory_profit
+
+FROM products p
+
+JOIN inventory i
+    ON p.product_id = i.product_id
+
+GROUP BY
+    p.product_id,
+    p.product_name,
+    p.cost_price,
+    p.selling_price
+
+ORDER BY potential_inventory_profit DESC;
+
+
+
+-- =========================================================
+-- 30. SHIPPING PERFORMANCE USING FUNCTION
+-- =========================================================
+
+SELECT
+    shipment_id,
+    order_id,
+    shipped_at,
+    delivered_at,
+
+    calculate_delivery_days(
+        shipped_at,
+        delivered_at
+    ) AS delivery_days,
+
+    CASE
+        WHEN delivered_at IS NULL
+            THEN 'NOT DELIVERED'
+
+        WHEN calculate_delivery_days(
+            shipped_at,
+            delivered_at
+        ) <= 2
+            THEN 'FAST'
+
+        WHEN calculate_delivery_days(
+            shipped_at,
+            delivered_at
+        ) <= 5
+            THEN 'NORMAL'
+
+        ELSE 'DELAYED'
+    END AS delivery_category
+
+FROM shipments;
+
+
+
+-- =========================================================
+-- 31. PAYMENT ANALYSIS USING FUNCTION
+-- =========================================================
+
+SELECT
+    payment_id,
+    order_id,
+    amount,
+    payment_status,
+
+    get_payment_description(
+        payment_status
+    ) AS payment_description
+
+FROM payments;
+
+
+
+-- =========================================================
+-- 32. RETURN ANALYSIS USING FUNCTION
+-- =========================================================
+
+SELECT
+    return_id,
+    order_id,
+    return_date,
+    return_status,
+    refund_amount,
+
+    get_return_description(
+        return_status
+    ) AS return_description
+
+FROM returns;
+
+
+
+-- =========================================================
+-- 33. CUSTOMER EMAIL ANALYSIS
+-- =========================================================
+
+SELECT
+    customer_id,
+    email,
+
+    get_email_domain(email)
+        AS email_domain,
+
+    is_valid_email(email)
+        AS email_status
+
+FROM customers;
+
+
+
+-- =========================================================
+-- 34. FUNCTION-BASED PRODUCT REPORT
+-- =========================================================
+
+SELECT
+    p.product_id,
+    p.product_name,
+
+    calculate_profit(
+        p.cost_price,
+        p.selling_price
+    ) AS profit_per_unit,
+
+    calculate_profit_margin(
+        p.cost_price,
+        p.selling_price
+    ) AS profit_margin,
+
+    get_price_category(
+        p.selling_price
+    ) AS price_category,
+
+    COALESCE(
+        SUM(i.quantity_available),
+        0
+    ) AS stock_quantity,
+
+    get_stock_status(
+        COALESCE(SUM(i.quantity_available), 0),
+        p.reorder_level
+    ) AS stock_status
+
+FROM products p
+
+LEFT JOIN inventory i
+    ON p.product_id = i.product_id
+
+GROUP BY
+    p.product_id,
+    p.product_name,
+    p.cost_price,
+    p.selling_price,
+    p.reorder_level
+
+ORDER BY profit_margin DESC;
+
+
+
+-- =========================================================
+-- 35. FUNCTION-BASED BUSINESS DASHBOARD
+-- =========================================================
+
+SELECT
+    COUNT(*) AS total_products,
+
+    ROUND(
+        AVG(
+            calculate_profit_margin(
+                cost_price,
+                selling_price
+            )
+        ),
+        2
+    ) AS average_profit_margin,
+
+    ROUND(
+        SUM(
+            calculate_profit(
+                cost_price,
+                selling_price
+            )
+        ),
+        2
+    ) AS total_unit_profit,
+
+    SUM(
+        CASE
+            WHEN get_price_category(selling_price)
+                = 'PREMIUM'
+            THEN 1
+            ELSE 0
+        END
+    ) AS premium_products,
+
+    SUM(
+        CASE
+            WHEN get_price_category(selling_price)
+                = 'LOW'
+            THEN 1
+            ELSE 0
+        END
+    ) AS low_price_products
+
+FROM products;
