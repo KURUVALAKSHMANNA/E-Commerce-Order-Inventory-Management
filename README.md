@@ -1,49 +1,53 @@
 # E-Commerce Order & Inventory Management System
 
-A **MySQL-based E-Commerce Order & Inventory Management System** designed to simulate real-world database operations of an e-commerce business.
+## 📌 Project Overview
 
-The project demonstrates practical **SQL and Database Developer skills** including relational database design, realistic business data, SQL queries, JOINs, aggregations, advanced SQL concepts, database programming, transactions, performance optimization, testing, and business reporting.
+The **E-Commerce Order & Inventory Management System** is a MySQL-based relational database project designed to simulate real-world e-commerce business operations.
 
----
-
-## Project Overview
-
-This project models the core database operations of an e-commerce platform, covering the complete flow from **customers and products to orders, payments, shipments, inventory, returns, and customer support**.
-
-It is designed as a practical database project to demonstrate how a Database Developer works with:
-
-* Relational database design
-* Business data modelling
-* Data integrity
-* SQL querying
-* Data analysis
-* Database programming
-* Transaction management
-* Performance optimization
-* Testing
-* Business reporting
+The project demonstrates practical **SQL and Database Development** skills including relational database design, business data modeling, realistic transactional data, SQL querying, advanced SQL, database programming, transaction management, performance optimization, SQL testing, and business reporting.
 
 ---
 
-## Business Workflow
+## 🎯 Project Objective
+
+The objective of this project is to design and implement a structured relational database for managing core e-commerce operations such as:
+
+* Customer management
+* Product and category management
+* Supplier management
+* Warehouse and inventory management
+* Order processing
+* Payment tracking
+* Shipment management
+* Returns and refunds
+* Coupon management
+* Product price history
+* Customer reviews
+* Customer support
+* Order status tracking
+* Audit logging
+
+---
+
+## 🛒 Business Workflow
 
 ### Order Management
 
 ```text
 Customer
-    ↓
+   ↓
 Customer Address
-    ↓
+   ↓
 Order
-    ↓
+   ↓
 Order Items
-    ↓
+   ↓
 Payment
-    ↓
+   ↓
 Shipment
-    ↓
+   ↓
 Delivery
-    ↓
+   ↓
 Return / Refund
 ```
 
@@ -51,15 +55,15 @@ Return / Refund
 
 ```text
 Product
-    ↓
+   ↓
 Category
-    ↓
+   ↓
 Supplier
-    ↓
+   ↓
 Warehouse
-    ↓
+   ↓
 Inventory
-    ↓
+   ↓
 Inventory Transactions
 ```
 
@@ -81,7 +85,7 @@ Database Changes → Audit Logs
 
 ---
 
-# Key Features
+# 🔑 Key Features
 
 * Customer and address management
 * Product and category management
@@ -104,15 +108,11 @@ Database Changes → Audit Logs
 
 ---
 
-# Database Design
+# 🗄️ Database Design
 
-Database:
+**Database:** `ecommerce_db`
 
-```sql
-ecommerce_db
-```
-
-The database contains **20 relational tables** designed using:
+The database contains **20 relational tables** using:
 
 * Primary Keys
 * Foreign Keys
@@ -123,11 +123,11 @@ The database contains **20 relational tables** designed using:
 * Referential Integrity
 * One-to-Many Relationships
 * Business Status Management
-* Timestamp-based tracking
+* Timestamp-based Tracking
 
 ---
 
-# Database Tables
+## 📊 Database Tables
 
 | #  | Table                    | Purpose                      |
 | -- | ------------------------ | ---------------------------- |
@@ -154,36 +154,46 @@ The database contains **20 relational tables** designed using:
 
 ---
 
-# SQL Development
+# 💻 SQL Development
 
-The project contains SQL scripts covering different database development areas.
+## 1. Database Creation
 
-### Database Creation
-
-```text
-01_Create_Database.sql
-```
+**File:** `01_Create_Database.sql`
 
 Creates the `ecommerce_db` database.
 
-### Table Design
-
-```text
-02_Create_Tables.sql
+```sql
+DROP DATABASE IF EXISTS ecommerce_db;
+CREATE DATABASE ecommerce_db;
+USE ecommerce_db;
 ```
 
-Creates the complete relational database structure with keys, constraints, relationships, and validation rules.
+---
 
-### Master Data
+## 2. Table Design
 
-```text
-03_Insert_Master_Data.sql
-```
+**File:** `02_Create_Tables.sql`
 
-Contains business data for:
+Creates the complete relational database structure with:
+
+* Primary keys
+* Foreign keys
+* Constraints
+* Relationships
+* Validation rules
+* Default values
+* Status management
+
+---
+
+## 3. Master Data
+
+**File:** `03_Insert_Master_Data.sql`
+
+Contains realistic business data for:
 
 * Customers
-* Addresses
+* Customer addresses
 * Categories
 * Suppliers
 * Products
@@ -191,13 +201,13 @@ Contains business data for:
 * Inventory
 * Coupons
 
-### Transactional Data
+---
 
-```text
-04_Insert_Transactional_Data.sql
-```
+## 4. Transactional Data
 
-Contains realistic business transactions including:
+**File:** `04_Insert_Transactional_Data.sql`
+
+Contains interconnected business transactions including:
 
 * Orders
 * Order items
@@ -212,54 +222,55 @@ Contains realistic business transactions including:
 
 ---
 
-# SQL Querying
+# 🔎 SQL Querying
 
-The project demonstrates practical SQL queries used for retrieving and analyzing business data.
+## 5. Basic SQL
 
-### Basic SQL
-
-```text
-05_Basic_SQL_Queries.sql
-```
+**File:** `05_Basic_SQL_Queries.sql`
 
 Concepts:
 
-* SELECT
-* DISTINCT
-* WHERE
-* ORDER BY
-* LIMIT
+* `SELECT`
+* `DISTINCT`
+* `WHERE`
+* `ORDER BY`
+* `LIMIT`
+* Column aliases
+* Basic calculations
 
-### Filtering
+---
 
-```text
-06_Filtering_Queries.sql
-```
+## 6. Filtering Queries
 
-Concepts:
-
-* AND
-* OR
-* IN
-* BETWEEN
-* LIKE
-* IS NULL
-* CASE
-
-### JOINs
-
-```text
-07_Joins.sql
-```
+**File:** `06_Filtering_Queries.sql`
 
 Concepts:
 
-* INNER JOIN
-* LEFT JOIN
-* RIGHT JOIN
+* `AND`
+* `OR`
+* `IN`
+* `NOT IN`
+* `BETWEEN`
+* `LIKE`
+* `NOT LIKE`
+* `IS NULL`
+* `IS NOT NULL`
+* `CASE`
+
+---
+
+## 7. JOIN Operations
+
+**File:** `07_Joins.sql`
+
+Concepts:
+
+* `INNER JOIN`
+* `LEFT JOIN`
+* `RIGHT JOIN`
 * Multiple-table JOINs
 
-Example business relationships:
+Business relationships include:
 
 ```text
 Customers → Orders
@@ -270,23 +281,23 @@ Orders → Payments
 Orders → Shipments
 ```
 
-### Aggregate Queries
+---
 
-```text
-08_Aggregate_Queries.sql
-```
+## 8. Aggregate Queries
+
+**File:** `08_Aggregate_Queries.sql`
 
 Concepts:
 
-* COUNT()
-* SUM()
-* AVG()
-* MIN()
-* MAX()
-* GROUP BY
-* HAVING
+* `COUNT()`
+* `SUM()`
+* `AVG()`
+* `MIN()`
+* `MAX()`
+* `GROUP BY`
+* `HAVING`
 
-These queries are used for business analysis such as:
+Business analysis includes:
 
 * Total sales
 * Customer order counts
@@ -296,85 +307,135 @@ These queries are used for business analysis such as:
 
 ---
 
-# Advanced SQL
+# 🚀 Advanced SQL
 
-The project also covers advanced SQL concepts:
+## 9. Subqueries
 
-### Subqueries
+**File:** `09_Subqueries.sql`
 
-```text
-09_Subqueries.sql
-```
+Concepts:
 
-* Scalar subqueries
+* Single-row subqueries
+* Multi-row subqueries
 * Correlated subqueries
-* EXISTS
-* NOT EXISTS
-* IN
+* `EXISTS`
+* `NOT EXISTS`
+* `IN`
+* `ANY`
+* `ALL`
 * Derived tables
 
-### Common Table Expressions
+Business problems include:
 
-```text
-10_CTE_Queries.sql
-```
-
-* CTEs
-* Multiple CTEs
-* Business analysis using CTEs
-
-### Window Functions
-
-```text
-11_Window_Functions.sql
-```
-
-* ROW_NUMBER()
-* RANK()
-* DENSE_RANK()
-* LAG()
-* LEAD()
-* Running totals
-* PARTITION BY
+* Customers spending above average
+* Products above average price
+* Customers with orders
+* Products without sales
+* Product and customer comparisons
 
 ---
 
-# Database Programming
+## 10. Common Table Expressions
 
-The project demonstrates database programming concepts using MySQL.
+**File:** `10_CTE_Queries.sql`
 
-### Built-in Functions
+Concepts:
 
-```text
-12_Built_In_Functions.sql
-```
+* CTEs
+* Multiple CTEs
+* CTE-based business analysis
+
+Examples include:
+
+* Customer spending analysis
+* Product sales analysis
+* Inventory analysis
+* Monthly sales analysis
+
+---
+
+## 11. Window Functions
+
+**File:** `11_Window_Functions.sql`
+
+Concepts:
+
+* `ROW_NUMBER()`
+* `RANK()`
+* `DENSE_RANK()`
+* `LAG()`
+* `LEAD()`
+* Running totals
+* `PARTITION BY`
+
+Business use cases include:
+
+* Product ranking
+* Customer ranking
+* Category-wise ranking
+* Sales comparisons
+* Price history analysis
+
+---
+
+# ⚙️ Database Programming
+
+## 12. Built-in Functions
+
+**File:** `12_Built_In_Functions.sql`
 
 Includes:
 
-* String functions
-* Date functions
-* Numeric functions
-* NULL functions
+### String Functions
 
-### User-Defined Functions
+* `CONCAT()`
+* `UPPER()`
+* `LOWER()`
+* `SUBSTRING()`
+* `LENGTH()`
+* `TRIM()`
 
-```text
-13_User_Defined_Functions.sql
-```
+### Numeric Functions
 
-Business calculations such as:
+* `ROUND()`
+* `CEIL()`
+* `FLOOR()`
+* `ABS()`
+
+### Date Functions
+
+* `CURDATE()`
+* `NOW()`
+* `YEAR()`
+* `MONTH()`
+* `DAY()`
+* `DATEDIFF()`
+* `TIMESTAMPDIFF()`
+
+### NULL Functions
+
+* `COALESCE()`
+* `IFNULL()`
+
+---
+
+## 13. User-Defined Functions
+
+**File:** `13_User_Defined_Functions.sql`
+
+Business calculations include:
 
 * Order total
 * Discount calculation
 * Profit calculation
 
-### Stored Procedures
+---
 
-```text
-14_Stored_Procedures.sql
-```
+## 14. Stored Procedures
 
-Business operations such as:
+**File:** `14_Stored_Procedures.sql`
+
+Database procedures cover business operations such as:
 
 * Customer order retrieval
 * Inventory checking
@@ -382,26 +443,26 @@ Business operations such as:
 * Return processing
 * Sales analysis
 
-### Triggers
+---
 
-```text
-15_Triggers.sql
-```
+## 15. Triggers
 
-Database automation such as:
+**File:** `15_Triggers.sql`
+
+Database automation includes:
 
 * Order status history
 * Inventory transactions
-* Price history
+* Product price history
 * Audit logging
 
-### Views
+---
 
-```text
-16_Views.sql
-```
+## 16. Views
 
-Business-oriented database views such as:
+**File:** `16_Views.sql`
+
+Business-oriented views include:
 
 * Customer order summary
 * Product sales summary
@@ -411,22 +472,23 @@ Business-oriented database views such as:
 
 ---
 
-# Transaction Management
+# 🔄 Transaction Management
 
-```text
-17_Transactions.sql
-```
+**File:** `17_Transactions.sql`
 
-Demonstrates:
+The project demonstrates:
 
 ```sql
 START TRANSACTION;
+
 COMMIT;
+
 ROLLBACK;
+
 SAVEPOINT;
 ```
 
-Example:
+Example business flow:
 
 ```text
 Place Order
@@ -442,33 +504,40 @@ Process Payment
 Commit Transaction
 ```
 
-Transaction handling helps maintain data consistency when multiple database operations are involved in a business process.
+Transaction management helps maintain data consistency when multiple database operations are involved in a business process.
 
 ---
 
-# Performance Optimization
+# ⚡ Performance Optimization
 
-```text
-18_Indexes.sql
-```
+**File:** `18_Indexes.sql`
 
-The project demonstrates database performance concepts using:
+Performance concepts include:
+
+* Index creation
+* Index selection
+* Query optimization
+* `EXPLAIN`
+* Indexes on frequently searched columns
+* Indexes on filtering columns
+* Indexes supporting JOIN operations
+
+Example:
 
 ```sql
 EXPLAIN
+SELECT *
+FROM orders
+WHERE customer_id = 10;
 ```
-
-Indexes are applied to frequently searched, filtered, and joined columns.
 
 ---
 
-# SQL Testing
+# 🧪 SQL Testing
 
-```text
-19_Test_Cases.sql
-```
+**File:** `19_Test_Cases.sql`
 
-Database testing covers scenarios such as:
+Testing covers:
 
 * Primary key validation
 * Foreign key validation
@@ -485,11 +554,9 @@ Database testing covers scenarios such as:
 
 ---
 
-# Business Reporting
+# 📊 Business Reporting
 
-```text
-20_Business_Reports.sql
-```
+**File:** `20_Business_Reports.sql`
 
 SQL-based business reports include:
 
@@ -498,7 +565,7 @@ SQL-based business reports include:
 * Top customers
 * Product sales analysis
 * Top products
-* Low stock analysis
+* Low-stock analysis
 * Warehouse inventory analysis
 * Payment analysis
 * Return analysis
@@ -506,7 +573,7 @@ SQL-based business reports include:
 
 ---
 
-# Project Structure
+# 📁 Project Structure
 
 ```text
 E-Commerce-Order-Inventory-Management/
@@ -538,55 +605,75 @@ E-Commerce-Order-Inventory-Management/
 
 ---
 
-# Technology Stack
+# 🛠️ Technology Stack
 
-| Technology      | Usage                          |
-| --------------- | ------------------------------ |
-| MySQL           | Relational Database            |
-| SQL             | Database Queries & Analysis    |
-| MySQL Workbench | Database Development & Testing |
-| Git             | Version Control                |
-| GitHub          | Project Repository             |
-
----
-
-# Skills Demonstrated
-
-```text
-MySQL
-SQL
-Relational Database Design
-Database Schema Design
-Data Modelling
-Primary Keys
-Foreign Keys
-Constraints
-Data Integrity
-Realistic Business Data
-JOINs
-Aggregate Functions
-Filtering
-Subqueries
-CTEs
-Window Functions
-SQL Functions
-Stored Procedures
-Triggers
-Views
-Transactions
-Indexes
-EXPLAIN
-SQL Testing
-Business Reporting
-Git
-GitHub
-```
+| Technology          | Usage                          |
+| ------------------- | ------------------------------ |
+| **MySQL**           | Relational Database            |
+| **SQL**             | Database Queries & Analysis    |
+| **MySQL Workbench** | Database Development & Testing |
+| **Git**             | Version Control                |
+| **GitHub**          | Project Repository             |
 
 ---
 
-# How to Run
+# 🧠 Skills Demonstrated
 
-### 1. Clone the repository
+### Database
+
+* Relational Database Design
+* Database Schema Design
+* Data Modeling
+* Primary Keys
+* Foreign Keys
+* Constraints
+* Referential Integrity
+* Data Integrity
+* Realistic Business Data
+
+### SQL
+
+* Basic SQL
+* Filtering
+* JOINs
+* Aggregate Functions
+* Subqueries
+* CTEs
+* Window Functions
+
+### Database Programming
+
+* MySQL Functions
+* User-Defined Functions
+* Stored Procedures
+* Triggers
+* Views
+* Transactions
+
+### Performance
+
+* Indexes
+* `EXPLAIN`
+* Query Optimization
+
+### Testing & Reporting
+
+* SQL Testing
+* Business Rule Validation
+* Business Reporting
+* Data Analysis
+
+### Tools
+
+* MySQL Workbench
+* Git
+* GitHub
+
+---
+
+# ▶️ How to Run
+
+### 1. Clone the Repository
 
 ```bash
 git clone https://github.com/KURUVALAKSHMANNA/E-Commerce-Order-Inventory-Management.git
@@ -594,7 +681,9 @@ git clone https://github.com/KURUVALAKSHMANNA/E-Commerce-Order-Inventory-Managem
 
 ### 2. Open MySQL Workbench
 
-### 3. Execute the SQL scripts in sequence
+Open the project SQL files in MySQL Workbench.
+
+### 3. Execute the SQL Scripts in Sequence
 
 ```text
 01_Create_Database.sql
@@ -619,26 +708,28 @@ git clone https://github.com/KURUVALAKSHMANNA/E-Commerce-Order-Inventory-Managem
 20_Business_Reports.sql
 ```
 
-### 4. Select the database
+### 4. Select the Database
 
 ```sql
 USE ecommerce_db;
 ```
 
-### 5. Execute and test the SQL scripts
+### 5. Execute and Test the SQL Scripts
+
+Execute each script in the specified order and verify the database results.
 
 ---
 
-# Why This Project
+# 💼 Project Highlights
 
-This project is built to demonstrate practical database development skills through a realistic e-commerce business scenario.
+This project demonstrates practical database development through a realistic e-commerce business scenario.
 
 It combines:
 
 ```text
 Database Design
       ↓
-Data Modelling
+Data Modeling
       ↓
 Realistic Business Data
       ↓
@@ -657,16 +748,26 @@ Testing
 Business Reporting
 ```
 
-The project provides hands-on experience with the types of database operations commonly used in real-world business applications.
+The project provides hands-on experience with relational database design, SQL development, database programming, data analysis, transaction management, performance optimization, and business reporting.
 
 ---
 
- # 👨‍💻 Author
+# 🔗 GitHub Repository
+
+**E-Commerce Order & Inventory Management System**
+
+https://github.com/KURUVALAKSHMANNA/E-Commerce-Order-Inventory-Management
+
+---
+
+# 👨‍💻 Author
 
 **Lakshmanna Kuruva**
 
-Aspiring Database Developer / SQL Developer
+B.Tech – Computer Science and Engineering
 
- Email: [kuruvalakshmanna4154@gmail.com](mailto:kuruvalakshmanna4154@gmail.com)
+**GitHub:**
+https://github.com/KURUVALAKSHMANNA
 
-🔗 GitHub: [KURUVALAKSHMANNA](https://github.com/KURUVALAKSHMANNA)
+**LinkedIn:**
+https://www.linkedin.com/in/lakshmanna-kuruva-749250334/
