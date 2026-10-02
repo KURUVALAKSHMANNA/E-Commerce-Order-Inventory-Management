@@ -4,10 +4,10 @@
 -- DATABASE: MySQL
 -- ============================================================
 
-DROP DATABASE IF EXISTS ecommerce_db;
+DROP DATABASE IF EXISTS ecommerce_management_db;
 
-CREATE DATABASE ecommerce_db;
+CREATE DATABASE ecommerce_management_db;
 
-USE ecommerce_db;
+USE ecommerce_management_db;
 
 SELECT DATABASE() AS current_database;
